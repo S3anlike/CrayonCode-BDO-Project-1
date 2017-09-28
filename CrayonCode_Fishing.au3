@@ -2,9 +2,8 @@
 
 	AutoIt Version: 3.3.14.2
 	Author:         CrayonCode
-	Version:		Alpha 0.50
-	Contact:		http://www.elitepvpers.com/forum/black-desert/4268940-autoit-crayoncode-bot-project-opensource-free.html
-	GitHub: 		https://github.com/CrayonCodeGit/CrayonCode-BDO-Project/
+	Version:		Alpha 0.51
+	Contact:		https://discord.gg/yEqadvZ edited by s3anlike & Rodent11 & David
 
 #ce ----------------------------------------------------------------------------
 
@@ -37,7 +36,7 @@ Global $WorkerEnable = True, $WorkerCD = 10
 Global $BuffEnable = True, $BuffCD = 30
 Global $BuffKeybinds[2] = [8, 7]
 Global $DryFishEnable = True, $DryFishCD = 5, $DryFishMaxRarity = 2
-
+Global $ReserveEnable = True, $SlotsReserved = 10
 Global $hTitle = "BLACK DESERT - "
 Global $LNG = "en"
 Global $ScreenCapLoot = False
@@ -49,7 +48,6 @@ For $i = 1 to 9
 Next
 
 HotKeySet("^{F1}", "_terminate")
-
 HotKeySet("{F3}", "PauseToggle")
 HotKeySet("{F4}", "Main_Fishing")
 HotKeySet("{F5}", "FishingAssist")
@@ -152,11 +150,16 @@ Func InitGUI()
 	GUICtrlSetState($CBLogFile, CBT($ClientSettings[3][1]))
 	GUICtrlSetState($CBLootCapture, CBT($ClientSettings[4][1]))
 
+	GUICtrlSetState($CBReserve, CBT($ClientSettings[5][1]))
+	GUICtrlSetState($ISlotsReserved, ($ClientSettings[6][1]))
+	
 	$hTitle = $ClientSettings[1][1]
 	$LNG = $ClientSettings[2][1]
 	$LogEnable = $ClientSettings[3][1]
 	$ScreenCapLoot = $ClientSettings[4][1]
-
+	$ReserveEnable = $ClientSettings[5][1]
+	$SlotsReserved = $ClientSettings[6][1]
+	
 	Local $TotalStats = IniReadSection("logs/stats.ini", "TotalStats")
 	Local $SessionStats = IniReadSection("logs/stats.ini", "SessionStats")
 
@@ -230,9 +233,10 @@ Func StoreGUI()
 	$ClientSettings[2][1] = GUICtrlRead($CLang)
 	$ClientSettings[3][1] = CBT(GUICtrlRead($CBLogFile))
 	$ClientSettings[4][1] = CBT(GUICtrlRead($CBLootCapture))
+	$ClientSettings[5][1] = CBT(GUICtrlRead($CBReserve))
+	$ClientSettings[6][1] = GUICtrlRead($ISlotsReserved)
 	IniWriteSection("config/settings.ini", "ClientSettings", $ClientSettings)
-
-
+	
 	InitGUI()
 EndFunc
 
@@ -278,6 +282,8 @@ Func CreateConfig()
 		$ClientSettings &= "ClientLanguage=en" & @LF
 		$ClientSettings &= "Enable_Logfile=1" & @LF
 		$ClientSettings &= "Enable_ScreencapLoot=0" & @LF
+		$ClientSettings &= "Enable_Reserve=1" & @LF
+		$ClientSettings &= "Slots_Reserved=10" & @LF
 		IniWriteSection("config/settings.ini", "ClientSettings", $ClientSettings)
 	EndIf
 
@@ -299,10 +305,6 @@ Func CreateConfig()
 
 
 EndFunc   ;==>CreateConfig
-
-
-
-
 
 ; # Basic
 Func DetectFullscreenToWindowedOffset($hTitle) ; Returns $Offset[4] left, top, right, bottom (Fullscreen returns 0, 0, Width, Height)
@@ -375,7 +377,7 @@ Func OCInventory($open = True)
 	Local $timer = TimerInit()
 	While Not $IS And $Fish
 		Sleep(250)
-		$IS = _ImageSearchArea("res/reference_inventory.png", 0, $Res[0], $Res[1], $Res[2], $Res[3], $C[0], $C[1], 10, 0)
+		$IS = _ImageSearchArea("res/reference_inventory.bmp", 0, $Res[0], $Res[1], $Res[2], $Res[3], $C[0], $C[1], 40, 0)
 		Sleep(250)
 		If $IS = True Then ; If the inventory is already open...
 			If $open = True Then ; If $open = True return the inventory coordinates
@@ -418,7 +420,7 @@ Func SearchInventory(ByRef $imagelist, $shadevariation = 0, $transparency = "", 
 			If $IS = True Then Return $C
 		Next
 		If $k < 2 Then ; Scrolling down inventory
-			MouseMove($IW[0], $IW[1])
+			MouseMove($IW[0] +8, $IW[1])
 			Sleep(50)
 			For $mw = 0 To 7
 				MouseWheel("down")
@@ -470,7 +472,7 @@ Func DetectFreeInventory()
 			SetGUIStatus($String)
 		Next
 		If $L < 2 Then
-			MouseMove($InvA[0], $InvA[1])
+			MouseMove($InvA[0] +8, $InvA[1])
 			Sleep(50)
 			For $mw = 0 To 7
 				MouseWheel("down")
@@ -870,7 +872,7 @@ Func DetectEnterQuantity($Left, $Top)
 	Return False
 EndFunc   ;==>DetectEnterQuantity
 
-Func HandleLoot(ByRef $LS, $Reserve = 0)
+Func HandleLoot(ByRef $LS, $avaibleslots)
 	Local $LW[5]
 	Local $Loot = DetectLoot($LW)
 	If Not IsArray($Loot) Then Return False
@@ -878,9 +880,18 @@ Func HandleLoot(ByRef $LS, $Reserve = 0)
 
 	Local $Pick[4] = [0, 0, 0, 0]
 	Local $PickedLoot = 0
+	
+	Dim $Reserve = IniReadKey("Enable_Reserve", $ClientSettings)
+	Dim $SlotsReserved = IniReadKey("Slots_Reserved", $ClientSettings)
+	
 	Local $Threshold = 0
-	If $Reserve = 1 Then $Threshold = 41
-
+	
+	If $Reserve = 1 Then
+		SetGUIStatus("Slots reserved = " & $SlotsReserved)
+	Else
+		SetGUIStatus("Reserve not turned on.")
+	EndIf
+	
 	; Make the loot settings understandable and prevent type confusion
 	Local $LS_Rarity = Int($LS[1][1])
 	Local $LS_Silverkey = Int($LS[2][1])
@@ -911,7 +922,10 @@ Func HandleLoot(ByRef $LS, $Reserve = 0)
 	Sleep(1250)
 	SetGUIStatus(StringFormat("Filter: R%s S%s A%s C%s E%s T%s", $LS_Rarity, $LS_Silverkey, $LS_AncientRelic, $LS_Coelacanth, $LS_EventItems, $LS_TrashItems))
 	SetGUIStatus("Pick:[" & $Pick[0] & "][" & $Pick[1] & "][" & $Pick[2] & "][" & $Pick[3] & "]")
-	If $Reserve = 1 Then SetGUIStatus("Relic Reserve reached. Unstackable Picks below " & $Threshold & " will be ignored.")
+	If $SlotsReserved >= $avaibleslots Then 
+		$Threshold = 10
+		SetGUIStatus("Relic Reserve reached. Fish will be ignored.")
+	EndIf
 
 	For $j = 3 To 0 Step -1
 		If $Pick[$j] > $Threshold Or (Mod($Pick[$j], 2) = 1 And $Pick[$j] > 0) Then
@@ -921,6 +935,10 @@ Func HandleLoot(ByRef $LS, $Reserve = 0)
 			If Not VisibleCursor() Then CoSe("{LCTRL}")
 			Sleep(250)
 			VMouse($LW[0] + 20 + $LW[4] * $j +1, $LW[1] + 20)
+			Sleep(50)
+			VMouse($LW[0] + 20 + $LW[4] * $j, $LW[1] + 20, 1, "Right")
+			Sleep(50)
+			VMouse($LW[0] + 20 + $LW[4] * $j, $LW[1] + 20, 1, "Right")
 			Sleep(50)
 			VMouse($LW[0] + 20 + $LW[4] * $j, $LW[1] + 20, 1, "Right")
 			Sleep(100)
@@ -1081,7 +1099,7 @@ Func CheckInventoryForFishBySlot($MaxRarity = 3)
 			Next
 		Next
 		If $k < 2 Then ; Scrolling down inventory
-			MouseMove($IW[0], $IW[1])
+			MouseMove($IW[0] +8, $IW[1])
 			Sleep(50)
 			For $mw = 0 To 7
 				MouseWheel("down")
@@ -1313,7 +1331,6 @@ Func Main_Fishing()
 	Local $Breaktimer = 0
 	Local $fishingtimer = 0, $fishingtime
 	Local $failedcasts = 0
-	Local $RelicReserve = 0 ; TODO implement or remove
 
 	Local $avaibleslots = 16
 	Local $freedetectedslots = "NotYetDetected"
@@ -1329,7 +1346,7 @@ Func Main_Fishing()
 					Riddler()
 					SetGUIStatus("Evaluating loot.")
 
-					$avaibleslots -= HandleLoot($LootSettings, $RelicReserve)
+					$avaibleslots -= HandleLoot($LootSettings, $avaibleslots)
 
 				Else
 					SetGUIStatus("ReelIn failed. Trying to close obstruction.")
@@ -1397,7 +1414,7 @@ Func Main_Fishing()
 			Case Else ; If no state is detected
 				If $Breaktimer = 0 Then
 					$Breaktimer = TimerInit()
-					SetGUIStatus("Unidentified state")
+					; SetGUIStatus("Unidentified state")
 				ElseIf TimerDiff($Breaktimer) / 1000 > 10 Then
 					SetGUIStatus("Trying to resolve unidentified state")
 					If WaitForMenu(False) = True Then
@@ -1422,7 +1439,7 @@ Func Main_Fishing()
 					EndIf
 					$Breaktimer = TimerInit()
 				Else
-					SetGUIStatus("Unidentified state (" & Round(TimerDiff($Breaktimer) / 1000, 0) & "s)")
+					; SetGUIStatus("Unidentified state (" & Round(TimerDiff($Breaktimer) / 1000, 0) & "s)")
 				EndIf
 		EndSwitch
 		Sleep(100)
