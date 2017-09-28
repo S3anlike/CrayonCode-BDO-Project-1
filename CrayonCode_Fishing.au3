@@ -882,11 +882,11 @@ Func HandleLoot(ByRef $LS, $avaibleslots)
 	Local $PickedLoot = 0
 	
 	Dim $Reserve = IniReadKey("Enable_Reserve", $ClientSettings)
-	Dim $SlotsReserved = IniReadKey("Slots_Reserved", $ClientSettings)
-	
+
 	Local $Threshold = 0
 	
 	If $Reserve = 1 Then
+		Dim $SlotsReserved = IniReadKey("Slots_Reserved", $ClientSettings)
 		SetGUIStatus("Slots reserved = " & $SlotsReserved)
 	Else
 		SetGUIStatus("Reserve not turned on.")
