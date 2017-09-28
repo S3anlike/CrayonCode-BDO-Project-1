@@ -651,21 +651,21 @@ Func OpenWarehouse($SkipTransport = False)
 	Local $x, $y, $IS
 
 	Local $counter = 12
-	SetGUIStatus("Trying to open Warehouse")
+	SetGUIStatus("Opening warehouse interface")
 	
 	While $counter >= 0 And $Processing = True
 		$IS = _ImageSearchArea($TransportButton, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 20, 0)
 		If $IS = True Then
 			If $SkipTransport = False Then
 				; Transport Workaround necessary to fix render issues that appear if you open the warehouse more than once per game session
-				SetGUIStatus("Clicking Transport Button")
+				SetGUIStatus("Clicking Transport Button to fix any render issues")
 				MouseClick("left", $x, $y, 1)
 				Sleep(500)
 				CoSe("{Esc}")
 			EndIf
 			$IS = _ImageSearchArea($WarehouseButton, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 20, 0)
 			If $IS = True Then
-				SetGUIStatus("Clicking WarehouseButton")
+				SetGUIStatus("Clicking Warehouse Button")
 				MouseClick("left", $x, $y, 2)
 				Return True
 			EndIf
@@ -683,7 +683,7 @@ Func OpenWarehouse($SkipTransport = False)
 		EndIf
 		Local $C = StorageWindow()
 		If IsArray($C) = True Then
-			SetGUIStatus("Escaping from Storage")
+			SetGUIStatus("Closing storage")
 			CoSe("{ESC}")
 		EndIf
 		CoSe("r") ; Talk to NPC
@@ -773,13 +773,13 @@ Func FindResource(ByRef $ProcessingList)
 			$IS = _ImageSearchArea("res/processing/" & $ProcessingList[$i][0] & ".bmp", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 0, 0)
 			If $IS = True Then
 				If $x = 0 Or $y = 0 Then SetGUIStatus("Imagefile probably missing")
-				SetGUIStatus($ProcessingList[$i][0] & " PRESENT")
+				SetGUIStatus($ProcessingList[$i][0] & " found, attempting to withdraw")
 				If $TestingMode = False Then ItemMoveAmount($x, $y, $DefaultBatchSize)
 				If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then MouseMove($C[0] - 50, $C[1], 0) ; Keep mouse out of detection range
 				Sleep(100)
 				If $TestingMode = False Then Return $i
 			Else
-				SetGUIStatus($ProcessingList[$i][0] & " absent")
+				SetGUIStatus($ProcessingList[$i][0] & " not found on current page, moving to next")
 			EndIf
 		Next
 		If $k < 2 Then
@@ -902,10 +902,10 @@ Func StorageWindow()
 	If $IS = True Then
 		$C[0] = $x + $FirstSlotOffset[0]
 		$C[1] = $y + $FirstSlotOffset[1]
-		SetGUIStatus("StorageAnchor: " & $C[0] & ", " & $C[1])
+		SetGUIStatus("StorageWindow(): Storage is open with anchor " & $C[0] & ", " & $C[1])
 		Return ($C)
 	Else
-		SetGUIStatus("StorageAnchor: not found")
+		SetGUIStatus("StorageWindow(): Storage is closed")
 		Return False
 	EndIf
 EndFunc   ;==>StorageWindow

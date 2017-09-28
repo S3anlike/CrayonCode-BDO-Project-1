@@ -1,1 +1,63 @@
 02:30.24 Feeding Worker
+14:19.49 Fullscreen detected (2560x1440) - No Offsets
+14:19.49 Trying to open Warehouse
+14:19.51 StorageAnchor: not found
+14:19.51 Clicking Transport Button
+14:19.53 Clicking WarehouseButton
+14:19.54 Returning items to storage
+14:20.01 StorageAnchor: 1384, 464
+14:20.01 Scanning for items
+14:20.01 lumber_birch not found
+14:20.04 No Item in ProcessingQueue found. Stopping.
+14:25.56 Fullscreen detected (2560x1440) - No Offsets
+14:25.56 Opening warehouse interface
+14:25.56 Clicking Transport Button to fix any render issues
+14:25.58 Clicking Warehouse Button
+14:25.59 Returning items to storage
+14:26.06 StorageWindow(): Storage is open with anchor 1384, 464
+14:26.06 Scanning for items
+14:26.06 lumber_birch not found
+14:26.09 No Item in ProcessingQueue found. Stopping.
+14:33.31 Fullscreen detected (2560x1440) - No Offsets
+14:33.31 Opening warehouse interface
+14:33.33 StorageWindow(): Storage is closed
+14:33.34 Clicking Transport Button to fix any render issues
+14:33.36 Clicking Warehouse Button
+14:33.37 Returning items to storage
+14:33.44 StorageWindow(): Storage is open with anchor 1384, 464
+14:33.44 Scanning for items
+14:33.44 lumber_birch not found
+14:33.47 No Item in ProcessingQueue found. Stopping.
+14:34.35 Fullscreen detected (2560x1440) - No Offsets
+14:34.35 Opening warehouse interface
+14:34.35 Clicking Transport Button to fix any render issues
+14:34.36 Clicking Warehouse Button
+14:34.37 Returning items to storage
+14:34.44 StorageWindow(): Storage is open with anchor 1384, 464
+14:34.44 Scanning for items
+14:34.44 lumber_birch not found
+14:34.46 lumber_birch found, attempting to withdraw
+14:34.51 Processing open: False
+14:34.52 Processing open: True
+14:34.56 Waiting for Processing to end.
+14:41.21 Settings saved
+14:41.28 Fullscreen detected (2560x1440) - No Offsets
+14:41.28 ProcessCustom finished
+14:42.15 Fullscreen detected (2560x1440) - No Offsets
+14:42.15 --> Heating ore_coal 10/10 with meltedshard_iron 10/10
+14:42.15 Opening warehouse interface
+14:42.17 StorageWindow(): Storage is open with anchor 213, 1219
+14:42.17 Closing storage
+14:42.18 Clicking Transport Button to fix any render issues
+14:42.19 Clicking Warehouse Button
+14:42.20 Returning items to storage
+14:42.27 StorageWindow(): Storage is open with anchor 1384, 464
+14:42.27 Scanning for current order: [ore_coal, 10]  [meltedshard_iron, 10] 
+14:42.27 ore_coal on page 0 is absent
+14:42.27 meltedshard_iron on page 0 is ABSENT
+14:42.29 ore_coal on page 1 is PRESENT
+14:42.31 meltedshard_iron on page 1 is PRESENT
+14:42.33 FindResourceCustom: 1, 1 - All Required Ingredients PRESENT
+14:42.35 Processing open: False
+14:42.36 Processing open: True
+14:42.41 Waiting for Processing to end.
