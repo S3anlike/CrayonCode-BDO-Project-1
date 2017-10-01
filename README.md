@@ -23,6 +23,7 @@ Requirements:
 * Storage auto-arrange must be turned **ON**.
 * Inventory auto-arrange must be turned **OFF** with the first 4 inventory slots EMPTY or with non-character bound items.
 * SAVE settings after any changes otherwise they won't apply!
+* All QUESTS from the NPC must be accepted prior!
 
 For custom processing, use round numbers for BATCH and MAX. Basically the bot will do #MAX of #BATCH items. So if MAX was 100, and BATCH was 10, it will do 10 rounds of 10 items.
 For example: You have 3651 Birch Lumber, BATCH would be 500, MAX 3500. 

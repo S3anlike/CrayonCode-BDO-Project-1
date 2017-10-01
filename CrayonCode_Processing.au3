@@ -47,6 +47,8 @@ Global $CustomsValues[14][8]
 Global $DefaultBatchSize = 100
 Global $MinProcessTime = 20
 Global $WorkerFeedingTime = 30
+Global $BuffEnable = True, $BuffCD = 30
+Global $BuffKeybinds[2] = [8, 7]
 Global $AlchemyStoneEnable = 1
 Global $TestingMode = False
 Global $Res[4] = [0, 0, @DesktopWidth, @DesktopHeight]
@@ -57,6 +59,7 @@ HotKeySet("{F3}", "PauseToggle")
 HotKeySet("{F4}", "ProcessCustom")
 HotKeySet("{F5}", "ProcessSimple")
 HotKeySet("{F6}", "WorkerFeed")
+HotKeySet("{F7}", "BuffTest")
 #EndRegion - Global
 
 
@@ -126,22 +129,22 @@ $I_DefaultBatchSize = GUICtrlCreateInput("", 144, 64, 121, 21)
 $Label8 = GUICtrlCreateLabel("Default Batch Size:", 24, 64, 95, 17)
 $I_MinProcessTime = GUICtrlCreateInput("", 144, 112, 121, 21)
 $Label9 = GUICtrlCreateLabel("Min Processing Time:", 24, 112, 105, 17)
-$CB_LogFile = GUICtrlCreateCheckbox("Enable Log File", 24, 320, 129, 17)
-;$Label10 = GUICtrlCreateLabel("Worker Feeding Time:", 24, 160, 109, 17)
-;$I_WorkerFeedingTime = GUICtrlCreateInput("", 144, 160, 121, 21)
-;$Label11 = GUICtrlCreateLabel("Time in Minutes. Set 0 to Deactivate.", 272, 160, 313, 17)
-;$I_AlchemyStoneTimer = GUICtrlCreateInput("", 16, 373, 81, 21, $ES_READONLY)
+$Label10 = GUICtrlCreateLabel("Buff delay:", 24, 160, 109, 17)
+$I_BuffCD = GUICtrlCreateInput("", 144, 160, 121, 21)
+$Label11 = GUICtrlCreateLabel("Time in Minutes. Set 0 to Deactivate. Buffs on keys 7,8", 24, 184, 313, 17)
 $Label12 = GUICtrlCreateLabel("Minimum seconds to wait before checking if actually processing", 24, 142, 327, 17)
 $Label13 = GUICtrlCreateLabel("Items taken from storage. Customize depending on your LT", 24, 94, 284, 17)
 $CB_AlchemyStone = GUICtrlCreateCheckbox("Enable Worker Feed (every 1h)", 24, 305, 300, 17)
+$CB_LogFile = GUICtrlCreateCheckbox("Enable Log File", 24, 320, 129, 17)
 ;$Label14 = GUICtrlCreateLabel("Will feed every 1h", 176, 288, 146, 17)
 GUICtrlCreateTabItem("")
-$BQuit = GUICtrlCreateButton("Quit (Ctrl+F1)", 8, 400, 100, 33)
-$BSave = GUICtrlCreateButton("Save (F2)", 108, 400, 100, 33)
-$BPause = GUICtrlCreateButton("Un/Pause (F3)", 208, 400, 100, 33)
-$BCustom = GUICtrlCreateButton("Custom (F4)", 308, 400, 100, 33)
-$BSimple = GUICtrlCreateButton("Simple (F5)", 408, 400, 100, 33)
-$BWorkerTest = GUICtrlCreateButton("Test Workers (F6)", 508, 400, 100, 33)
+$BQuit = GUICtrlCreateButton("Quit (Ctrl+F1)", 8, 400, 80, 33)
+$BSave = GUICtrlCreateButton("Save (F2)", 91, 400, 80, 33)
+$BPause = GUICtrlCreateButton("Un/Pause (F3)", 174, 400, 80, 33)
+$BCustom = GUICtrlCreateButton("Custom (F4)", 257, 400, 80, 33)
+$BSimple = GUICtrlCreateButton("Simple (F5)", 340, 400, 80, 33)
+$BWorkerTest = GUICtrlCreateButton("Test Workers (F6)", 423, 400, 100, 33)
+$BBuffsTest = GUICtrlCreateButton("Test Buffs (F7)", 526, 400, 80, 33)
 GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
 
@@ -151,11 +154,10 @@ Func StoreGUI()
 	; Global Settings
 	IniWrite("config/processing.ini", "Global", "DefaultBatchSize", GUICtrlRead($I_DefaultBatchSize))
 	IniWrite("config/processing.ini", "Global", "MinProcessTime", GUICtrlRead($I_MinProcessTime))
-	;IniWrite("config/processing.ini", "Global", "WorkerFeedingTime", GUICtrlRead($I_WorkerFeedingTime))
+	IniWrite("config/processing.ini", "Global", "BuffCD", GUICtrlRead($I_BuffCD))
 	IniWrite("config/processing.ini", "Global", "LogFileEnable", cbt($CB_LogFile))
 	IniWrite("config/processing.ini", "Global", "AlchemyStoneEnable", cbt($CB_AlchemyStone))
-
-
+	
 	; Lumber
 	IniWrite("config/processing.ini", "lumber", "lumber_category", cbt($lumber_category))
 	IniWrite("config/processing.ini", "lumber", "lumber_acacia", cbt($lumber_acacia))
@@ -229,13 +231,19 @@ Func InitGUI()
 	GUICtrlSetData($I_DefaultBatchSize, $DefaultBatchSize)
 	$MinProcessTime = IniRead("config/processing.ini", "Global", "MinProcessTime", $MinProcessTime)
 	GUICtrlSetData($I_MinProcessTime, $MinProcessTime)
-	;$WorkerFeedingTime = IniRead("config/processing.ini", "Global", "WorkerFeedingTime", $WorkerFeedingTime)
-	;GUICtrlSetData($I_WorkerFeedingTime, $WorkerFeedingTime)
+	$BuffCD = IniRead("config/processing.ini", "Global", "BuffCD", $BuffCD)
+	GUICtrlSetState($I_BuffCD, $BuffCD)
 	$LogFileEnable =  cbt(IniRead("config/processing.ini", "Global", "LogFileEnable", $LogFileEnable))
 	GUICtrlSetState($CB_LogFile, $LogFileEnable)
 	$AlchemyStoneEnable =  cbt(IniRead("config/processing.ini", "Global", "AlchemyStoneEnable", $AlchemyStoneEnable))
 	GUICtrlSetState($CB_AlchemyStone, $AlchemyStoneEnable)
 
+	If $BuffCD = 0 Then
+		$BuffEnable = False
+		SetGUIStatus(StringFormat("Buff timer is 0, will not attempt to use buffs"))
+	Else
+		SetGUIStatus(StringFormat("Buffs are enabled"))
+	EndIf
 
 	; Lumber
 	GUICtrlSetState($lumber_category, cbt(IniRead("config/processing.ini", "lumber", "lumber_category", 0)))
@@ -1009,6 +1017,7 @@ Func GSleep($time)
 	$time /= 10
 	For $i = 0 To $time
 		AlchemyStone()
+		Buff($BuffEnable, $BuffCD, $BuffKeybinds)
 		For $j = 0 To 10
 			Sleep(10)
 			CheckGUI()
@@ -1089,6 +1098,39 @@ Func WorkerFeed()
 		SetGUIStatus("WorkerIcon missing")
 	EndIf
 EndFunc   ;==>WorkerFeed
+
+Func BuffTest()
+	SetGUIStatus("Test consuming buffs")
+	Buff(True, 0, $BuffKeybinds)
+EndFunc
+
+Func Buff($BuffEnable, $BuffCD, ByRef $Keybinds)
+	If $BuffEnable = False Then Return False
+
+	Local Static $BuffTimer = TimerInit()
+	If $BuffCD = 0 Then $BuffTimer = 0
+	$BuffCD *= 60000
+	Local $TimerDiff = TimerDiff($BuffTimer)
+
+	Local $sKeys = ""
+	For $vElement In $Keybinds
+		$sKeys &= "[" & $vElement & "]"
+	Next
+
+	If $TimerDiff > $BuffCD Then
+		SetGUIStatus(StringFormat("Using Buff Keybinds [%.1fm CD] Keys:%s", $BuffCD / 60000, $sKeys))
+
+		For $vElement In $Keybinds
+			CoSe($vElement)
+			Sleep(100)
+		Next
+		$BuffTimer = TimerInit()
+		Return True
+	Else
+		SetGUIStatus("Buff Cooldown(" & $BuffCD / 60000 & "m): " & Round(($BuffCD - $TimerDiff) / 60000, 1) & "m left. Keys:" & $sKeys)
+		Return False
+	EndIf
+EndFunc   ;==>Buff
 
 Func VMouse($x, $y, $clicks = 0, $button = "left", $speed = 10)
 	If Not VisibleCursor() Then CoSe("{LCTRL}")
