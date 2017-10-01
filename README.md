@@ -30,3 +30,18 @@ For example: You have 3651 Birch Lumber, BATCH would be 500, MAX 3500.
 This feature is still under development and might bug.
 
 Any issues please report to the discord at: https://discord.gg/hj6jPrW
+
+## FOR MARKETPLACE SNIPING ENTHUSIASTS:
+
+Run CrayonCode_MP.au3 to start the script.
+
+Requirements:
+* Marketplace must be open on a specific item, image for reference: https://i.gyazo.com/f243cf942bf5031fd53f1fc62abb2c96.png
+
+This feature is also a WIP and might not work as intended, and as such testers as appreciated.
+
+Known issues:
+
+* When there's a item in the bid phase and the next BUY item is much more expensive the bot will keep trying to buy it while waiting for the next phase.
+
+
