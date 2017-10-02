@@ -404,7 +404,7 @@ Func SetGUIStatus($data)
 EndFunc   ;==>SetGUIStatus
 
 Func LogData($text)
-	If $LogFile = "" Then $LogFile = FileOpen("ProcessingLOGFILE.txt", 9)
+	If $LogFile = "" Then $LogFile = FileOpen("logs\ProcessingLOGFILE.txt", 9)
 	FileWriteLine($LogFile, $text)
 EndFunc   ;==>LogData
 
