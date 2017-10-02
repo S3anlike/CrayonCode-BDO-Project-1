@@ -602,7 +602,7 @@ Func ProcessSimple()
 		SetGUIStatus("Manually stopping ProcessSimple")
 		Return False
 	EndIf
-
+	BuffTest($BuffEnable)
 	Global $PL[0][2]
 	Local $ItemNumber
 	$ResOffset = DetectFullscreenToWindowedOffset()
@@ -695,7 +695,7 @@ Func OpenWarehouse($SkipTransport = False)
 			CoSe("{ESC}")
 		EndIf
 		CoSe("r") ; Talk to NPC
-		Sleep(750)
+		Sleep(1750)
 		$counter -= 1
 		If $counter <= 0 Then Return False
 	WEnd
@@ -1099,9 +1099,11 @@ Func WorkerFeed()
 	EndIf
 EndFunc   ;==>WorkerFeed
 
-Func BuffTest()
-	SetGUIStatus("Test consuming buffs")
-	Buff(True, 0, $BuffKeybinds)
+Func BuffTest($BuffEnable)
+	if($BuffEnable) Then
+		SetGUIStatus("Consuming initial buffs")
+		Buff(True, 0, $BuffKeybinds)
+	EndIf
 EndFunc
 
 Func Buff($BuffEnable, $BuffCD, ByRef $Keybinds)
@@ -1122,12 +1124,12 @@ Func Buff($BuffEnable, $BuffCD, ByRef $Keybinds)
 
 		For $vElement In $Keybinds
 			CoSe($vElement)
-			Sleep(100)
+			Sleep(1500)
 		Next
 		$BuffTimer = TimerInit()
 		Return True
 	Else
-		SetGUIStatus("Buff Cooldown(" & $BuffCD / 60000 & "m): " & Round(($BuffCD - $TimerDiff) / 60000, 1) & "m left. Keys:" & $sKeys)
+		;SetGUIStatus("Buff Cooldown(" & $BuffCD / 60000 & "m): " & Round(($BuffCD - $TimerDiff) / 60000, 1) & "m left. Keys:" & $sKeys)
 		Return False
 	EndIf
 EndFunc   ;==>Buff
