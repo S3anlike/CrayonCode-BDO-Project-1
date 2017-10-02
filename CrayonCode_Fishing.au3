@@ -785,7 +785,7 @@ Func DetectLoot(ByRef $LWref) ; Identifies Rarity by bordercolor and Empty, Tras
 	Next
 
 	; ScreenCapping the first 4 Inventory slots
-	Dim $ScreenCapLoot
+	Dim $ScreenCapLoot = IniReadKey("Enable_ScreencapLoot", $ClientSettings)
 	If $ScreenCapLoot = True Then
 		SetGUIStatus("Saving Loot Screenshot")
 		FFSaveBMP("logs/Loot", True, $LW[0], $LW[1], $LW[2] + $LW[4] * 4, $LW[3])

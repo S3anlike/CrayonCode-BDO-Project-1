@@ -50,3 +50,4 @@ Known issues:
 
 If you want to help, join the discord! Any translation help can also be done at: 
 
+https://docs.google.com/spreadsheets/d/1JjFftrODGTWlQHbAxtjA6mETAiWGNsK5fVv2-Ll6tfE/edit#gid=1200139819
