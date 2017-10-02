@@ -1,51 +1,51 @@
 <status_log>Journal d'état</status_log>
-<global_settings>1</global_settings>
-<loot_settings>2</loot_settings>
-<rarity_settings>3</rarity_settings>
-<fish_colors>4</fish_colors>
-<fish_default_color>5</fish_default_color>
-<fish_color_tip>6</fish_color_tip>
-<silver_key>7</silver_key>
-<silver_key_tip>8</silver_key_tip>
-<relic>9</relic>
-<relic_tip>10</relic_tip>
-<coel>11</coel>
-<coel_tip>12</coel_tip>
-<event>13</event>
-<event_tip>14</event_tip>
-<trash>15</trash>
-<trash_tip>16</trash_tip>
-<side_functions>17</side_functions>
-<feed_worker>18</feed_worker>
-<worker_tip>19</worker_tip>
-<interval_tip>20</interval_tip>
-<interval>21</interval>
-<test>22</test>
-<enable_buffs>23</enable_buffs>
-<buffkeys>24</buffkeys>
-<side_functions_on>25</side_functions_on>
-<cl_settings>26</cl_settings>
-<cl_name>27</cl_name>
-<cl_lang>28</cl_lang>
-<rarity_tip>29</rarity_tip>
-<log>30</log>
-<screencap>31</screencap>
-<relic_reserve>32</relic_reserve>
-<dry>33</dry>
-<dry_fish>34</dry_fish>
-<dry_tip>35</dry_tip>
-<dry_rarity>36</dry_rarity>
-<dry_colors>37</dry_colors>
-<dry_default_color>38</dry_default_color>
-<dry_max_rarity>39</dry_max_rarity>
-<inven_settings>40</inven_settings>
-<discard_rods>41</discard_rods>
-<discard_tip>42</discard_tip>
-<buffer>43</buffer>
-<stats>44</stats>
-<stats_tip>45</stats_tip>
-<b_save>46</b_save>
-<b_fish>47</b_fish>
-<b_mini>48</b_mini>
-<b_quit>49</b_quit>
-<b_pause>50</b_pause>
+<global_settings>Paramètres globaux</global_settings>
+<loot_settings>Paramètres Loot</loot_settings>
+<rarity_settings>Rareté minimum:</rarity_settings>
+<fish_colors>Or | Bleu | Vert | Blanc | Spécial seulement</fish_colors>
+<fish_default_color>Bleu</fish_default_color>
+<fish_color_tip>Ramassez des objets qui sont égaux ou supérieurs à la rareté.</fish_color_tip>
+<silver_key>Loot Silver Key</silver_key>
+<silver_key_tip>Prenez Silverkey.(Ignore la rareté minimale)</silver_key_tip>
+<relic>Loot Ancient Relic</relic>
+<relic_tip>Ramassez les anciennes reliques. (Ignore la rareté minimale)</relic_tip>
+<coel>Loot Coelacanth</coel>
+<coel_tip>Ramenez Coealacanth.(Ignore la rareté minimale)</coel_tip>
+<event>Loot événement</event>
+<event_tip>Choisissez les éléments de l'événement.(Ignore la rareté minimale) [Vous pouvez ajouter de nouveaux éléments pairs en ajoutant un .bmp ou .png à res / event]</event_tip>
+<trash>Loot Trash</trash>
+<trash_tip>Voulez-vous retirer des ordures? Êtes-vous sûr? (Perdre des objets de rareté blanche avec quantité)</trash_tip>
+<side_functions>Fonctions latérales</side_functions>
+<feed_worker>Activer Feed Worker</feed_worker>
+<worker_tip>Alimente les travailleurs toutes les 90 minutes.Assurez-vous d'avoir de la bière dans l'inventaire.</worker_tip>
+<interval_tip>Intervalle en quelques minutes.</interval_tip>
+<interval>Intervalle:</interval>
+<test>Tester</test>
+<enable_buffs>Activer BuffKeys</enable_buffs>
+<buffkeys>Clés:</buffkeys>
+<side_functions_on>Fonctionnalités latérales</side_functions_on>
+<cl_settings>Paramètres du client</cl_settings>
+<cl_name>Nom</cl_name>
+<cl_lang>Langue</cl_lang>
+<rarity_tip>Ramassez des objets qui sont égaux ou supérieurs à la rareté.</rarity_tip>
+<log>Activer le journal</log>
+<screencap>Activer le goujon d'écran</screencap>
+<relic_reserve>Activer la réservation pour les reliques, à réserver (si activé):</relic_reserve>
+<dry>Paramètres de séchage</dry>
+<dry_fish>Activer le séchage du poisson</dry_fish>
+<dry_tip>Sera le poisson sec lorsque l'inventaire est presque plein.Les machines à sous vides seront automatiquement évaluées après.</dry_tip>
+<dry_rarity>Max Rarité:</dry_rarity>
+<dry_colors>Blanc | Vert | Bleu | Or</dry_colors>
+<dry_default_color>blanc</dry_default_color>
+<dry_max_rarity>La rareté maximale à utiliser pour le séchage.</dry_max_rarity>
+<inven_settings>Inventory_Settings</inven_settings>
+<discard_rods>Barres de rejet</discard_rods>
+<discard_tip>Rejete les instruments de pêche à usage unique. (Ceux qui ne peuvent être réparés)</discard_tip>
+<buffer>Taille:</buffer>
+<stats>Tab_Stats</stats>
+<stats_tip>| Session | Total |</stats_tip>
+<b_save>Enregistrer</b_save>
+<b_fish>Pêcher [F4]</b_fish>
+<b_mini>Minigame [F5]</b_mini>
+<b_quit>Quittez [CTRL + F1]</b_quit>
+<b_pause>Un / Pause [F3]</b_pause>

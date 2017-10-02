@@ -158,7 +158,7 @@ Func InitGUI()
 	$LogEnable = $ClientSettings[3][1]
 	$ScreenCapLoot = $ClientSettings[4][1]
 	$ReserveEnable = $ClientSettings[5][1]
-	MsgBox(48, "prompt", "$slots reserved should be: " & $ClientSettings[6][1])
+	;MsgBox(48, "prompt", "$slots reserved should be: " & $ClientSettings[6][1])
 	$SlotsReserved = $ClientSettings[6][1]
 	
 	Local $TotalStats = IniReadSection("logs/stats.ini", "TotalStats")

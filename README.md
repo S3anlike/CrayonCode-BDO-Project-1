@@ -46,3 +46,7 @@ Known issues:
 * When there's a item in the bid phase and the next BUY item is much more expensive the bot will keep trying to buy it while waiting for the next phase.
 
 
+## OTHER INFO
+
+If you want to help, join the discord! Any translation help can also be done at: 
+
