@@ -1,4 +1,4 @@
-# CrayonCode-BDO-Project Rev. 1 (9/28/2017) Kamasylvia Update Part 1.
+# CrayonCode-BDO-Project Rev. 2 (10/2/2017) Kamasylvia Update Part 1.
 
 ## FOR FISHING ENTHUSIASTS:
 

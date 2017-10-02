@@ -151,13 +151,14 @@ Func InitGUI()
 	GUICtrlSetState($CBLootCapture, CBT($ClientSettings[4][1]))
 
 	GUICtrlSetState($CBReserve, CBT($ClientSettings[5][1]))
-	GUICtrlSetState($ISlotsReserved, ($ClientSettings[6][1]))
+	GUICtrlSetData($ISlotsReserved, $ClientSettings[6][1])
 	
 	$hTitle = $ClientSettings[1][1]
 	$LNG = $ClientSettings[2][1]
 	$LogEnable = $ClientSettings[3][1]
 	$ScreenCapLoot = $ClientSettings[4][1]
 	$ReserveEnable = $ClientSettings[5][1]
+	MsgBox(48, "prompt", "$slots reserved should be: " & $ClientSettings[6][1])
 	$SlotsReserved = $ClientSettings[6][1]
 	
 	Local $TotalStats = IniReadSection("logs/stats.ini", "TotalStats")
@@ -236,6 +237,7 @@ Func StoreGUI()
 	$ClientSettings[5][1] = CBT(GUICtrlRead($CBReserve))
 	$ClientSettings[6][1] = GUICtrlRead($ISlotsReserved)
 	IniWriteSection("config/settings.ini", "ClientSettings", $ClientSettings)
+	
 	
 	InitGUI()
 EndFunc
