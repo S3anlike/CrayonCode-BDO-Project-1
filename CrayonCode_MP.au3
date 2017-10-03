@@ -28,13 +28,14 @@ Opt("MouseClickDownDelay", 100)
 Opt("MouseClickDelay", 50)
 Opt("SendKeyDelay", 50)
 
-Global $Marketplace = False
+Global $Marketplace = False, $Milking = False
 Global $Res[4] = [0, 0, @DesktopWidth, @DesktopHeight]
 Global $hTitle = "BLACK DESERT - "
 Global $LNG = "en"
 Global $LogEnable = True
 HotKeySet("^{F1}", "_terminate")
 HotKeySet("{F4}", "RunMarketplace")
+HotKeySet("{F7}", "Milking")
 
 ; # GUI
 Func SetGUIStatus($data)
@@ -58,6 +59,8 @@ Func GUILoopSwitch()
 			RunMarketplace()
 		Case $BSave
 			StoreGUI()
+		;Case $BMilk
+			;Milking()
 	EndSwitch
 EndFunc   ;==>GUILoopSwitch
 
@@ -286,6 +289,63 @@ Func Main()
 	WEnd
 EndFunc   ;==>Main
 
+Func Milking()
+	$Milking = Not $Milking
+	If $Milking = False Then Return False
 
+	Local $x, $y, $IS
+	Local Const $Milk[4] = ["res/milk_right.bmp", "res/milk_left.bmp", "res/milk_startL.bmp", "res/milk_startR.bmp"]
+	Local $CowCDIni = 0;Int(IniRead("config/data.ini", "MilkingSettings", "MilkCD", 0))
+	$ResOffset = DetectFullscreenToWindowedOffset($hTitle)
+	Local $statustimer = TimerInit()
+	Local $CowCDtimer = TimerInit()
+	Local $CowCD = $CowCDIni * 1000
+
+	SetGUIStatus("Ready for milking. Talk to a cow. (CD: " & $CowCDIni & ")")
+	While $Milking
+		GUILoopSwitch()
+		Sleep(50)
+		$IS = _ImageSearchArea($Milk[0], 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 40, 0)
+		If $IS = True Then
+			If VisibleCursor() = True Then CoSe("{LCTRL}")
+			SetGUIStatus("milk RIGHT")
+			MouseDown("right")
+			Sleep(120)
+			MouseUp("right")
+			$statustimer = TimerInit()
+			ContinueLoop
+		EndIf
+		$IS = _ImageSearchArea($Milk[1], 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 40, 0)
+		If $IS = True Then
+			If VisibleCursor() = True Then CoSe("{LCTRL}")
+			SetGUIStatus("milk LEFT")
+			MouseDown("left")
+			Sleep(120)
+			MouseUp("left")
+			$statustimer = TimerInit()
+			ContinueLoop
+		EndIf
+		$IS = _ImageSearchArea($Milk[2], 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 20, 0)
+		If $IS = True Then
+			$IS = _ImageSearchArea($Milk[3], 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 20, 0)
+			If $IS = True Then
+				If VisibleCursor() = True Then CoSe("{LCTRL}")
+				SetGUIStatus("Start Milking")
+				MouseClick("left")
+				$statustimer = TimerInit()
+				Sleep(100)
+				ContinueLoop
+			EndIf
+		EndIf
+		If TimerDiff($statustimer) > 2000 Then SetGUIStatus("Ready for milking. Talk to a cow.")
+		If TimerDiff($CowCDtimer) > $CowCD And $CowCD > 0 Then
+			SetGUIStatus("Milking Cooldoown over. Pressing R.")
+			CoSe("r")
+			Sleep(2000)
+			$CowCDtimer = TimerInit()
+		EndIf
+	WEnd
+	SetGUIStatus("Stopped Milking")
+EndFunc   ;==>Milking
 
 Main()

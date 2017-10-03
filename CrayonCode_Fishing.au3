@@ -518,7 +518,7 @@ EndFunc   ;==>GetState
 Func ReelIn() ; Solves the fishing timing minigame
 	Local Const $ReelIn = "res/fishing/reelin.png"
 	Local $x, $y, $IS, $SSN = 1
-
+	
 	CoSe("{SPACE}")
 
 	Local $timer = TimerInit()
@@ -532,6 +532,7 @@ Func ReelIn() ; Solves the fishing timing minigame
 		FFSnapShot($x, $y, $x + 97, $y + 21, $SSN)
 		$NS = FFNearestSpot(1, 1, $x, $y, 5933000, 30, False, $x, $y, $x + 97, $y + 21, $SSN)
 		If Not @error Then
+			Sleep(Random(10, 100,1))
 			CoSe("{SPACE}")
 			Return True
 		EndIf
