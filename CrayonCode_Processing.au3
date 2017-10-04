@@ -47,8 +47,8 @@ Global $CustomsValues[14][8]
 Global $DefaultBatchSize = 100
 Global $MinProcessTime = 20
 Global $WorkerFeedingTime = 30
-Global $BuffEnable = True, $BuffCD = 30
-Global $BuffKeybinds[2] = [8, 7]
+Global $BuffEnable = True, $BuffCD1 = 30, $BuffCD2 = 90
+Global $BuffKey1 = 7, $BuffKey2 = 8
 Global $AlchemyStoneEnable = 1
 Global $TestingMode = False
 Global $Res[4] = [0, 0, @DesktopWidth, @DesktopHeight]
@@ -125,17 +125,29 @@ $Label4 = GUICtrlCreateLabel("Max", 288, 32, 24, 17)
 $Label7 = GUICtrlCreateLabel("Max", 536, 32, 24, 17)
 $TabSheet4 = GUICtrlCreateTabItem("Control Panel")
 $ELog = GUICtrlCreateEdit("", 330, 32, 280, 350, BitOR($GUI_SS_DEFAULT_EDIT,$ES_READONLY))
-$I_DefaultBatchSize = GUICtrlCreateInput("", 144, 64, 121, 21)
+$Processing_Settings = GUICtrlCreateGroup("Processing Settings", 13, 37, 300, 199)
+$I_DefaultBatchSize = GUICtrlCreateInput("", 144, 62, 121, 21)
+GUICtrlSetTip(-1, "Items taken from storage. Customize depending on your LT")
 $Label8 = GUICtrlCreateLabel("Default Batch Size:", 24, 64, 95, 17)
-$I_MinProcessTime = GUICtrlCreateInput("", 144, 112, 121, 21)
-$Label9 = GUICtrlCreateLabel("Min Processing Time:", 24, 112, 105, 17)
-$Label10 = GUICtrlCreateLabel("Buff delay:", 24, 160, 109, 17)
-$I_BuffCD = GUICtrlCreateInput("", 144, 160, 121, 21)
-$Label11 = GUICtrlCreateLabel("Time in Minutes. Set 0 to Deactivate. Buffs on keys 7,8", 24, 184, 313, 17)
-$Label12 = GUICtrlCreateLabel("Minimum seconds to wait before checking if actually processing", 24, 142, 327, 17)
-$Label13 = GUICtrlCreateLabel("Items taken from storage. Customize depending on your LT", 24, 94, 284, 17)
-$CB_AlchemyStone = GUICtrlCreateCheckbox("Enable Worker Feed (every 1h)", 24, 305, 300, 17)
-$CB_LogFile = GUICtrlCreateCheckbox("Enable Log File", 24, 320, 129, 17)
+GUICtrlSetTip(-1, "Items taken from storage. Customize depending on your LT")
+$I_MinProcessTime = GUICtrlCreateInput("", 144, 92, 121, 21)
+GUICtrlSetTip(-1, "Minimum seconds to wait before checking if actually processing")
+$Label9 = GUICtrlCreateLabel("Min Processing Time:", 24, 94, 105, 17)
+GUICtrlSetTip(-1, "Minimum seconds to wait before checking if actually processing")
+$Label10 = GUICtrlCreateLabel("Buff 1 key:", 24, 124, 59, 17)
+$CBuffkey1 = GUICtrlCreateCombo("", 84, 122, 35, 25, BitOR($CBS_DROPDOWNLIST,$CBS_AUTOHSCROLL))
+GUICtrlSetData(-1, "1|2|3|4|5|6|7|8|9|0", "7")
+$Label11 = GUICtrlCreateLabel("Buff 1 delay:", 140, 124, 59, 17)
+$I_BuffCD1 = GUICtrlCreateInput("", 205, 122, 30, 21)
+GUICtrlSetTip(-1,"Time in Minutes. Set 0 to Deactivate.")
+$Label12 = GUICtrlCreateLabel("Buff 2 key:", 24, 154, 59, 17)
+$CBuffkey2 = GUICtrlCreateCombo("", 84, 152, 35, 25, BitOR($CBS_DROPDOWNLIST,$CBS_AUTOHSCROLL))
+GUICtrlSetData(-1, "1|2|3|4|5|6|7|8|9|0", "8")
+$Label13 = GUICtrlCreateLabel("Buff 2 delay:", 140, 154, 59, 17)
+$I_BuffCD2 = GUICtrlCreateInput("", 205, 152, 30, 21)
+GUICtrlSetTip(-1,"Time in Minutes. Set 0 to Deactivate.")
+$CB_AlchemyStone = GUICtrlCreateCheckbox("Enable Worker Feed (every 1h)", 24, 184, 180, 17)
+$CB_LogFile = GUICtrlCreateCheckbox("Enable Log File", 24, 214, 129, 17)
 ;$Label14 = GUICtrlCreateLabel("Will feed every 1h", 176, 288, 146, 17)
 GUICtrlCreateTabItem("")
 $BQuit = GUICtrlCreateButton("Quit (Ctrl+F1)", 8, 400, 80, 33)
@@ -148,15 +160,18 @@ $BBuffsTest = GUICtrlCreateButton("Test Buffs (F7)", 526, 400, 80, 33)
 GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
 
-
-
 Func StoreGUI()
 	; Global Settings
 	IniWrite("config/processing.ini", "Global", "DefaultBatchSize", GUICtrlRead($I_DefaultBatchSize))
 	IniWrite("config/processing.ini", "Global", "MinProcessTime", GUICtrlRead($I_MinProcessTime))
-	IniWrite("config/processing.ini", "Global", "BuffCD", GUICtrlRead($I_BuffCD))
 	IniWrite("config/processing.ini", "Global", "LogFileEnable", cbt($CB_LogFile))
 	IniWrite("config/processing.ini", "Global", "AlchemyStoneEnable", cbt($CB_AlchemyStone))
+	
+	; Buff Settings
+	IniWrite("config/processing.ini", "Buff", "BuffCD1", GUICtrlRead($I_BuffCD1))
+	IniWrite("config/processing.ini", "Buff", "BuffCD2", GUICtrlRead($I_BuffCD2))
+	IniWrite("config/processing.ini", "Buff", "BuffKey1", GUICtrlRead($CBuffkey1))
+	IniWrite("config/processing.ini", "Buff", "BuffKey2", GUICtrlRead($CBuffkey2))
 	
 	; Lumber
 	IniWrite("config/processing.ini", "lumber", "lumber_category", cbt($lumber_category))
@@ -231,18 +246,28 @@ Func InitGUI()
 	GUICtrlSetData($I_DefaultBatchSize, $DefaultBatchSize)
 	$MinProcessTime = IniRead("config/processing.ini", "Global", "MinProcessTime", $MinProcessTime)
 	GUICtrlSetData($I_MinProcessTime, $MinProcessTime)
-	$BuffCD = IniRead("config/processing.ini", "Global", "BuffCD", $BuffCD)
-	GUICtrlSetData($I_BuffCD, $BuffCD)
 	$LogFileEnable =  cbt(IniRead("config/processing.ini", "Global", "LogFileEnable", $LogFileEnable))
 	GUICtrlSetState($CB_LogFile, $LogFileEnable)
 	$AlchemyStoneEnable =  cbt(IniRead("config/processing.ini", "Global", "AlchemyStoneEnable", $AlchemyStoneEnable))
 	GUICtrlSetState($CB_AlchemyStone, $AlchemyStoneEnable)
-
-	If $BuffCD = 0 Then
+	
+	; Buff Settings
+	$BuffCD1 = IniRead("config/processing.ini", "Buff", "BuffCD1", $BuffCD1)
+	GUICtrlSetData($I_BuffCD1, $BuffCD1)
+	$BuffCD2 = IniRead("config/processing.ini", "Buff", "BuffCD2", $BuffCD2)
+	GUICtrlSetData($I_BuffCD2, $BuffCD2)
+	$BuffKey1 = IniRead("config/processing.ini", "Buff", "BuffKey1", $BuffKey1)
+	GUICtrlSetData($CBuffKey1, "1|2|3|4|5|6|7|8|9|0", $BuffKey1)
+	$BuffKey2 = IniRead("config/processing.ini", "Buff", "BuffKey2", $BuffKey2)
+	GUICtrlSetData($CBuffKey2, "1|2|3|4|5|6|7|8|9|0", $BuffKey2)
+	
+	If ($BuffCD1 = 0 And $BuffCD2 = 0) Then
 		$BuffEnable = False
-		SetGUIStatus(StringFormat("Buff timer is 0, will not attempt to use buffs"))
+		SetGUIStatus(StringFormat("Buff timers are 0, will not attempt to use buffs"))
 	Else
-		SetGUIStatus(StringFormat("Buffs are enabled"))
+		SetGUIStatus(StringFormat("Buff(s) are enabled"))
+		If Not ($BuffCD1 = 0) Then SetGUIStatus(StringFormat("Buff1 key: " & $BuffKey1 & " with delay of " & $BuffCD1 & " minutes."))
+		If Not ($BuffCD2 = 0) Then SetGUIStatus(StringFormat("Buff2 key: " & $BuffKey2 & " with delay of " & $BuffCD2 & " minutes."))
 	EndIf
 
 	; Lumber
@@ -357,8 +382,6 @@ Func de_acvtivate_array($cbtrigger, ByRef $uitargets, $on_active = False)
 		Return True
 	EndIf
 EndFunc   ;==>de_acvtivate_array
-
-
 
 #Region - CrayonCode Support
 Func _terminate()
@@ -517,8 +540,24 @@ Func ObfuscateTitle($Title, $length = 5)
 	WinSetTitle($Title, "", $newtitle)
 	Return True
 EndFunc   ;==>ObfuscateTitle
+
+Func AntiScreenSaverMouseWiggle($minutes = 2)
+	Local Static $ScreenSaver = TimerInit()
+	$minutes *= 60000
+
+	If TimerDiff($ScreenSaver) >= $minutes Then
+		Local $MPos = MouseGetPos()
+		MouseMove($MPos[0] + 10, $MPos[1])
+		MouseMove($MPos[0], $MPos[1])
+		$ScreenSaver = TimerInit()
+		Return True
+	EndIf
+
+	Return False
+EndFunc
 #EndRegion - CrayonCode Support
 
+#Region - Main Functions
 Func ProcessCustom()
 	$Processing = Not $Processing
 	If $Processing = False Then
@@ -1006,18 +1045,19 @@ Func CheckGUI()
 			ClearRowCustom(13)
 	EndSwitch
 EndFunc
+#EndRegion ;==> Main Function Region End
 
 Func Save()
 	SetGUIStatus("Settings saved")
 	StoreGUI()
-	InitGUI()
 EndFunc
 
 Func GSleep($time)
 	$time /= 10
 	For $i = 0 To $time
 		AlchemyStone()
-		Buff($BuffEnable, $BuffCD, $BuffKeybinds)
+		Buff($BuffEnable, $BuffCD1, $BuffCD2, $BuffKey1, $BuffKey2)
+		AntiScreenSaverMouseWiggle()
 		For $j = 0 To 10
 			Sleep(10)
 			CheckGUI()
@@ -1102,34 +1142,49 @@ EndFunc   ;==>WorkerFeed
 Func BuffTest($BuffEnable)
 	if($BuffEnable) Then
 		SetGUIStatus("Consuming initial buffs")
-		Buff(True, 0, $BuffKeybinds)
+		Local $CoSeKey1 = String($BuffKey1)
+		Local $CoSeKey2 = String($BuffKey2)
+		CoSe($CoSeKey1)
+		Sleep(1500)
+		CoSe($CoSeKey2)
+		Sleep(1500)
 	EndIf
 EndFunc
 
-Func Buff($BuffEnable, $BuffCD, ByRef $Keybinds)
+Func Buff($BuffEnable, $BuffCD1, $BuffCD2, $BuffKey1, $BuffKey2)
 	If $BuffEnable = False Then Return False
+	
+	Local Static $BuffTimer1 = TimerInit()
+	Local Static $BuffTimer2 = TimerInit()
+	
+	If $BuffCD1 = 0 Then $BuffTimer1 = 0
+	$BuffCD1 *= 60000
+	Local $TimerDiff1 = TimerDiff($BuffTimer1)
+	
+	If $BuffCD2 = 0 Then $BuffTimer2 = 0
+	$BuffCD2 *= 60000
+	Local $TimerDiff2 = TimerDiff($BuffTimer2)
 
-	Local Static $BuffTimer = TimerInit()
-	If $BuffCD = 0 Then $BuffTimer = 0
-	$BuffCD *= 60000
-	Local $TimerDiff = TimerDiff($BuffTimer)
-
-	Local $sKeys = ""
-	For $vElement In $Keybinds
-		$sKeys &= "[" & $vElement & "]"
-	Next
-
-	If $TimerDiff > $BuffCD Then
-		SetGUIStatus(StringFormat("Using Buff Keybinds [%.1fm CD] Keys:%s", $BuffCD / 60000, $sKeys))
-
-		For $vElement In $Keybinds
-			CoSe($vElement)
-			Sleep(1500)
-		Next
-		$BuffTimer = TimerInit()
+	Local $CoSeKey1 = String($BuffKey1)
+	Local $CoSeKey2 = String($BuffKey2)
+	
+	If $TimerDiff1 > $BuffCD1 Then
+		SetGUIStatus(StringFormat("Using Buff 1 ", $BuffCD1 / 60000))
+		CoSe($CoSeKey1)
+		Sleep(1500)
+		$BuffTimer1 = TimerInit()
+	Else
+		;SetGUIStatus("Buff1 Cooldown(" & $BuffCD1 / 60000 & "m): " & Round(($BuffCD1 - $TimerDiff1) / 60000, 1) & "m left.")
+	EndIf
+	
+	If $TimerDiff2 > $BuffCD2 Then
+		SetGUIStatus(StringFormat("Using Buff 2 ", $BuffCD2 / 60000))
+		CoSe($CoSeKey2)
+		Sleep(1500)
+		$BuffTimer2 = TimerInit()
 		Return True
 	Else
-		;SetGUIStatus("Buff Cooldown(" & $BuffCD / 60000 & "m): " & Round(($BuffCD - $TimerDiff) / 60000, 1) & "m left. Keys:" & $sKeys)
+		;SetGUIStatus("Buff2 Cooldown(" & $BuffCD2 / 60000 & "m): " & Round(($BuffCD2 - $TimerDiff2) / 60000, 1) & "m left.")
 		Return False
 	EndIf
 EndFunc   ;==>Buff

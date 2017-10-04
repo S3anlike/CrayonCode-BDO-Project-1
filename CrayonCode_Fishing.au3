@@ -60,7 +60,7 @@ Func SetGUIStatus($data)
 	If $data <> $LastGUIStatus Then
 		_GUICtrlEdit_AppendText($ELog, @HOUR & ":" & @MIN & "." & @SEC & " " & $data & @CRLF)
 		ConsoleWrite(@CRLF & @HOUR & ":" & @MIN & "." & @SEC & " " & $data)
-		If $LogEnable = True Then LogData(@HOUR & ":" & @MIN & "." & @SEC & " " & $data, "logs/LOGFILE.txt")
+		If $LogEnable = 1 Then LogData(@HOUR & ":" & @MIN & "." & @SEC & " " & $data, "logs/LOGFILE.txt")
 		$LastGUIStatus = $data
 	EndIf
 EndFunc   ;==>SetGUIStatus
@@ -787,7 +787,8 @@ Func DetectLoot(ByRef $LWref) ; Identifies Rarity by bordercolor and Empty, Tras
 
 	; ScreenCapping the first 4 Inventory slots
 	Dim $ScreenCapLoot = IniReadKey("Enable_ScreencapLoot", $ClientSettings)
-	If $ScreenCapLoot = True Then
+	;SetGUIStatus($ScreenCapLoot)
+	If $ScreenCapLoot = 1 Then
 		SetGUIStatus("Saving Loot Screenshot")
 		FFSaveBMP("logs/Loot", True, $LW[0], $LW[1], $LW[2] + $LW[4] * 4, $LW[3])
 	EndIf
