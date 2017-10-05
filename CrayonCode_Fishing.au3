@@ -168,6 +168,10 @@ Func InitGUI()
 	For $i = 1 To 9
 		GUICtrlSetData($aListView1[$i], $SessionStats[$i][0] & "|" & $SessionStats[$i][1] & "|" & $TotalStats[$i][1], "")
 	Next
+	
+	SetGUIStatus("workerenable: " & $WorkerEnable)
+	SetGUIStatus("dry fish: " & $DryFishEnable)
+	SetGUIStatus("reserve enable: " & $ReserveEnable)
 EndFunc
 
 Func StoreGUI()

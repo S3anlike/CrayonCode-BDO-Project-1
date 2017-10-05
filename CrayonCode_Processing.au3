@@ -39,7 +39,7 @@ Opt("SendKeyDelay", 50)
 Global $hBDO = "BLACK DESERT -"
 Global $Processing = False
 Global $LogFile = ""
-Global $LogFileEnable = 1
+;Global $LogFileEnable = 1
 Global $LastGUIStatus
 Global $ResOffset[4] = [0, 0, 0, 0]
 Global $Customs[14][8]
@@ -47,7 +47,7 @@ Global $CustomsValues[14][8]
 Global $DefaultBatchSize = 100
 Global $MinProcessTime = 20
 Global $WorkerFeedingTime = 30
-Global $BuffEnable = True, $BuffCD1 = 30, $BuffCD2 = 90
+Global $Buff1Enable = True, $Buff2Enable = True, $BuffCD1 = 30, $BuffCD2 = 90
 Global $BuffKey1 = 7, $BuffKey2 = 8
 Global $AlchemyStoneEnable = 1
 Global $TestingMode = False
@@ -136,13 +136,13 @@ $Label9 = GUICtrlCreateLabel("Min Processing Time:", 24, 94, 105, 17)
 GUICtrlSetTip(-1, "Minimum seconds to wait before checking if actually processing")
 $Label10 = GUICtrlCreateLabel("Buff 1 key:", 24, 124, 59, 17)
 $CBuffkey1 = GUICtrlCreateCombo("", 84, 122, 35, 25, BitOR($CBS_DROPDOWNLIST,$CBS_AUTOHSCROLL))
-GUICtrlSetData(-1, "1|2|3|4|5|6|7|8|9|0", "7")
+GUICtrlSetData(-1, "", "7")
 $Label11 = GUICtrlCreateLabel("Buff 1 delay:", 140, 124, 59, 17)
 $I_BuffCD1 = GUICtrlCreateInput("", 205, 122, 30, 21)
 GUICtrlSetTip(-1,"Time in Minutes. Set 0 to Deactivate.")
 $Label12 = GUICtrlCreateLabel("Buff 2 key:", 24, 154, 59, 17)
 $CBuffkey2 = GUICtrlCreateCombo("", 84, 152, 35, 25, BitOR($CBS_DROPDOWNLIST,$CBS_AUTOHSCROLL))
-GUICtrlSetData(-1, "1|2|3|4|5|6|7|8|9|0", "8")
+GUICtrlSetData(-1, "", "8")
 $Label13 = GUICtrlCreateLabel("Buff 2 delay:", 140, 154, 59, 17)
 $I_BuffCD2 = GUICtrlCreateInput("", 205, 152, 30, 21)
 GUICtrlSetTip(-1,"Time in Minutes. Set 0 to Deactivate.")
@@ -164,7 +164,7 @@ Func StoreGUI()
 	; Global Settings
 	IniWrite("config/processing.ini", "Global", "DefaultBatchSize", GUICtrlRead($I_DefaultBatchSize))
 	IniWrite("config/processing.ini", "Global", "MinProcessTime", GUICtrlRead($I_MinProcessTime))
-	IniWrite("config/processing.ini", "Global", "LogFileEnable", cbt($CB_LogFile))
+	;IniWrite("config/processing.ini", "Global", "LogFileEnable", cbt($CB_LogFile))
 	IniWrite("config/processing.ini", "Global", "AlchemyStoneEnable", cbt($CB_AlchemyStone))
 	
 	; Buff Settings
@@ -246,8 +246,8 @@ Func InitGUI()
 	GUICtrlSetData($I_DefaultBatchSize, $DefaultBatchSize)
 	$MinProcessTime = IniRead("config/processing.ini", "Global", "MinProcessTime", $MinProcessTime)
 	GUICtrlSetData($I_MinProcessTime, $MinProcessTime)
-	$LogFileEnable =  cbt(IniRead("config/processing.ini", "Global", "LogFileEnable", $LogFileEnable))
-	GUICtrlSetState($CB_LogFile, $LogFileEnable)
+	;$LogFileEnable =  cbt(IniRead("config/processing.ini", "Global", "LogFileEnable", $LogFileEnable))
+	;GUICtrlSetState($CB_LogFile, $LogFileEnable)
 	$AlchemyStoneEnable =  cbt(IniRead("config/processing.ini", "Global", "AlchemyStoneEnable", $AlchemyStoneEnable))
 	GUICtrlSetState($CB_AlchemyStone, $AlchemyStoneEnable)
 	
@@ -262,12 +262,23 @@ Func InitGUI()
 	GUICtrlSetData($CBuffKey2, "1|2|3|4|5|6|7|8|9|0", $BuffKey2)
 	
 	If ($BuffCD1 = 0 And $BuffCD2 = 0) Then
-		$BuffEnable = False
+		$Buff1Enable = False
+		$Buff2Enable = False
 		SetGUIStatus(StringFormat("Buff timers are 0, will not attempt to use buffs"))
 	Else
 		SetGUIStatus(StringFormat("Buff(s) are enabled"))
-		If Not ($BuffCD1 = 0) Then SetGUIStatus(StringFormat("Buff1 key: " & $BuffKey1 & " with delay of " & $BuffCD1 & " minutes."))
-		If Not ($BuffCD2 = 0) Then SetGUIStatus(StringFormat("Buff2 key: " & $BuffKey2 & " with delay of " & $BuffCD2 & " minutes."))
+		If Not ($BuffCD1 = 0) Then 
+		SetGUIStatus(StringFormat("Buff1 key: " & $BuffKey1 & " with delay of " & $BuffCD1 & " minutes."))
+		Else
+		SetGUIStatus(StringFormat("Buff1 Disabled"))
+		$Buff1Enable = False
+		EndIf
+		If Not ($BuffCD2 = 0) Then 
+		SetGUIStatus(StringFormat("Buff2 key: " & $BuffKey2 & " with delay of " & $BuffCD2 & " minutes."))
+		Else
+		SetGUIStatus(StringFormat("Buff2 Disabled"))
+		$Buff2Enable = False
+		EndIf
 	EndIf
 
 	; Lumber
@@ -407,11 +418,17 @@ Func cw($text)
 EndFunc   ;==>cw
 
 Func CoSe($key, $raw = 0)
-	$hwnd = WinActive($hBDO)
-	If $hwnd = 0 Then $hwnd = WinActivate($hBDO)
+	Dim $hTitle
+	$hwnd = WinActive($hTitle)
+	If $hwnd = 0 Then $hwnd = WinActivate($hTitle)
+
+	Local $Pos = WinGetPos($hwnd)
+	If @error Then
+		Local $Pos[4] = [0, 0, @DesktopWidth, @DesktopHeight]
+	EndIf
 
 	Opt("MouseCoordMode", 2)
-	If MouseGetPos(0) < 0 Or MouseGetPos(0) > $ResOffset[2] Or MouseGetPos(1) < 0 Or MouseGetPos(1) > $ResOffset[3] Then MouseMove(100, 100, 0)
+	If MouseGetPos(0) < 0 Or MouseGetPos(0) > $Pos[2] Or MouseGetPos(1) < 0 Or MouseGetPos(1) > $Pos[3] Then MouseMove(100, 100, 0)
 	Opt("MouseCoordMode", 1)
 
 	ControlSend($hwnd, "", "", $key, $raw)
@@ -420,7 +437,8 @@ EndFunc   ;==>CoSe
 Func SetGUIStatus($data)
 	If $data <> $LastGUIStatus Then
 		ConsoleWrite(@CRLF & @HOUR & ":" & @MIN & "." & @SEC & " " & $data)
-		If $LogFileEnable = True Then LogData(@HOUR & ":" & @MIN & "." & @SEC & " " & $data)
+		;If $LogFileEnable = True Then 
+		LogData(@HOUR & ":" & @MIN & "." & @SEC & " " & $data)
 		_GUICtrlEdit_AppendText($ELog, $data & @CRLF)
 		$LastGUIStatus = $data
 	EndIf
@@ -641,7 +659,7 @@ Func ProcessSimple()
 		SetGUIStatus("Manually stopping ProcessSimple")
 		Return False
 	EndIf
-	BuffTest($BuffEnable)
+	BuffTest($Buff1Enable, $Buff2Enable)
 	Global $PL[0][2]
 	Local $ItemNumber
 	$ResOffset = DetectFullscreenToWindowedOffset()
@@ -1056,7 +1074,7 @@ Func GSleep($time)
 	$time /= 10
 	For $i = 0 To $time
 		AlchemyStone()
-		Buff($BuffEnable, $BuffCD1, $BuffCD2, $BuffKey1, $BuffKey2)
+		Buff($Buff1Enable, $Buff2Enable, $BuffCD1, $BuffCD2, $BuffKey1, $BuffKey2)
 		AntiScreenSaverMouseWiggle()
 		For $j = 0 To 10
 			Sleep(10)
@@ -1129,6 +1147,8 @@ Func WorkerFeed()
 				VMouse($x + $WorkerOffsets[3][0], $y + $WorkerOffsets[3][1], 1, "left") ; Repeat All
 				VMouse($x + $WorkerOffsets[3][0], $y + $WorkerOffsets[3][1] + 10, 1, "left") ; Repeat All DIFFERENT LANGUAGES FIX
 			CoSe("{ESC}") ; Close Worker List
+			Sleep(1500)
+			CoSe("l") ; Open Processing screen
 			Return True
 		Else
 			SetGUIStatus("WorkerStamina missing")
@@ -1140,53 +1160,61 @@ Func WorkerFeed()
 EndFunc   ;==>WorkerFeed
 
 Func BuffTest($BuffEnable)
-	if($BuffEnable) Then
-		SetGUIStatus("Consuming initial buffs")
+	if $Buff1Enable = True Then
+		SetGUIStatus("Consuming buff1")
 		Local $CoSeKey1 = String($BuffKey1)
-		Local $CoSeKey2 = String($BuffKey2)
 		CoSe($CoSeKey1)
 		Sleep(1500)
+	EndIf
+	
+	if $Buff2Enable = True Then
+		SetGUIStatus("Consuming buff2")
+		Local $CoSeKey2 = String($BuffKey2)
 		CoSe($CoSeKey2)
 		Sleep(1500)
 	EndIf
 EndFunc
 
-Func Buff($BuffEnable, $BuffCD1, $BuffCD2, $BuffKey1, $BuffKey2)
-	If $BuffEnable = False Then Return False
+Func Buff($Buff1Enable, $Buff2Enable, $BuffCD1, $BuffCD2, $BuffKey1, $BuffKey2)
+	;SetGUIStatus("Buff()")
+	If $Buff1Enable = False And $Buff2Enable = False Then Return False
 	
-	Local Static $BuffTimer1 = TimerInit()
-	Local Static $BuffTimer2 = TimerInit()
-	
-	If $BuffCD1 = 0 Then $BuffTimer1 = 0
-	$BuffCD1 *= 60000
-	Local $TimerDiff1 = TimerDiff($BuffTimer1)
-	
-	If $BuffCD2 = 0 Then $BuffTimer2 = 0
-	$BuffCD2 *= 60000
-	Local $TimerDiff2 = TimerDiff($BuffTimer2)
-
-	Local $CoSeKey1 = String($BuffKey1)
-	Local $CoSeKey2 = String($BuffKey2)
-	
-	If $TimerDiff1 > $BuffCD1 Then
-		SetGUIStatus(StringFormat("Using Buff 1 ", $BuffCD1 / 60000))
-		CoSe($CoSeKey1)
-		Sleep(1500)
-		$BuffTimer1 = TimerInit()
-	Else
+	If $Buff1Enable = True Then 
+		Local Static $BuffTimer1 = TimerInit()
+		If $BuffCD1 = 0 Then $BuffTimer1 = 0
+		$BuffCD1 *= 60000
+		Local $TimerDiff1 = TimerDiff($BuffTimer1)
+		Local $CoSeKey1 = String($BuffKey1)
+		If $TimerDiff1 > $BuffCD1 Then
+			SetGUIStatus(StringFormat("Using Buff 1 ", $BuffCD1 / 60000))
+			CoSe($CoSeKey1)
+			Sleep(1500)
+			$BuffTimer1 = TimerInit()
+		Else
 		;SetGUIStatus("Buff1 Cooldown(" & $BuffCD1 / 60000 & "m): " & Round(($BuffCD1 - $TimerDiff1) / 60000, 1) & "m left.")
+		EndIf
 	EndIf
 	
-	If $TimerDiff2 > $BuffCD2 Then
-		SetGUIStatus(StringFormat("Using Buff 2 ", $BuffCD2 / 60000))
-		CoSe($CoSeKey2)
-		Sleep(1500)
-		$BuffTimer2 = TimerInit()
-		Return True
-	Else
-		;SetGUIStatus("Buff2 Cooldown(" & $BuffCD2 / 60000 & "m): " & Round(($BuffCD2 - $TimerDiff2) / 60000, 1) & "m left.")
-		Return False
+	If $Buff2Enable = True Then
+		Local Static $BuffTimer2 = TimerInit()
+		If $BuffCD2 = 0 Then $BuffTimer2 = 0
+		$BuffCD2 *= 60000
+		Local $TimerDiff2 = TimerDiff($BuffTimer2)
+
+		Local $CoSeKey2 = String($BuffKey2)
+		If $TimerDiff2 > $BuffCD2 Then
+			SetGUIStatus(StringFormat("Using Buff 2 ", $BuffCD2 / 60000))
+			CoSe($CoSeKey2)
+			Sleep(1500)
+			$BuffTimer2 = TimerInit()
+			Return True
+		Else
+			;SetGUIStatus("Buff2 Cooldown(" & $BuffCD2 / 60000 & "m): " & Round(($BuffCD2 - $TimerDiff2) / 60000, 1) & "m left.")
+			Return False
+		EndIf
+	
 	EndIf
+	
 EndFunc   ;==>Buff
 
 Func VMouse($x, $y, $clicks = 0, $button = "left", $speed = 10)
