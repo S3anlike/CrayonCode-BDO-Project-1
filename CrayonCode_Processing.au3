@@ -1159,7 +1159,7 @@ Func WorkerFeed()
 	EndIf
 EndFunc   ;==>WorkerFeed
 
-Func BuffTest($BuffEnable)
+Func BuffTest($Buff1Enable, $Buff2Enable)
 	if $Buff1Enable = True Then
 		SetGUIStatus("Consuming buff1")
 		Local $CoSeKey1 = String($BuffKey1)
