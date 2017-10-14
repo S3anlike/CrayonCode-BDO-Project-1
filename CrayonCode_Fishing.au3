@@ -168,10 +168,6 @@ Func InitGUI()
 	For $i = 1 To 9
 		GUICtrlSetData($aListView1[$i], $SessionStats[$i][0] & "|" & $SessionStats[$i][1] & "|" & $TotalStats[$i][1], "")
 	Next
-	
-	SetGUIStatus("workerenable: " & $WorkerEnable)
-	SetGUIStatus("dry fish: " & $DryFishEnable)
-	SetGUIStatus("reserve enable: " & $ReserveEnable)
 EndFunc
 
 Func StoreGUI()
@@ -896,6 +892,10 @@ Func HandleLoot(ByRef $LS, $avaibleslots)
 	If $Reserve = 1 Then
 		Dim $SlotsReserved = IniReadKey("Slots_Reserved", $ClientSettings)
 		SetGUIStatus("Slots reserved = " & $SlotsReserved)
+		If $SlotsReserved >= $avaibleslots Then 
+			$Threshold = 10
+			SetGUIStatus("Relic Reserve reached. Fish will be ignored.")
+		EndIf
 	Else
 		SetGUIStatus("Reserve not turned on.")
 	EndIf
@@ -930,34 +930,31 @@ Func HandleLoot(ByRef $LS, $avaibleslots)
 	Sleep(1250)
 	SetGUIStatus(StringFormat("Filter: R%s S%s A%s C%s E%s T%s", $LS_Rarity, $LS_Silverkey, $LS_AncientRelic, $LS_Coelacanth, $LS_EventItems, $LS_TrashItems))
 	SetGUIStatus("Pick:[" & $Pick[0] & "][" & $Pick[1] & "][" & $Pick[2] & "][" & $Pick[3] & "]")
-	If $SlotsReserved >= $avaibleslots Then 
-		$Threshold = 10
-		SetGUIStatus("Relic Reserve reached. Fish will be ignored.")
-	EndIf
 
 	For $j = 3 To 0 Step -1
-		If $Pick[$j] > $Threshold Or (Mod($Pick[$j], 2) = 1 And $Pick[$j] > 0) Then
+		If $Pick[$j] > $Threshold Then
+			If (Mod($Pick[$j], 2) = 1 And $Pick[$j] > 0) Then
+				If Mod($Pick[$j], 2) = 0 Then $PickedLoot += 1 ; Increase Picked loot if item is not stackable
 
-			If Mod($Pick[$j], 2) = 0 Then $PickedLoot += 1 ; Increase Picked loot if item is not stackable
-
-			If Not VisibleCursor() Then CoSe("{LCTRL}")
-			Sleep(250)
-			VMouse($LW[0] + 20 + $LW[4] * $j +1, $LW[1] + 20)
-			Sleep(50)
-			VMouse($LW[0] + 20 + $LW[4] * $j, $LW[1] + 20, 1, "Right")
-			Sleep(50)
-			VMouse($LW[0] + 20 + $LW[4] * $j, $LW[1] + 20, 1, "Right")
-			Sleep(50)
-			VMouse($LW[0] + 20 + $LW[4] * $j, $LW[1] + 20, 1, "Right")
-			Sleep(100)
-			If $Pick[$j] = 21 Or $Pick[$j] = 31 Then ; If it's an event item check for quantity.
-				SetGUIStatus("Trying to pick Event Item. Checking Quantity.")
-				If DetectEnterQuantity($LW[0], $LW[1]) = True Then
-					SetGUIStatus("Quantity detected. Collecting all.")
-					CoSe("f")
-					Sleep(50)
-					CoSe("r")
-					Sleep(50)
+				If Not VisibleCursor() Then CoSe("{LCTRL}")
+				Sleep(250)
+				VMouse($LW[0] + 20 + $LW[4] * $j +1, $LW[1] + 20)
+				Sleep(50)
+				VMouse($LW[0] + 20 + $LW[4] * $j, $LW[1] + 20, 1, "Right")
+				Sleep(50)
+				VMouse($LW[0] + 20 + $LW[4] * $j, $LW[1] + 20, 1, "Right")
+				Sleep(50)
+				VMouse($LW[0] + 20 + $LW[4] * $j, $LW[1] + 20, 1, "Right")
+				Sleep(100)
+				If $Pick[$j] = 21 Or $Pick[$j] = 31 Then ; If it's an event item check for quantity.
+					SetGUIStatus("Trying to pick Event Item. Checking Quantity.")
+					If DetectEnterQuantity($LW[0], $LW[1]) = True Then
+						SetGUIStatus("Quantity detected. Collecting all.")
+						CoSe("f")
+						Sleep(50)
+						CoSe("r")
+						Sleep(50)
+					EndIf
 				EndIf
 			EndIf
 		EndIf
