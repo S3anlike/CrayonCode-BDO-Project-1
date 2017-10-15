@@ -164,6 +164,9 @@ Func InitGUI()
 	Local $TotalStats = IniReadSection("logs/stats.ini", "TotalStats")
 	Local $SessionStats = IniReadSection("logs/stats.ini", "SessionStats")
 
+	SetGUIStatus("Diagnostic data: ")
+	SetGUIStatus("Relic reserve enabled: " & $ReserveEnable)
+	SetGUIStatus("Slots Reserved: " & $SlotsReserved)
 
 	For $i = 1 To 9
 		GUICtrlSetData($aListView1[$i], $SessionStats[$i][0] & "|" & $SessionStats[$i][1] & "|" & $TotalStats[$i][1], "")
@@ -890,11 +893,14 @@ Func HandleLoot(ByRef $LS, $avaibleslots)
 	Local $Threshold = 0
 	
 	If $Reserve = 1 Then
+		SetGUIStatus("Enabled relic reserve, checking if we need to change threshold yet...")
 		Dim $SlotsReserved = IniReadKey("Slots_Reserved", $ClientSettings)
-		SetGUIStatus("Slots reserved = " & $SlotsReserved)
 		If $SlotsReserved >= $avaibleslots Then 
+			SetGUIStatus("Slots reserved = " & $SlotsReserved)
 			$Threshold = 10
-			SetGUIStatus("Relic Reserve reached. Fish will be ignored.")
+			SetGUIStatus("Relic Reserve reached. New threshold: " & $Threshold)
+		Else 
+			SetGUIStatus("Relic reserve not reached yet. Threshold still: " & $Threshold)
 		EndIf
 	Else
 		SetGUIStatus("Reserve not turned on.")
@@ -932,34 +938,37 @@ Func HandleLoot(ByRef $LS, $avaibleslots)
 	SetGUIStatus("Pick:[" & $Pick[0] & "][" & $Pick[1] & "][" & $Pick[2] & "][" & $Pick[3] & "]")
 
 	For $j = 3 To 0 Step -1
+		SetGUIStatus("Box: " & $j & " value: " & $Pick[$j])
 		If $Pick[$j] > $Threshold Then
-			If (Mod($Pick[$j], 2) = 1 And $Pick[$j] > 0) Then
-				If Mod($Pick[$j], 2) = 0 Then $PickedLoot += 1 ; Increase Picked loot if item is not stackable
+			SetGUIStatus("Box " & $j & " is worth picking up")
+			If Mod($Pick[$j], 2) = 0 Then $PickedLoot += 1 ; Increase Picked loot if item is not stackable
 
-				If Not VisibleCursor() Then CoSe("{LCTRL}")
-				Sleep(250)
-				VMouse($LW[0] + 20 + $LW[4] * $j +1, $LW[1] + 20)
-				Sleep(50)
-				VMouse($LW[0] + 20 + $LW[4] * $j, $LW[1] + 20, 1, "Right")
-				Sleep(50)
-				VMouse($LW[0] + 20 + $LW[4] * $j, $LW[1] + 20, 1, "Right")
-				Sleep(50)
-				VMouse($LW[0] + 20 + $LW[4] * $j, $LW[1] + 20, 1, "Right")
-				Sleep(100)
-				If $Pick[$j] = 21 Or $Pick[$j] = 31 Then ; If it's an event item check for quantity.
-					SetGUIStatus("Trying to pick Event Item. Checking Quantity.")
-					If DetectEnterQuantity($LW[0], $LW[1]) = True Then
-						SetGUIStatus("Quantity detected. Collecting all.")
-						CoSe("f")
-						Sleep(50)
-						CoSe("r")
-						Sleep(50)
-					EndIf
+			If Not VisibleCursor() Then CoSe("{LCTRL}")
+			Sleep(250)
+			VMouse($LW[0] + 20 + $LW[4] * $j +1, $LW[1] + 20)
+			Sleep(50)
+			VMouse($LW[0] + 20 + $LW[4] * $j, $LW[1] + 20, 1, "Right")
+			Sleep(50)
+			VMouse($LW[0] + 20 + $LW[4] * $j, $LW[1] + 20, 1, "Right")
+			Sleep(50)
+			VMouse($LW[0] + 20 + $LW[4] * $j, $LW[1] + 20, 1, "Right")
+			Sleep(100)
+			If $Pick[$j] = 21 Or $Pick[$j] = 31 Then ; If it's an event item check for quantity.
+				SetGUIStatus("Trying to pick Event Item. Checking Quantity.")
+				If DetectEnterQuantity($LW[0], $LW[1]) = True Then
+					SetGUIStatus("Quantity detected. Collecting all.")
+					CoSe("f")
+					Sleep(50)
+					CoSe("r")
+					Sleep(50)
 				EndIf
 			EndIf
+		Else
+			SetGUIStatus("Box not good with threshold value: " & $Pick[$j] & " vs $Threshold: " & $Threshold)
 		EndIf
 	Next
 	If VisibleCursor() Then CoSe("{LCTRL}")
+	SetGUIStatus("Picked up a total of " & $PickedLoot & " items")
 	Return $PickedLoot
 EndFunc   ;==>HandleLoot
 

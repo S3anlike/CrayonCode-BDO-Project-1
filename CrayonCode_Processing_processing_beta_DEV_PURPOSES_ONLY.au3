@@ -39,18 +39,19 @@ Opt("SendKeyDelay", 50)
 Global $hBDO = "BLACK DESERT -"
 Global $Processing = False
 Global $LogFile = ""
-;Global $LogFileEnable = 1
 Global $LastGUIStatus
 Global $ResOffset[4] = [0, 0, 0, 0]
 Global $Customs[14][8]
 Global $CustomsValues[14][8]
+Global $CustomProcessing = False
 Global $DefaultBatchSize = 100
 Global $MinProcessTime = 20
 Global $WorkerFeedingTime = 30
 Global $Buff1Enable = True, $Buff2Enable = True, $BuffCD1 = 30, $BuffCD2 = 90
 Global $BuffKey1 = 7, $BuffKey2 = 8
-Global $AlchemyStoneEnable = 1
+Global $WorkerEnable = 1
 Global $TestingMode = False
+Global $ProcessingCostume = False
 Global $Res[4] = [0, 0, @DesktopWidth, @DesktopHeight]
 
 HotKeySet("^{F1}", "_terminate")
@@ -60,8 +61,8 @@ HotKeySet("{F4}", "ProcessCustom")
 HotKeySet("{F5}", "ProcessSimple")
 HotKeySet("{F6}", "WorkerFeed")
 HotKeySet("{F7}", "BuffTest")
+HotKeySet("{F8}", "ImageTest")
 #EndRegion - Global
-
 
 #Region ### START Koda GUI section ### Form=c:\program files (x86)\autoit3\scite\koda\forms\processing.kxf
 $Form1 = GUICreate("CrayonCode Processing", 615, 437, 196, 143)
@@ -125,7 +126,7 @@ $Label4 = GUICtrlCreateLabel("Max", 288, 32, 24, 17)
 $Label7 = GUICtrlCreateLabel("Max", 536, 32, 24, 17)
 $TabSheet4 = GUICtrlCreateTabItem("Control Panel")
 $ELog = GUICtrlCreateEdit("", 330, 32, 280, 350, BitOR($GUI_SS_DEFAULT_EDIT,$ES_READONLY))
-$Processing_Settings = GUICtrlCreateGroup("Processing Settings", 13, 37, 300, 199)
+$Processing_Settings = GUICtrlCreateGroup("Processing Settings", 13, 37, 300, 230)
 $I_DefaultBatchSize = GUICtrlCreateInput("", 144, 62, 121, 21)
 GUICtrlSetTip(-1, "Items taken from storage. Customize depending on your LT")
 $Label8 = GUICtrlCreateLabel("Default Batch Size:", 24, 64, 95, 17)
@@ -135,20 +136,20 @@ GUICtrlSetTip(-1, "Minimum seconds to wait before checking if actually processin
 $Label9 = GUICtrlCreateLabel("Min Processing Time:", 24, 94, 105, 17)
 GUICtrlSetTip(-1, "Minimum seconds to wait before checking if actually processing")
 $Label10 = GUICtrlCreateLabel("Buff 1 key:", 24, 124, 59, 17)
-$CBuffkey1 = GUICtrlCreateCombo("", 84, 122, 35, 25, BitOR($CBS_DROPDOWNLIST,$CBS_AUTOHSCROLL))
+$CBuffkey1 = GUICtrlCreateCombo("", 84, 122, 35, 15, BitOR($CBS_DROPDOWNLIST,$CBS_AUTOHSCROLL))
 GUICtrlSetData(-1, "", "7")
 $Label11 = GUICtrlCreateLabel("Buff 1 delay:", 140, 124, 59, 17)
 $I_BuffCD1 = GUICtrlCreateInput("", 205, 122, 30, 21)
 GUICtrlSetTip(-1,"Time in Minutes. Set 0 to Deactivate.")
 $Label12 = GUICtrlCreateLabel("Buff 2 key:", 24, 154, 59, 17)
-$CBuffkey2 = GUICtrlCreateCombo("", 84, 152, 35, 25, BitOR($CBS_DROPDOWNLIST,$CBS_AUTOHSCROLL))
+$CBuffkey2 = GUICtrlCreateCombo("", 84, 152, 35, 15, BitOR($CBS_DROPDOWNLIST,$CBS_AUTOHSCROLL))
 GUICtrlSetData(-1, "", "8")
 $Label13 = GUICtrlCreateLabel("Buff 2 delay:", 140, 154, 59, 17)
 $I_BuffCD2 = GUICtrlCreateInput("", 205, 152, 30, 21)
 GUICtrlSetTip(-1,"Time in Minutes. Set 0 to Deactivate.")
-$CB_AlchemyStone = GUICtrlCreateCheckbox("Enable Worker Feed (every 1h)", 24, 184, 180, 17)
-$CB_LogFile = GUICtrlCreateCheckbox("Enable Log File", 24, 214, 129, 17)
-;$Label14 = GUICtrlCreateLabel("Will feed every 1h", 176, 288, 146, 17)
+$CB_WorkerEnable = GUICtrlCreateCheckbox("Enable Worker Feed (every 1h)", 24, 184, 180, 17)
+$CB_ProcessingCostume = GUICtrlCreateCheckbox("Enable Processing Costume", 24, 204, 180, 17)
+
 GUICtrlCreateTabItem("")
 $BQuit = GUICtrlCreateButton("Quit (Ctrl+F1)", 8, 400, 80, 33)
 $BSave = GUICtrlCreateButton("Save (F2)", 91, 400, 80, 33)
@@ -160,12 +161,13 @@ $BBuffsTest = GUICtrlCreateButton("Test Buffs (F7)", 526, 400, 80, 33)
 GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
 
+#Region - GUI Storage and Init
 Func StoreGUI()
 	; Global Settings
 	IniWrite("config/processing.ini", "Global", "DefaultBatchSize", GUICtrlRead($I_DefaultBatchSize))
 	IniWrite("config/processing.ini", "Global", "MinProcessTime", GUICtrlRead($I_MinProcessTime))
-	;IniWrite("config/processing.ini", "Global", "LogFileEnable", cbt($CB_LogFile))
-	IniWrite("config/processing.ini", "Global", "AlchemyStoneEnable", cbt($CB_AlchemyStone))
+	IniWrite("config/processing.ini", "Global", "WorkerEnable", cbt($CB_WorkerEnable))
+	IniWrite("config/processing.ini", "Global", "ProcessingCostume", cbt($CB_ProcessingCostume))
 	
 	; Buff Settings
 	IniWrite("config/processing.ini", "Buff", "BuffCD1", GUICtrlRead($I_BuffCD1))
@@ -242,16 +244,18 @@ EndFunc   ;==>StoreGUI
 
 Func InitGUI()
 	; Global Settings
+	Global $Global = IniReadSection("config/processing.ini", "Global")
 	$DefaultBatchSize = IniRead("config/processing.ini", "Global", "DefaultBatchSize", $DefaultBatchSize)
 	GUICtrlSetData($I_DefaultBatchSize, $DefaultBatchSize)
 	$MinProcessTime = IniRead("config/processing.ini", "Global", "MinProcessTime", $MinProcessTime)
 	GUICtrlSetData($I_MinProcessTime, $MinProcessTime)
-	;$LogFileEnable =  cbt(IniRead("config/processing.ini", "Global", "LogFileEnable", $LogFileEnable))
-	;GUICtrlSetState($CB_LogFile, $LogFileEnable)
-	$AlchemyStoneEnable =  cbt(IniRead("config/processing.ini", "Global", "AlchemyStoneEnable", $AlchemyStoneEnable))
-	GUICtrlSetState($CB_AlchemyStone, $AlchemyStoneEnable)
+	$WorkerEnable =  cbt(IniRead("config/processing.ini", "Global", "WorkerEnable", $WorkerEnable))
+	GUICtrlSetState($CB_WorkerEnable, $WorkerEnable)
+	$ProcessingCostume = cbt(IniRead("config/processing.ini", "Global", "ProcessingCostume", $ProcessingCostume))
+	GUICtrlSetState($CB_ProcessingCostume, $ProcessingCostume)
 	
 	; Buff Settings
+	
 	$BuffCD1 = IniRead("config/processing.ini", "Buff", "BuffCD1", $BuffCD1)
 	GUICtrlSetData($I_BuffCD1, $BuffCD1)
 	$BuffCD2 = IniRead("config/processing.ini", "Buff", "BuffCD2", $BuffCD2)
@@ -280,7 +284,7 @@ Func InitGUI()
 		$Buff2Enable = False
 		EndIf
 	EndIf
-
+	
 	; Lumber
 	GUICtrlSetState($lumber_category, cbt(IniRead("config/processing.ini", "lumber", "lumber_category", 0)))
 	GUICtrlSetState($lumber_acacia, cbt(IniRead("config/processing.ini", "lumber", "lumber_acacia", 0)))
@@ -294,7 +298,7 @@ Func InitGUI()
 	GUICtrlSetState($lumber_pine, cbt(IniRead("config/processing.ini", "lumber", "lumber_pine", 0)))
 	GUICtrlSetState($lumber_whitecedar, cbt(IniRead("config/processing.ini", "lumber", "lumber_whitecedar", 0)))
 	Global $lumber_array[10] = [$lumber_acacia, $lumber_ash, $lumber_birch, $lumber_cedar, $lumber_eldertree, $lumber_fir, $lumber_maple, $lumber_palm, $lumber_pine, $lumber_whitecedar]
-	de_acvtivate_array($lumber_category, $lumber_array)
+	de_activate_array($lumber_category, $lumber_array)
 	Global $lumber_list = IniReadSection("config/processing.ini", "lumber")
 
 	; Plank
@@ -310,7 +314,7 @@ Func InitGUI()
 	GUICtrlSetState($plank_pine, cbt(IniRead("config/processing.ini", "plank", "plank_pine", 0)))
 	GUICtrlSetState($plank_whitecedar, cbt(IniRead("config/processing.ini", "plank", "plank_whitecedar", 0)))
 	Global $plank_array[10] = [$plank_acacia, $plank_ash, $plank_birch, $plank_cedar, $plank_eldertree, $plank_fir, $plank_maple, $plank_palm, $plank_pine, $plank_whitecedar]
-	de_acvtivate_array($plank_category, $plank_array)
+	de_activate_array($plank_category, $plank_array)
 	Global $plank_list = IniReadSection("config/processing.ini", "plank")
 
 	; Ore
@@ -327,8 +331,8 @@ Func InitGUI()
 	GUICtrlSetState($ore_vanadium, cbt(IniRead("config/processing.ini", "ore", "ore_vanadium", 0)))
 	GUICtrlSetState($ore_zinc, cbt(IniRead("config/processing.ini", "ore", "ore_zinc", 0)))
 	GUICtrlSetState($ore_coal, cbt(IniRead("config/processing.ini", "ore", "ore_coal", 0)))
-	Global $ore_array[12] = [$ore_copper, $ore_gold, $ore_iron, $ore_lead, $ore_mythril, $ore_platinum, $ore_silver, $ore_tin, $ore_titanium, $ore_vanadium, $ore_zinc, $ore_coal]
-	de_acvtivate_array($ore_category, $ore_array)
+	Global $ore_array[12] = [$ore_copper, $ore_gold, $ore_iron, $ore_lead, $ore_mythril, $ore_platinum, $ore_silver, $ore_tin, $ore_titanium, $ore_coal, $ore_zinc, $ore_vanadium]
+	de_activate_array($ore_category, $ore_array)
 	Global $ore_list = IniReadSection("config/processing.ini", "ore")
 
 	; MeltedShard
@@ -345,7 +349,7 @@ Func InitGUI()
 	GUICtrlSetState($meltedshard_vanadium, cbt(IniRead("config/processing.ini", "meltedshard", "meltedshard_vanadium", 0)))
 	GUICtrlSetState($meltedshard_zinc, cbt(IniRead("config/processing.ini", "meltedshard", "meltedshard_zinc", 0)))
 	Global $meltedshard_array[11] = [$meltedshard_copper, $meltedshard_gold, $meltedshard_iron, $meltedshard_lead, $meltedshard_mythril, $meltedshard_platinum, $meltedshard_silver, $meltedshard_tin, $meltedshard_titanium, $meltedshard_vanadium, $meltedshard_zinc]
-	de_acvtivate_array($meltedshard_category, $meltedshard_array)
+	de_activate_array($meltedshard_category, $meltedshard_array)
 	Global $meltedshard_list = IniReadSection("config/processing.ini", "meltedshard")
 
 	_FileReadToArray("config/processing_custom.txt", $CustomsValues, 0, "|")
@@ -356,6 +360,13 @@ Func InitGUI()
 	Next
 EndFunc   ;==>InitGUI
 
+Func Save()
+	SetGUIStatus("Settings saved")
+	StoreGUI()
+EndFunc
+#EndRegion ;==> GUI
+
+#Region Support
 Func cbt($handle) ; Transforms Checkbox values for ini
 	Local $Switch
 	If IsString($handle) Then
@@ -373,7 +384,7 @@ Func cbt($handle) ; Transforms Checkbox values for ini
 	EndSwitch
 EndFunc   ;==>cbt
 
-Func de_acvtivate_array($cbtrigger, ByRef $uitargets, $on_active = False)
+Func de_activate_array($cbtrigger, ByRef $uitargets, $on_active = False)
 	Local $ONOFF[2] = [4, 1]
 
 	If $on_active = True Then
@@ -392,9 +403,8 @@ Func de_acvtivate_array($cbtrigger, ByRef $uitargets, $on_active = False)
 		Next
 		Return True
 	EndIf
-EndFunc   ;==>de_acvtivate_array
+EndFunc   ;==>de_activate_array
 
-#Region - CrayonCode Support
 Func _terminate()
 	Exit (0)
 EndFunc   ;==>_terminate
@@ -418,26 +428,26 @@ Func cw($text)
 EndFunc   ;==>cw
 
 Func CoSe($key, $raw = 0)
-	Dim $hTitle
-	$hwnd = WinActive($hTitle)
-	If $hwnd = 0 Then $hwnd = WinActivate($hTitle)
-
-	Local $Pos = WinGetPos($hwnd)
-	If @error Then
-		Local $Pos[4] = [0, 0, @DesktopWidth, @DesktopHeight]
-	EndIf
+	$hwnd = WinActive($hBDO)
+	If $hwnd = 0 Then $hwnd = WinActivate($hBDO)
 
 	Opt("MouseCoordMode", 2)
-	If MouseGetPos(0) < 0 Or MouseGetPos(0) > $Pos[2] Or MouseGetPos(1) < 0 Or MouseGetPos(1) > $Pos[3] Then MouseMove(100, 100, 0)
+	If MouseGetPos(0) < 0 Or MouseGetPos(0) > $ResOffset[2] Or MouseGetPos(1) < 0 Or MouseGetPos(1) > $ResOffset[3] Then MouseMove(700, 500, 0)
 	Opt("MouseCoordMode", 1)
 
 	ControlSend($hwnd, "", "", $key, $raw)
 EndFunc   ;==>CoSe
 
+Func IniReadKey($Key, ByRef $aSection)
+	For $i = 1 To UBound($aSection) - 1 Step 1
+		If $aSection[$i][0] = $Key Then Return ($aSection[$i][1])
+	Next
+	Return ("KeyNotFound")
+EndFunc
+
 Func SetGUIStatus($data)
 	If $data <> $LastGUIStatus Then
 		ConsoleWrite(@CRLF & @HOUR & ":" & @MIN & "." & @SEC & " " & $data)
-		;If $LogFileEnable = True Then 
 		LogData(@HOUR & ":" & @MIN & "." & @SEC & " " & $data)
 		_GUICtrlEdit_AppendText($ELog, $data & @CRLF)
 		$LastGUIStatus = $data
@@ -456,7 +466,6 @@ Func CloseLog()
 EndFunc   ;==>CloseLog
 
 Func DetectFullscreenToWindowedOffset() ; Returns $Offset[4] left, top, right, bottom (Fullscreen returns 0, 0, Width, Height)
-
 	Local $x1, $x2, $y1, $y2
 	Local $Offset[4]
 	Local $ClientZero[4] = [0, 0, 0, 0]
@@ -573,11 +582,22 @@ Func AntiScreenSaverMouseWiggle($minutes = 2)
 
 	Return False
 EndFunc
-#EndRegion - CrayonCode Support
+
+Func VMouse($x, $y, $clicks = 0, $button = "left", $speed = 10)
+	If Not VisibleCursor() Then CoSe("{LCTRL}")
+	If $clicks > 0 Then
+		MouseClick($button, $x, $y, $clicks, $speed)
+	Else
+		MouseMove($x, $y, $speed)
+	EndIf
+EndFunc   ;==>VMouse
+
+#EndRegion - CrayonCode Support;==> Support
 
 #Region - Main Functions
 Func ProcessCustom()
 	$Processing = Not $Processing
+	$CustomProcessing = True
 	If $Processing = False Then
 		SetGUIStatus("Manually stopping ProcessCustom")
 		Return False
@@ -654,6 +674,9 @@ Func ProcessCustom()
 EndFunc   ;==>ProcessCustom
 
 Func ProcessSimple()
+	SetGUIStatus("ProcessSimple()")
+	Dim $ProcessingCostume = Int(IniReadKey("ProcessingCostume", $Global))
+
 	$Processing = Not $Processing
 	If $Processing = False Then
 		SetGUIStatus("Manually stopping ProcessSimple")
@@ -689,21 +712,32 @@ Func ProcessSimple()
 			OpenWarehouse()
 			ReturnToStorage()
 		EndIf
-		$ItemNumber = FindResource($PL)
-		If $ItemNumber > -1 Then
-			Sleep(250)
-			CoSe("{Esc}")
-			CoSe("{Esc}")
-			Sleep(250)
+		
+		If $ProcessingCostume = False Then
+			SetGUIStatus("ProcessingCostume disabled.")
+			$ItemNumber = FindResource($PL, 0)
+			If $ItemNumber > -1 Then
+				Sleep(250)
+				CoSe("{Esc}")
+				CoSe("{Esc}")
+				Sleep(250)
+				If ProductionMethod($PL[$ItemNumber][1]) = False Then
+					SetGUIStatus("Removing " & $PL[$ItemNumber][0] & " from ProcessingQueue")
+					_ArrayDelete($PL, $ItemNumber)
+				EndIf
+				SetGUIStatus("Proceeding to next item")
+			Else
+				SetGUIStatus("No Item in ProcessingQueue found. Stopping.")
+				$Processing = False
+				ExitLoop
+			EndIf
+		Else
+			SetGUIStatus("ProcessingCostume enabled.");
 			If ProductionMethod($PL[$ItemNumber][1]) = False Then
-				SetGUIStatus("Removing " & $PL[$ItemNumber][0] & " from ProcessingQueue")
+				SetGUIStatus("Removing previous element from ProcessingQueue")
 				_ArrayDelete($PL, $ItemNumber)
 			EndIf
 			SetGUIStatus("Proceeding to next item")
-		Else
-			SetGUIStatus("No Item in ProcessingQueue found. Stopping.")
-			$Processing = False
-			ExitLoop
 		EndIf
 	WEnd
 
@@ -785,7 +819,7 @@ Func FindResourceCustom($Ingredient1 = "", $Batch1 = 0, $Ingredient2 = "", $Batc
 				ItemMoveAmount($x, $y, $Batch1)
 				$Ing1Status = 1
 				If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then MouseMove($C[0] - 50, $C[1], 0) ; Keep mouse out of detection range
-				Sleep(100)
+				Sleep(1000)
 			Else
 				SetGUIStatus($Ingredient1 & " on page " & $k & " is absent")
 			EndIf
@@ -824,9 +858,13 @@ Func FindResourceCustom($Ingredient1 = "", $Batch1 = 0, $Ingredient2 = "", $Batc
 	Return False
 EndFunc   ;==>FindResourceCustom
 
-Func FindResource(ByRef $ProcessingList)
-	Local $x, $y, $IS
-
+Func FindResource(ByRef $ProcessingList, $Method)
+	SetGUIStatus("FindResource()")
+	Local $x, $y, $IS, $x1, $y1, $IS1
+	Local $ProductionHammer = "res/processing_hammer.png"
+	Local $ProcessingMethodOffset[2] = [62, -62]
+	Local $ProcessingStart[2] = [256, -294]
+	Dim $ProcessingCostume = Int(IniReadKey("ProcessingCostume", $Global))
 	Local $C = StorageWindow()
 	If IsArray($C) = False Then Return False
 
@@ -837,14 +875,31 @@ Func FindResource(ByRef $ProcessingList)
 		For $i = 0 To UBound($ProcessingList) - 1
 			$IS = _ImageSearchArea("res/processing/" & $ProcessingList[$i][0] & ".bmp", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 0, 0)
 			If $IS = True Then
+				SetGUIStatus($ProcessingList[$i][0] & " found.")
 				If $x = 0 Or $y = 0 Then SetGUIStatus("Imagefile probably missing")
-				SetGUIStatus($ProcessingList[$i][0] & " found, attempting to withdraw")
-				If $TestingMode = False Then ItemMoveAmount($x, $y, $DefaultBatchSize)
+				
+				If $ProcessingCostume = False Then
+					SetGUIStatus("Attempting to withdraw")
+					ItemMoveAmount($x, $y, $DefaultBatchSize)
+				Else 
+					$IS1 = _ImageSearchArea($ProductionHammer, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x1, $y1, 50, 0)
+					If $IS1 = True Then
+						SetGUIStatus("Processing open: " & $IS)
+						MouseClick("left", $x1 + $ProcessingMethodOffset[0] * $Method, $y1 + $ProcessingMethodOffset[1])
+						Sleep(500)
+						SetGUIStatus("Attempting to right click item as processing costume is on")
+						ItemRightClick($x, $y)
+						Sleep(500)
+						MouseClick("left", $x1 + $ProcessingStart[0], $y1 + $ProcessingStart[1])
+					Else
+						SetGUIStatus("IS1 false");
+					EndIf
+				EndIf
 				If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then MouseMove($C[0] - 50, $C[1], 0) ; Keep mouse out of detection range
 				Sleep(100)
 				If $TestingMode = False Then Return $i
 			Else
-				SetGUIStatus($ProcessingList[$i][0] & " not found on current page, moving to next")
+				SetGUIStatus($ProcessingList[$i][0] & " not found on current page, moving to next page")
 			EndIf
 		Next
 		If $k < 2 Then
@@ -871,8 +926,13 @@ Func ItemMoveAmount($x, $y, $Quantity)
 	EndIf
 	Sleep(100)
 	CoSe("r")
-	Sleep(250)
+	;Sleep(250)
 EndFunc   ;==>ItemMoveAmount
+
+Func ItemRightClick($x, $y)
+	MouseClick("right", $x, $y, 2)
+	Sleep(100)
+EndFunc
 
 Func ReturnToStorage()
 	Local $InvA = OCInventory(True)
@@ -884,11 +944,12 @@ Func ReturnToStorage()
 EndFunc   ;==>ReturnToStorage
 
 Func ProductionMethod($Method) ; 0=Shaking, 1=Grinding, 2=Chopping, 3=Drying, 4=Filtering, 5=Heating
-
+	SetGUIStatus("ProductionMethod()")
 	$Processing = True
-
+	Dim $ProcessingCostume = Int(IniReadKey("ProcessingCostume", $Global))
 	Local $x, $y, $IS
 	Local $ProductionHammer = "res/processing_hammer.png"
+	Local $ProductionCostume = "res/processing_costume.png"
 	Local $ProcessingMethodOffset[2] = [62, -62]
 	Local $ProcessingStart[2] = [256, -294]
 
@@ -908,34 +969,70 @@ Func ProductionMethod($Method) ; 0=Shaking, 1=Grinding, 2=Chopping, 3=Drying, 4=
 				$Method = 5
 		EndSwitch
 	EndIf
+	
+	If $ProcessingCostume = False Or $CustomProcessing = True Then
+		SetGUIStatus("Processing costume not selected, using standard inventory method")
+		$IS = _ImageSearchArea($ProductionHammer, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
+		SetGUIStatus("Processing open: " & $IS)
+		If Not $IS Then
+			CoSe("l")
+			Sleep(500)
+		Else
+			CoSe("l")
+			CoSe("l")
+			Sleep(500)
+		EndIf
+		$IS = _ImageSearchArea($ProductionHammer, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
+		SetGUIStatus("Processing open: " & $IS)
 
-	$IS = _ImageSearchArea($ProductionHammer, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
-	SetGUIStatus("Processing open: " & $IS)
-	If Not $IS Then
-		CoSe("l")
+		MouseClick("left", $x + $ProcessingMethodOffset[0] * $Method, $y + $ProcessingMethodOffset[1])
 		Sleep(500)
-	Else
-		CoSe("l")
-		CoSe("l")
+		Local $InvA = OCInventory(True)
+		If IsArray($InvA) = False Then
+			SetGUIStatus("Inventory not found")
+			Return False
+		EndIf
 		Sleep(500)
+		MouseClick("Left", $InvA[0] + 48 * 8, $InvA[1]) ; Click on Inventory to get focus
+		MouseClick("Right", $InvA[0] + 10, $InvA[1]) ; Click first slot
+		MouseClick("Right", $InvA[0] + 10 + 48, $InvA[1]) ; Click second slot
+		MouseClick("left", $x + $ProcessingStart[0], $y + $ProcessingStart[1])
+		SetGUIStatus("Waiting for Processing to end.")
+		Local $timer = TimerInit()
+		If Not ProductionActivityCheck() Then
+			SetGUIStatus("Processing failed")
+			Return False
+		EndIf
+		SetGUIStatus("Processing stopped after " & Round(TimerDiff($timer) / 1000, 0) & "s.")
+		If TimerDiff($timer) / 1000 > $MinProcessTime Then
+			SetGUIStatus("Processing time longer than " & $MinProcessTime & " seconds. Repeat the same item.")
+			Return True
+		Else
+			SetGUIStatus("Processing time too short. Switching to next item")
+			Return False
+		EndIf
+		
+	Else 
+		SetGUIStatus("Processing costume selected, trying to find processing icon")
+		$IS = _ImageSearchArea($ProductionCostume, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
+		SetGUIStatus("Production costume: " & $IS)
+		Sleep(500)
+		MouseClick("left", $x, $y)
+		Sleep(1000)
+		
+		Local $ItemNumber = FindResource($PL, $Method)
+		If $ItemNumber > -1 Then
+			If ActivityTrack() = False Then
+				SetGUIStatus("Removing " & $PL[$ItemNumber][0] & " from ProcessingQueue")
+				_ArrayDelete($PL, $ItemNumber)
+			EndIf
+			SetGUIStatus("Proceeding to next item")
+		EndIf
 	EndIf
-	$IS = _ImageSearchArea($ProductionHammer, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
-	SetGUIStatus("Processing open: " & $IS)
+EndFunc   ;==>ProductionMethod
 
-	MouseClick("left", $x + $ProcessingMethodOffset[0] * $Method, $y + $ProcessingMethodOffset[1])
-	Sleep(500)
-	Local $InvA = OCInventory(True)
-	If IsArray($InvA) = False Then
-		SetGUIStatus("Inventory not found")
-		Return False
-	EndIf
-	Sleep(500)
-	MouseClick("Left", $InvA[0] + 48 * 8, $InvA[1]) ; Click on Inventory to get focus
-	MouseClick("Right", $InvA[0] + 10, $InvA[1]) ; Click first slot
-	MouseClick("Right", $InvA[0] + 10 + 48, $InvA[1]) ; Click second slot
-
-	MouseClick("left", $x + $ProcessingStart[0], $y + $ProcessingStart[1])
-	SetGUIStatus("Waiting for Processing to end.")
+Func ActivityTrack()
+	SetGUIStatus("ActivityTrack().")
 	Local $timer = TimerInit()
 	If Not ProductionActivityCheck() Then
 		SetGUIStatus("Processing failed")
@@ -949,8 +1046,7 @@ Func ProductionMethod($Method) ; 0=Shaking, 1=Grinding, 2=Chopping, 3=Drying, 4=
 		SetGUIStatus("Processing time too short. Switching to next item")
 		Return False
 	EndIf
-
-EndFunc   ;==>ProductionMethod
+EndFunc
 
 Func StorageWindow()
 	Local $x, $y, $IS
@@ -1026,13 +1122,13 @@ Func CheckGUI()
 		Case $BSave
 			Save()
 		Case $lumber_category
-			de_acvtivate_array($lumber_category, $lumber_array)
+			de_activate_array($lumber_category, $lumber_array)
 		Case $plank_category
-			de_acvtivate_array($plank_category, $plank_array)
+			de_activate_array($plank_category, $plank_array)
 		Case $ore_category
-			de_acvtivate_array($ore_category, $ore_array)
+			de_activate_array($ore_category, $ore_array)
 		Case $meltedshard_category
-			de_acvtivate_array($meltedshard_category, $meltedshard_array)
+			de_activate_array($meltedshard_category, $meltedshard_array)
 		Case $Customs[0][7]
 			ClearRowCustom(0)
 		Case $Customs[1][7]
@@ -1063,17 +1159,13 @@ Func CheckGUI()
 			ClearRowCustom(13)
 	EndSwitch
 EndFunc
-#EndRegion ;==> Main Function Region End
+#EndRegion - Main Fucntions;==> Main Function Region End
 
-Func Save()
-	SetGUIStatus("Settings saved")
-	StoreGUI()
-EndFunc
-
+#Region - Side Functions
 Func GSleep($time)
 	$time /= 10
 	For $i = 0 To $time
-		AlchemyStone()
+		WorkerEnable()
 		Buff($Buff1Enable, $Buff2Enable, $BuffCD1, $BuffCD2, $BuffKey1, $BuffKey2)
 		AntiScreenSaverMouseWiggle()
 		For $j = 0 To 10
@@ -1083,21 +1175,25 @@ Func GSleep($time)
 	Next
 EndFunc
 
-Func AlchemyStone()
-	Local Static $AlchemyStoneTimer = TimerInit()
-	Local Static $AlchemyStoneTimerDiff
-	Local Static $AlchemyStoneCooldown = 3601000
-	If $AlchemyStoneEnable = False Then
+Func WorkerEnable()
+	SetGUIStatus("WorkerEnable()")
+	Local Static $WorkerEnableTimer = TimerInit()
+	Local Static $WorkerEnableTimerDiff
+	Local Static $WorkerEnableCooldown = 3601000
+	
+	Dim $WorkerEnable = Int(IniReadKey("WorkerEnable", $Global))
+	
+	If $WorkerEnable = False Then
+		SetGUIStatus("Feeding workers turned off")
 		Return False
 	Else
-		$AlchemyStoneTimerDiff = TimerDiff($AlchemyStoneTimer)
-		If $AlchemyStoneTimerDiff >= $AlchemyStoneCooldown Then
+		$WorkerEnableTimerDiff = TimerDiff($WorkerEnableTimer)
+		If $WorkerEnableTimerDiff >= $WorkerEnableCooldown Then
 			WorkerFeed()
 			SetGUIStatus("Feeding workers")
-			;CoSe("u")
-			$AlchemyStoneTimer = TimerInit()
+			$WorkerEnableTimer = TimerInit()
 		Else
-			;GUICtrlSetData($I_AlchemyStoneTimer, Round($AlchemyStoneTimerDiff/1000,0) & "s")
+			;GUICtrlSetData($I_WorkerEnableTimer, Round($WorkerEnableTimerDiff/1000,0) & "s")
 		EndIf
 	EndIf
 EndFunc
@@ -1120,8 +1216,8 @@ Func WaitForMenu($show = False, $timeout = 5)
 	Return False
 EndFunc   ;==>WaitForMenu
 
-; # Side
 Func WorkerFeed()
+	;SetGUIStatus("WorkerFeed()")
 	Local Const $WorkerIcon = "res/esc_worker.png"
 	Local Const $WorkerStamina = "res/worker_staminabar.png"
 	Local Const $WorkerOffsets[4][2] = [ _
@@ -1147,8 +1243,8 @@ Func WorkerFeed()
 				VMouse($x + $WorkerOffsets[3][0], $y + $WorkerOffsets[3][1], 1, "left") ; Repeat All
 				VMouse($x + $WorkerOffsets[3][0], $y + $WorkerOffsets[3][1] + 10, 1, "left") ; Repeat All DIFFERENT LANGUAGES FIX
 			CoSe("{ESC}") ; Close Worker List
-			Sleep(1500)
-			CoSe("l") ; Open Processing screen
+			Sleep(500)
+			CoSe("l") ; open process tab again
 			Return True
 		Else
 			SetGUIStatus("WorkerStamina missing")
@@ -1217,28 +1313,60 @@ Func Buff($Buff1Enable, $Buff2Enable, $BuffCD1, $BuffCD2, $BuffKey1, $BuffKey2)
 	
 EndFunc   ;==>Buff
 
-Func VMouse($x, $y, $clicks = 0, $button = "left", $speed = 10)
-	If Not VisibleCursor() Then CoSe("{LCTRL}")
-	If $clicks > 0 Then
-		MouseClick($button, $x, $y, $clicks, $speed)
-	Else
-		MouseMove($x, $y, $speed)
-	EndIf
-EndFunc   ;==>VMouse
-
 Func ProductionActivityCheck() ; Adpated
+	SetGUIStatus("ProductionActivityCheck()")
 	Local Const $Processing_Hammer = "res/processing_hammer.png"
+	Local $WarehouseButton = "res/npc_bank_button.bmp"
+	Dim $ProcessingCostume = Int(IniReadKey("ProcessingCostume", $Global))
 	Local $IS, $x, $y
 	GSleep(500)
 	$IS = _ImageSearchArea($Processing_Hammer, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
 	If $IS = True Then Return False
+	If $ProcessingCostume = True Then 
+		SetGUIStatus("R pressed in ProductionActivityCheck()")
+		CoSe("r")
+		$IS = _ImageSearchArea($WarehouseButton, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 20, 0)
+	EndIf
+	If $IS = True Then Return False
 	While $Processing
+		SetGUIStatus("ProductionActivityCheck() while loop")
 		$IS = _ImageSearchArea($Processing_Hammer, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
 		If $IS = True Then Return True
-		GSleep(5000)
+		If $ProcessingCostume = True Then 
+			CoSe("r")
+			SetGUIStatus("R pressed in while loop")
+			$IS = _ImageSearchArea($WarehouseButton, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 20, 0)
+			If $IS = True Then Return True
+		EndIf
+		GSleep(500)
 	WEnd
 	Return False
 EndFunc   ;==>ProductionActivityCheck
+
+Func ImageTest()
+	Local $IS, $x, $y
+	$IS = _ImageSearchArea("res/processing/ore_coal.bmp", 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 0, 0)
+	If $IS = True Then 
+		SetGUIStatus("True coal")
+	Else 
+		SetGUIStatus("False coal")
+	EndIf
+	
+	$IS = _ImageSearchArea("res/processing/plank_birch.bmp", 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 0, 0)
+	If $IS = True Then 
+		SetGUIStatus("True birch")
+	Else 
+		SetGUIStatus("False birch")
+	EndIf
+	
+	$IS = _ImageSearchArea("res/processing/ore_copper.bmp", 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 0, 0)
+	If $IS = True Then 
+		SetGUIStatus("True copper")
+	Else 
+		SetGUIStatus("False copper")
+	EndIf
+EndFunc
+#EndRegion - Side Functions
 
 InitGUI()
 ObfuscateTitle($Form1)
