@@ -611,7 +611,7 @@ EndFunc
 Func ProcessCustom()
 	$Connected = IsProcessConnected("BlackDesert64.exe")
 	SetGUIStatus("Game state: " & $Connected)
-	If $Connected = -1 And $EnableRestart = 1 Then 
+	If $Connected < 1 And $EnableRestart = 1 Then 
 		SetGUIStatus("Attempting to launch game")
 		LaunchMain()
 	EndIf
@@ -694,7 +694,7 @@ EndFunc   ;==>ProcessCustom
 Func ProcessSimple()
 	$Connected = IsProcessConnected("BlackDesert64.exe")
 	SetGUIStatus("Game state: " & $Connected)
-	If $Connected = -1 And $EnableRestart = 1 Then 
+	If $Connected < 1 And $EnableRestart = 1 Then 
 		SetGUIStatus("Attempting to launch game")
 		LaunchMain()
 	EndIf
@@ -1125,7 +1125,7 @@ Func GSleep($time)
 		AntiScreenSaverMouseWiggle()
 		$Connected = IsProcessConnected("BlackDesert64.exe")
 		SetGUIStatus("Game still connected: " & $Connected)
-		If $Connected = -1 And $EnableRestart = 1 Then 
+		If $Connected < 1 And $EnableRestart = 1 Then 
 			SetGUIStatus("Attempting to launch game as game is closed")
 			LaunchMain()
 		EndIf
