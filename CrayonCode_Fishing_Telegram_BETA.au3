@@ -42,11 +42,10 @@ Global $hTitle = "BLACK DESERT - "
 Global $LNG = "en"
 Global $ScreenCapLoot = False
 Global $LogEnable = True
-Global $Token = '420543843:AAFhUs2A4LXwdRzhTr3HO9mrJKbV5T3mCpc' ;Insert here your token
-_InitBot($Token)
-$msgData = _Polling()
-_SendMsg($msgData[2], "Your telegram bot is now initiated.")
-	
+Global $Token = '' ;Insert here your token
+Global $msgData[5] = ['', '', '', '', '']
+Global $TelegramEnable = False
+
 Global $aListView1[10]
 For $i = 1 to 9
 	$aListView1[$i] = GUICtrlCreateListViewItem("", $ListView1)
@@ -157,6 +156,7 @@ Func InitGUI()
 
 	GUICtrlSetState($CBReserve, CBT($ClientSettings[5][1]))
 	GUICtrlSetData($ISlotsReserved, $ClientSettings[6][1])
+	GUICtrlSetData($Telegram_Token, $ClientSettings[7][1])
 	
 	$hTitle = $ClientSettings[1][1]
 	$LNG = $ClientSettings[2][1]
@@ -246,7 +246,6 @@ Func StoreGUI()
 	$ClientSettings[6][1] = GUICtrlRead($ISlotsReserved)
 	$ClientSettings[7][1] = GUICtrlRead($Telegram_Token)
 	IniWriteSection("config/settings.ini", "ClientSettings", $ClientSettings)
-	
 	
 	InitGUI()
 EndFunc
@@ -823,7 +822,7 @@ Func ResetSession()
 		$SessionStats[$i][1] = 0
 	Next
 	IniWriteSection("logs/stats.ini", "SessionStats", $SessionStats)
-	InitGUI()
+	;InitGUI()
 EndFunc   ;==>ResetSession
 
 Func DocLoot(ByRef $Loot)
@@ -1319,12 +1318,19 @@ Func LoopSideFunctions()
 	WEnd
 EndFunc
 
-
-
 ; # Main
 Func Main_Fishing()
+	if $TelegramEnable = False Then
+		SetGUIStatus("Initiating telegram bot with token: " & $Token)
+		_InitBot($Token)
+		MsgBox(1, "Telegram setup", "Please send a message on the telegram chat to your unique bot to start the monitoring process.")
+		$msgData = _Polling()
+		_SendMsg($msgData[2], "Telegram linked with unique ID " & $msgData[2] & ".")
+		MsgBox(1, "Telegram setup", "Link success with unique ID: " & $msgData[2])
+	EndIf
+	
 	$Fish = Not $Fish
-	_SendMsg($msgData[2], "Main_Fishing_START")
+
 	If $Fish = False Then
 		SetGUIStatus("Stopping Main_Fishing")
 		_SendMsg($msgData[2], "Main_Fishing STOPPED")
