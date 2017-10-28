@@ -1333,7 +1333,6 @@ Func Main_Fishing()
 
 	If $Fish = False Then
 		SetGUIStatus("Stopping Main_Fishing")
-		_SendMsg($msgData[2], "Main_Fishing STOPPED")
 		Return False
 	EndIf
 
@@ -1386,6 +1385,7 @@ Func Main_Fishing()
 				SetGUIStatus(StringFormat("FreeDetectedSlots: %s, AvaibleSlots: %s", $freedetectedslots, $avaibleslots))
 				If $avaibleslots <= 0 Then
 					SetGUIStatus("Inventory full! Stopping!")
+					_SendMsg($msgData[2], "Main_Fishing STOPPED")
 					$Fish = False
 				EndIf
 
