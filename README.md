@@ -1,4 +1,4 @@
-# CrayonCode-BDO-Project Rev. 2 (10/2/2017) Kamasylvia Update Part 1.
+# CrayonCode-BDO-Project Rev. 11 (11/2/2017) Militia/Platoon Update
 
 ## FOR FISHING ENTHUSIASTS:
 
@@ -8,6 +8,7 @@ Run CrayonCode_Fishing.au3 to start the script.
 * BDO NA/EU (or EN/DE/FR client language)
 * Default BDO Font
 * 100% UI Scale (UI Settings ingame)
+* All attendance rewards accepted: https://i.gyazo.com/4de36f1f87b24254ded87e5f747a53bf.png (image on the right must be absent) OR a high resolution game where the icon doesn't obstruct any text.
 
 Works in Fullscreen and Windowed Mode (If the text is a little blurry in windowed just use fullscreen instead)
 
@@ -45,9 +46,4 @@ Known issues:
 
 * When there's a item in the bid phase and the next BUY item is much more expensive the bot will keep trying to buy it while waiting for the next phase.
 
-
 ## OTHER INFO
-
-If you want to help, join the discord! Any translation help can also be done at: 
-
-https://docs.google.com/spreadsheets/d/1JjFftrODGTWlQHbAxtjA6mETAiWGNsK5fVv2-Ll6tfE/edit#gid=1200139819
