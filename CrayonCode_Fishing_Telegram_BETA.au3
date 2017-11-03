@@ -43,8 +43,10 @@ Global $LNG = "en"
 Global $ScreenCapLoot = False
 Global $LogEnable = True
 Global $Token = '' ;Insert here your token
+Global $ChatID = ''
 Global $msgData[5] = ['', '', '', '', '']
 Global $TelegramEnable = False
+Global $WarningCounter = 0
 
 Global $aListView1[10]
 For $i = 1 to 9
@@ -91,6 +93,10 @@ Func GUILoopSwitch()
 			StoreGUI()
 		Case $BLoopSide
 			LoopSideFunctions()
+		Case $BGetChatID
+			GetChatIDFromGUI()
+		Case $BResetChatID
+			ResetChatID()
 	EndSwitch
 EndFunc   ;==>GUILoopSwitch
 
@@ -157,6 +163,7 @@ Func InitGUI()
 	GUICtrlSetState($CBReserve, CBT($ClientSettings[5][1]))
 	GUICtrlSetData($ISlotsReserved, $ClientSettings[6][1])
 	GUICtrlSetData($Telegram_Token, $ClientSettings[7][1])
+	GUICtrlSetData($IChatID, $ClientSettings[8][1])
 	
 	$hTitle = $ClientSettings[1][1]
 	$LNG = $ClientSettings[2][1]
@@ -165,6 +172,7 @@ Func InitGUI()
 	$ReserveEnable = $ClientSettings[5][1]
 	$SlotsReserved = $ClientSettings[6][1]
 	$Token = $ClientSettings[7][1]
+	$ChatID = $ClientSettings[8][1]
 	
 	Local $TotalStats = IniReadSection("logs/stats.ini", "TotalStats")
 	Local $SessionStats = IniReadSection("logs/stats.ini", "SessionStats")
@@ -173,6 +181,7 @@ Func InitGUI()
 	SetGUIStatus("Relic reserve enabled: " & $ReserveEnable)
 	SetGUIStatus("Slots Reserved: " & $SlotsReserved)
 	SetGUIStatus("Telegram token: " & $Token)
+	SetGUIStatus("ChatID: " & $ChatID)
 	For $i = 1 To 9
 		GUICtrlSetData($aListView1[$i], $SessionStats[$i][0] & "|" & $SessionStats[$i][1] & "|" & $TotalStats[$i][1], "")
 	Next
@@ -245,6 +254,7 @@ Func StoreGUI()
 	$ClientSettings[5][1] = CBT(GUICtrlRead($CBReserve))
 	$ClientSettings[6][1] = GUICtrlRead($ISlotsReserved)
 	$ClientSettings[7][1] = GUICtrlRead($Telegram_Token)
+	$ClientSettings[8][1] = GUICtrlRead($IChatID)
 	IniWriteSection("config/settings.ini", "ClientSettings", $ClientSettings)
 	
 	InitGUI()
@@ -295,7 +305,13 @@ Func CreateConfig()
 		$ClientSettings &= "Enable_Reserve=1" & @LF
 		$ClientSettings &= "Slots_Reserved=10" & @LF
 		$ClientSettings &= "Telegram_Token=abcdefg" & @LF
+		$ClientSettings &= "ChatID=-1" & @LF
 		IniWriteSection("config/settings.ini", "ClientSettings", $ClientSettings)
+		
+		Local $LangSettings = ""
+		$LangSettings &= "Lang=-1" & @LF
+		IniWriteSection("config/settings.ini", "LangSettings", $LangSettings)
+		
 	EndIf
 
 	If FileExists("logs/stats.ini") = False Then
@@ -493,7 +509,10 @@ Func DetectFreeInventory()
 		Sleep(150)
 	Next
 	OCInventory(False)
-	SetGUIStatus($Free & " empty slots")
+	SetGUIStatus(($Free - 2) & " empty slots")
+	$WarningCounter = Floor(($Free - 2) / 10)
+	SetGUIStatus("Warning Counter set to " & $WarningCounter)
+	TelegramMessage("Starting fishing task with " & $Free & " inventory slots.")
 	Return ($Free)
 EndFunc   ;==>DetectFreeInventory
 
@@ -1227,6 +1246,47 @@ Func DryFish($DryFishEnable, $DryFishMaxRarity = 3, $DryFishCD = 5)
 EndFunc   ;==>DryFish
 
 
+; # Telegram
+Func GetChatIDFromGUI()
+	If $ChatID < 0 Then
+		if $TelegramEnable = False Then
+			SetGUIStatus("Initiating telegram bot with token: " & $Token)
+			_InitBot($Token)
+			MsgBox(1, "Telegram setup", "Please send a message on the telegram chat after this prompt to your unique bot to start the monitoring process.")
+			GUICtrlSetData($IChatID, "Waiting for response from telegram.")
+			$msgData = _Polling()
+			$ChatID = $msgData[2]
+			_SendMsg($ChatID, "Telegram linked with unique ID " & $ChatID  & ".")
+			MsgBox(1, "Telegram setup", "Link success with unique ID: " & $ChatID)
+			GUICtrlSetData($IChatID, $ChatID)
+			$TelegramEnable = True
+			StoreGUI()
+		EndIf
+	Else
+		MsgBox(1, "Telegram setup", "ChatID exists already, if you'd like to reset your chat ID, please press the reset button first.")
+	EndIf
+EndFunc
+
+Func TelegramMessage($msg)
+	If $TelegramEnable = True Then
+		SetGUIStatus("_SendMsg called with $msg: " & $msg & " and ChatID: " & $ChatID)	
+		_SendMsg($ChatID, " " & $msg)	
+	Else
+		SetGUIStatus("Telegram not enabled, will not send update to Telegram.")
+	EndIf
+EndFunc
+
+Func ResetChatID()
+	If $ChatID > 0 Then
+		$ChatID = -1
+		GUICtrlSetData($IChatID, -1)
+		$TelegramEnable = False
+		StoreGUI()
+	Else
+		MsgBox(1, "Telegram setup", "No existing valid Chat ID detected, please get a ChatID first")
+	EndIf
+EndFunc
+
 ; # Side
 Func WorkerFeed($WorkerEnable, $WorkerCD)
 	If $WorkerEnable = False Then Return False
@@ -1321,14 +1381,16 @@ EndFunc
 ; # Main
 Func Main_Fishing()
 	if $TelegramEnable = False Then
-		SetGUIStatus("Initiating telegram bot with token: " & $Token)
-		_InitBot($Token)
-		MsgBox(1, "Telegram setup", "Please send a message on the telegram chat to your unique bot to start the monitoring process.")
-		$msgData = _Polling()
-		_SendMsg($msgData[2], "Telegram linked with unique ID " & $msgData[2] & ".")
-		MsgBox(1, "Telegram setup", "Link success with unique ID: " & $msgData[2])
+		SetGUIStatus("Checking if valid ChatID is set, and turning on telegram if it's the case.")
+		If $ChatID > 0 Then
+			SetGUIStatus("Valid ChatID: " & $ChatID & " was found, will enable telegram.")
+			_InitBot($Token)
+			$TelegramEnable = True
+		Else
+			SetGUIStatus("No valid chat ID was found, telegram will remain disabled.")
+		EndIf
 	EndIf
-	
+
 	$Fish = Not $Fish
 
 	If $Fish = False Then
@@ -1383,9 +1445,19 @@ Func Main_Fishing()
 
 				; Inventory Managmenet
 				SetGUIStatus(StringFormat("FreeDetectedSlots: %s, AvaibleSlots: %s", $freedetectedslots, $avaibleslots))
+				
+				If Mod($avaibleslots, 10) = 0 Then
+					SetGUIStatus("Round number detected, sending telegram message if counter is the same")
+					If Round(($avaibleslots / 10), 0) = $WarningCounter Then
+						TelegramMessage("Update: " & $avaibleslots & " inventory slots left before task completion")
+						$WarningCounter = $WarningCounter - 1
+						SetGUIStatus("Warning counter decreased, is now at " & $WarningCounter)
+					EndIf
+				EndIf
+				
 				If $avaibleslots <= 0 Then
 					SetGUIStatus("Inventory full! Stopping!")
-					_SendMsg($msgData[2], "Main_Fishing STOPPED")
+					TelegramMessage("Inventory is full, fishing task complete!")
 					$Fish = False
 				EndIf
 
@@ -1456,8 +1528,8 @@ Func Main_Fishing()
 					If IsProcessConnected("BlackDesert64.exe") = 1 Then
 						SetGUIStatus("BlackDesert64.exe is connected")
 					Else
+						TelegramMessage("Black Desert is disconnected!")
 						SetGUIStatus("BlackDesert64.exe is DISCONNECTED")
-						; TODO DC HANDLING
 					EndIf
 
 					If SwapFishingrod($Enable_DiscardRods) = True Then

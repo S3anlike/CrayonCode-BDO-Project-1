@@ -16,10 +16,69 @@ Local $LANG_DIR = @ScriptDir & "\LanguageFiles"; Where we are storing the langua
 ;location to stop the user having to select a Language every time they run your program.
 If FileExists("logs/") = False Then DirCreate("logs/")
 If FileExists("config/") = False Then DirCreate("config/")
+
+
 If FileExists("config/settings.ini") = False Then
+	Local $LootSettings = ""
+	$LootSettings &= "MinRarity=0" & @LF
+	$LootSettings &= "loot_Silverkey=1" & @LF
+	$LootSettings &= "loot_AncientRelic=1" & @LF
+	$LootSettings &= "loot_Coelacanth=1" & @LF
+	$LootSettings &= "loot_EventItems=1" & @LF
+	$LootSettings &= "loot_TrashItems=0" & @LF
+	IniWriteSection("config/settings.ini", "LootSettings", $LootSettings)
+
+	Local $InventorySettings = ""
+	$InventorySettings &= "Enable_DiscardRods=1" & @LF
+	$InventorySettings &= "BufferSize=2" & @LF
+	IniWriteSection("config/settings.ini", "InventorySettings", $InventorySettings)
+
+	Local $DryingSettings = ""
+	$DryingSettings &= "Enable_Drying=1" & @LF
+	$DryingSettings &= "MaxRarity=2" & @LF
+	$DryingSettings &= "DryingInterval=5" & @LF
+	IniWriteSection("config/settings.ini", "DryingSettings", $DryingSettings)
+
+	Local $WorkerSettings = ""
+	$WorkerSettings &= "Enable_FeedWorker=1" & @LF
+	$WorkerSettings &= "FeedWorkerInterval=60" & @LF
+	IniWriteSection("config/settings.ini", "WorkerSettings", $WorkerSettings)
+
+	Local $BuffSettings = ""
+	$BuffSettings &= "Enable_Buff=1" & @LF
+	$BuffSettings &= "BuffInterval=30" & @LF
+	$BuffSettings &= "BuffKeys=7,8" & @LF
+	IniWriteSection("config/settings.ini", "BuffSettings", $BuffSettings)
+
+	Local $ClientSettings = ""
+	$ClientSettings &= "ClientName=BLACK DESERT - " & @LF
+	$ClientSettings &= "ClientLanguage=en" & @LF
+	$ClientSettings &= "Enable_Logfile=1" & @LF
+	$ClientSettings &= "Enable_ScreencapLoot=0" & @LF
+	$ClientSettings &= "Enable_Reserve=1" & @LF
+	$ClientSettings &= "Slots_Reserved=10" & @LF
+	$ClientSettings &= "Telegram_Token=Copy/paste your unique Telegram token in here." & @LF
+	$ClientSettings &= "ChatID=-1" & @LF
+	IniWriteSection("config/settings.ini", "ClientSettings", $ClientSettings)
+	
 	Local $LangSettings = ""
-	$LangSettings &= "0409" & @LF
+	$LangSettings &= "Lang=-1" & @LF
 	IniWriteSection("config/settings.ini", "LangSettings", $LangSettings)
+EndIf
+
+If FileExists("logs/stats.ini") = False Then
+	Local $Stats = ""
+	$Stats &= "White=0" & @LF
+	$Stats &= "Green=0" & @LF
+	$Stats &= "Blue=0" & @LF
+	$Stats &= "Gold=0" & @LF
+	$Stats &= "Silverkey=0" & @LF
+	$Stats &= "AncientRelic=0" & @LF
+	$Stats &= "Coelacanth=0" & @LF
+	$Stats &= "Eventitem=0" & @LF
+	$Stats &= "Trash=0"
+	IniWriteSection("logs/stats.ini", "TotalStats", $Stats)
+	IniWriteSection("logs/stats.ini", "SessionStats", $Stats)
 EndIf
 
 ; Read language from INI
@@ -180,8 +239,11 @@ $IBufferSize = GUICtrlCreateInput("0", 480, 356, 65, 21, BitOR($GUI_SS_DEFAULT_I
 $Label7 = GUICtrlCreateLabel(_MultiLang_GetText("buffer"), 368, 360, 98, 17)
 GUICtrlCreateGroup("", -99, -99, 1, 1)
 $Tab_Telegram = GUICtrlCreateTabItem("Telegram")
-$LTelegram = GUICtrlCreateLabel("Token", 13, 37, 51, 169)
-$Telegram_Token = GUICtrlCreateInput("inserttokenhere", 83, 37, 301, 21)
+$LTelegram = GUICtrlCreateLabel("Token", 83, 37, 51, 21)
+$Telegram_Token = GUICtrlCreateInput("inserttokenhere", 163, 37, 301, 21)
+$IChatID = GUICtrlCreateInput("", 163, 67, 201, 21, $ES_READONLY)
+$BGetChatID = GUICtrlCreateButton("Get ID", 83, 67, 71, 21)
+$BResetChatID = GUICtrlCreateButton("Reset", 373, 67, 71, 21)
 $TabSheet1 = GUICtrlCreateTabItem(_MultiLang_GetText("stats"))
 $ListView1 = GUICtrlCreateListView(_MultiLang_GetText("stats_tip"), 24, 40, 570, 342)
 GUICtrlSendMsg(-1, $LVM_SETCOLUMNWIDTH, 0, 100)

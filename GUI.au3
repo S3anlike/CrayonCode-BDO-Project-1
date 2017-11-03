@@ -16,9 +16,53 @@ Local $LANG_DIR = @ScriptDir & "\LanguageFiles"; Where we are storing the langua
 ;location to stop the user having to select a Language every time they run your program.
 If FileExists("logs/") = False Then DirCreate("logs/")
 If FileExists("config/") = False Then DirCreate("config/")
+
+
 If FileExists("config/settings.ini") = False Then
+	Local $LootSettings = ""
+	$LootSettings &= "MinRarity=0" & @LF
+	$LootSettings &= "loot_Silverkey=1" & @LF
+	$LootSettings &= "loot_AncientRelic=1" & @LF
+	$LootSettings &= "loot_Coelacanth=1" & @LF
+	$LootSettings &= "loot_EventItems=1" & @LF
+	$LootSettings &= "loot_TrashItems=0" & @LF
+	IniWriteSection("config/settings.ini", "LootSettings", $LootSettings)
+
+	Local $InventorySettings = ""
+	$InventorySettings &= "Enable_DiscardRods=1" & @LF
+	$InventorySettings &= "BufferSize=2" & @LF
+	IniWriteSection("config/settings.ini", "InventorySettings", $InventorySettings)
+
+	Local $DryingSettings = ""
+	$DryingSettings &= "Enable_Drying=1" & @LF
+	$DryingSettings &= "MaxRarity=2" & @LF
+	$DryingSettings &= "DryingInterval=5" & @LF
+	IniWriteSection("config/settings.ini", "DryingSettings", $DryingSettings)
+
+	Local $WorkerSettings = ""
+	$WorkerSettings &= "Enable_FeedWorker=1" & @LF
+	$WorkerSettings &= "FeedWorkerInterval=60" & @LF
+	IniWriteSection("config/settings.ini", "WorkerSettings", $WorkerSettings)
+
+	Local $BuffSettings = ""
+	$BuffSettings &= "Enable_Buff=1" & @LF
+	$BuffSettings &= "BuffInterval=30" & @LF
+	$BuffSettings &= "BuffKeys=7,8" & @LF
+	IniWriteSection("config/settings.ini", "BuffSettings", $BuffSettings)
+
+	Local $ClientSettings = ""
+	$ClientSettings &= "ClientName=BLACK DESERT - " & @LF
+	$ClientSettings &= "ClientLanguage=en" & @LF
+	$ClientSettings &= "Enable_Logfile=1" & @LF
+	$ClientSettings &= "Enable_ScreencapLoot=0" & @LF
+	$ClientSettings &= "Enable_Reserve=1" & @LF
+	$ClientSettings &= "Slots_Reserved=10" & @LF
+	$ClientSettings &= "Telegram_Token=Copy/paste your unique Telegram token in here." & @LF
+	$ClientSettings &= "ChatID=-1" & @LF
+	IniWriteSection("config/settings.ini", "ClientSettings", $ClientSettings)
+	
 	Local $LangSettings = ""
-	$LangSettings &= "0409" & @LF
+	$LangSettings &= "Lang=-1" & @LF
 	IniWriteSection("config/settings.ini", "LangSettings", $LangSettings)
 EndIf
 

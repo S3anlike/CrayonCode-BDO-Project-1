@@ -1,10 +1,5 @@
-Revision 6:
+Revision 11:
 
-* Added anti-screen saver to processing bot
-* Changed labels in Processing bot to tips to de-clutter the GUI
-* Updated French Language text, thanks to UJuliet for the translations
-* Re-organized bot settings in processing bot
-* Added multiple buff support, currently 2 with customizable keys 0-9
-
-Bugfixes:
-* Fixed screen-cap/log settings not saving correctly and logging screencaps no matter what
+* Initial Telegram support (BETA) use the CrayonCode_Fishing_Telegram_BETA.au3 script to set it up.
+* It will notify you of the fishing task, follow the included pdf guide to learn how to get your own token.
+* If you delete settings.ini the fishing bot will successfully recreate the settings.ini with default settings.
