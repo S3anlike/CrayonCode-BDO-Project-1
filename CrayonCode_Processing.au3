@@ -835,7 +835,7 @@ Func FindResource(ByRef $ProcessingList)
 		If $Processing = False Then Return False
 		If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then MouseMove($C[0] - 50, $C[1]) ; Keep mouse out of detection range
 		For $i = 0 To UBound($ProcessingList) - 1
-			$IS = _ImageSearchArea("res/processing/" & $ProcessingList[$i][0] & ".bmp", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 0, 0)
+			$IS = _ImageSearchArea("res/processing/" & $ProcessingList[$i][0] & ".bmp", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 20, 0)
 			If $IS = True Then
 				If $x = 0 Or $y = 0 Then SetGUIStatus("Imagefile probably missing")
 				SetGUIStatus($ProcessingList[$i][0] & " found, attempting to withdraw")

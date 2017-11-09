@@ -57,6 +57,11 @@ HotKeySet("^{F1}", "_terminate")
 HotKeySet("{F3}", "PauseToggle")
 HotKeySet("{F4}", "Main_Fishing")
 HotKeySet("{F5}", "FishingAssist")
+HotKeySet("^{F8}", "KillBDO")
+
+Func KillBDO()
+	ProcessClose("BlackDesert64.exe")
+EndFunc
 
 
 ; # GUI
