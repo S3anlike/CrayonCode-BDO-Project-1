@@ -60,6 +60,7 @@ HotKeySet("{F4}", "ProcessCustom")
 HotKeySet("{F5}", "ProcessSimple")
 HotKeySet("{F6}", "WorkerFeed")
 HotKeySet("{F7}", "BuffTest")
+HotKeySet("{F8}", "ProductionActivityCheck")
 #EndRegion - Global
 
 
@@ -1227,10 +1228,16 @@ Func VMouse($x, $y, $clicks = 0, $button = "left", $speed = 10)
 EndFunc   ;==>VMouse
 
 Func ProductionActivityCheck() ; Adpated
-	Local Const $Processing_Hammer = "res/processing_hammer.png"
+	Local Const $Processing_Hammer = "res/processing_hammer_uno.png"
+	;$ResOffset = DetectFullscreenToWindowedOffset()
 	Local $IS, $x, $y
 	GSleep(500)
 	$IS = _ImageSearchArea($Processing_Hammer, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
+	If $IS = True Then 
+		SetGUIStatus("Processing hammer detected") 
+	Else 
+		SetGUIStatus("Processing hammer not detected")
+	EndIf
 	If $IS = True Then Return False
 	While $Processing
 		$IS = _ImageSearchArea($Processing_Hammer, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
