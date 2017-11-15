@@ -1124,12 +1124,12 @@ EndFunc   ;==>WaitForMenu
 ; # Side
 Func WorkerFeed()
 	Local Const $WorkerIcon = "res/esc_worker.png"
-	Local Const $WorkerStamina = "res/worker_staminabar.png"
+	Local Const $WorkerRecoverAnchor = "res/worker_recover_anchor.png"
 	Local Const $WorkerOffsets[4][2] = [ _
-			[-33, 464], _ ; Recover All
-			[-302, 9], _ ; Select food
-			[-249, 145], _ ; Confirm
-			[48, 463]] ; Repeat All
+			[-263, 444], _ ; Recover All
+			[-522, -19], _ ; Select food
+			[-479, 125], _ ; Confirm
+			[-188, 443]] ; Repeat All
 	Local $x, $y, $IS
 	SetGUIStatus(StringFormat("Feeding Worker"))
 	WaitForMenu(True)
@@ -1137,7 +1137,7 @@ Func WorkerFeed()
 	If $IS = True Then
 		VMouse($x, $y, 1, "left")
 		Sleep(1500)
-		$IS = _ImageSearchArea($WorkerStamina, 0, $Res[0], $Res[1], $Res[2], $Res[3], $x, $y, 10, 0)
+		$IS = _ImageSearchArea($WorkerRecoverAnchor, 0, $Res[0], $Res[1], $Res[2], $Res[3], $x, $y, 10, 0)
 		If $IS = True Then
 				VMouse($x + $WorkerOffsets[0][0], $y + $WorkerOffsets[0][1], 1, "left") ; Recover All
 				VMouse($x + $WorkerOffsets[0][0], $y + $WorkerOffsets[0][1] + 10, 1, "left") ; Recover All DIFFERENT LANGUAGES FIX
@@ -1152,7 +1152,7 @@ Func WorkerFeed()
 			CoSe("l") ; Open Processing screen
 			Return True
 		Else
-			SetGUIStatus("WorkerStamina missing")
+			SetGUIStatus("WorkerRecoverAnchor missing")
 			Return False
 		EndIf
 	Else
