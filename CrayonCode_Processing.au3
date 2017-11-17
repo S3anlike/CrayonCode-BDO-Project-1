@@ -125,6 +125,7 @@ $Label6 = GUICtrlCreateLabel("Batch", 488, 32, 32, 17)
 $Label4 = GUICtrlCreateLabel("Max", 288, 32, 24, 17)
 $Label7 = GUICtrlCreateLabel("Max", 536, 32, 24, 17)
 $TabSheet4 = GUICtrlCreateTabItem("Control Panel")
+GUICtrlSetState(-1,$GUI_SHOW)
 $ELog = GUICtrlCreateEdit("", 330, 32, 280, 350, BitOR($GUI_SS_DEFAULT_EDIT,$ES_READONLY))
 $Processing_Settings = GUICtrlCreateGroup("Processing Settings", 13, 37, 300, 199)
 $I_DefaultBatchSize = GUICtrlCreateInput("", 144, 62, 121, 21)
@@ -133,7 +134,7 @@ $Label8 = GUICtrlCreateLabel("Default Batch Size:", 24, 64, 95, 17)
 GUICtrlSetTip(-1, "Items taken from storage. Customize depending on your LT")
 $I_MinProcessTime = GUICtrlCreateInput("", 144, 92, 121, 21)
 GUICtrlSetTip(-1, "Minimum seconds to wait before checking if actually processing")
-$Label9 = GUICtrlCreateLabel("Min Processing Time:", 24, 94, 105, 17)
+$Label9 = GUICtrlCreateLabel("Delay in seconds:", 24, 94, 105, 17)
 GUICtrlSetTip(-1, "Minimum seconds to wait before checking if actually processing")
 $Label10 = GUICtrlCreateLabel("Buff 1 key:", 24, 124, 59, 17)
 $CBuffkey1 = GUICtrlCreateCombo("", 84, 122, 35, 25, BitOR($CBS_DROPDOWNLIST,$CBS_AUTOHSCROLL))
@@ -147,7 +148,7 @@ GUICtrlSetData(-1, "", "8")
 $Label13 = GUICtrlCreateLabel("Buff 2 delay:", 140, 154, 59, 17)
 $I_BuffCD2 = GUICtrlCreateInput("", 205, 152, 30, 21)
 GUICtrlSetTip(-1,"Time in Minutes. Set 0 to Deactivate.")
-$CB_AlchemyStone = GUICtrlCreateCheckbox("Enable Worker Feed (every 1h)", 24, 184, 180, 17)
+$CB_AlchemyStone = GUICtrlCreateCheckbox("Enable Worker Feed (every 30m)", 24, 184, 180, 17)
 $CB_LogFile = GUICtrlCreateCheckbox("Enable Log File", 24, 214, 129, 17)
 ;$Label14 = GUICtrlCreateLabel("Will feed every 1h", 176, 288, 146, 17)
 GUICtrlCreateTabItem("")
@@ -711,8 +712,8 @@ Func ProcessSimple()
 EndFunc   ;==>ProcessBasic
 
 Func OpenWarehouse($SkipTransport = False)
-	Local $WarehouseButton = "res/npc_bank_button.bmp"
-	Local $TransportButton = "res/npc_bank_transport.bmp"
+	Local $WarehouseButton = "res/npc_bank_button.png"
+	Local $TransportButton = "res/npc_bank_transport.png"
 	Local Const $ESC = "res/esc_worker.png"
 	Local $x, $y, $IS
 
@@ -737,11 +738,12 @@ Func OpenWarehouse($SkipTransport = False)
 			EndIf
 		ElseIf $counter < 10 Then
 			; Close dialog and slowly pan camera to the right in case multiple npcs are overlapping
-			SetGUIStatus("Wrong NPC? Escape and turn")
+			SetGUIStatus("Couldn't find Transport icon, wrong NPC? Attempting to correct...")
 			CoSe("{ESC}")
 			Sleep(500)
 			$IS = _ImageSearchArea($ESC, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 20, 0)
 			If $IS = True Then
+				SetGUIStatus("Menu open, closing...")
 				CoSe("{ESC}")
 				Sleep(500)
 			EndIf
@@ -779,7 +781,7 @@ Func FindResourceCustom($Ingredient1 = "", $Batch1 = 0, $Ingredient2 = "", $Batc
 
 
 		If $Ing1Status = 0 Then
-			$IS = _ImageSearchArea("res/processing/" & StringStripWS($Ingredient1, 8) & ".bmp", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 0, 0)
+			$IS = _ImageSearchArea("res/processing/" & StringStripWS($Ingredient1, 8) & ".png", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 0, 0)
 			If $IS = True Then
 				If $x = 0 Or $y = 0 Then SetGUIStatus("Ingredient Image probably missing")
 				SetGUIStatus($Ingredient1 & " on page " & $k & " is PRESENT")
@@ -793,7 +795,7 @@ Func FindResourceCustom($Ingredient1 = "", $Batch1 = 0, $Ingredient2 = "", $Batc
 		EndIf
 
 		If $Ing2Status = 0 Then
-			$IS = _ImageSearchArea("res/processing/" & StringStripWS($Ingredient2, 8) & ".bmp", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 0, 0)
+			$IS = _ImageSearchArea("res/processing/" & StringStripWS($Ingredient2, 8) & ".png", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 0, 0)
 			If $IS = True Then
 				If $x = 0 Or $y = 0 Then SetGUIStatus("Ingredient Image probably missing")
 				SetGUIStatus($Ingredient2 & " on page " & $k & " is PRESENT")
@@ -836,7 +838,7 @@ Func FindResource(ByRef $ProcessingList)
 		If $Processing = False Then Return False
 		If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then MouseMove($C[0] - 50, $C[1]) ; Keep mouse out of detection range
 		For $i = 0 To UBound($ProcessingList) - 1
-			$IS = _ImageSearchArea("res/processing/" & $ProcessingList[$i][0] & ".bmp", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 20, 0)
+			$IS = _ImageSearchArea("res/processing/" & $ProcessingList[$i][0] & ".png", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 0, 0)
 			If $IS = True Then
 				If $x = 0 Or $y = 0 Then SetGUIStatus("Imagefile probably missing")
 				SetGUIStatus($ProcessingList[$i][0] & " found, attempting to withdraw")
@@ -1087,7 +1089,7 @@ EndFunc
 Func AlchemyStone()
 	Local Static $AlchemyStoneTimer = TimerInit()
 	Local Static $AlchemyStoneTimerDiff
-	Local Static $AlchemyStoneCooldown = 3601000
+	Local Static $AlchemyStoneCooldown = 1800500
 	If $AlchemyStoneEnable = False Then
 		Return False
 	Else
@@ -1229,20 +1231,14 @@ EndFunc   ;==>VMouse
 
 Func ProductionActivityCheck() ; Adpated
 	Local Const $Processing_Hammer = "res/processing_hammer_uno.png"
-	;$ResOffset = DetectFullscreenToWindowedOffset()
 	Local $IS, $x, $y
 	GSleep(500)
 	$IS = _ImageSearchArea($Processing_Hammer, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
-	If $IS = True Then 
-		SetGUIStatus("Processing hammer detected") 
-	Else 
-		SetGUIStatus("Processing hammer not detected")
-	EndIf
 	If $IS = True Then Return False
 	While $Processing
 		$IS = _ImageSearchArea($Processing_Hammer, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
 		If $IS = True Then Return True
-		GSleep(5000)
+		GSleep(500)
 	WEnd
 	Return False
 EndFunc   ;==>ProductionActivityCheck
