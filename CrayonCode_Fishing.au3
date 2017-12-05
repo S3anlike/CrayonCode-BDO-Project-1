@@ -409,7 +409,7 @@ Func OCInventory($open = True)
 	Local $timer = TimerInit()
 	While Not $IS And $Fish
 		Sleep(250)
-		$IS = _ImageSearchArea("res/reference_inventory.bmp", 0, $Res[0], $Res[1], $Res[2], $Res[3], $C[0], $C[1], 40, 0)
+		$IS = _ImageSearchArea("res/reference_inventory.png", 0, $Res[0], $Res[1], $Res[2], $Res[3], $C[0], $C[1], 40, 0)
 		Sleep(250)
 		If $IS = True Then ; If the inventory is already open...
 			If $open = True Then ; If $open = True return the inventory coordinates

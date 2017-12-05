@@ -509,7 +509,7 @@ Func OCInventory($open = True) ; Adpated (Removed $Fish)
 	Local $timer = TimerInit()
 	While Not $IS And $Processing
 		Sleep(250)
-		$IS = _ImageSearchArea("res/reference_inventory.bmp", 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $C[0], $C[1], 40, 0)
+		$IS = _ImageSearchArea("res/reference_inventory.png", 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $C[0], $C[1], 40, 0)
 		Sleep(250)
 		If $IS = True Then
 			If $open = True Then
@@ -781,7 +781,7 @@ Func FindResourceCustom($Ingredient1 = "", $Batch1 = 0, $Ingredient2 = "", $Batc
 
 
 		If $Ing1Status = 0 Then
-			$IS = _ImageSearchArea("res/processing/" & StringStripWS($Ingredient1, 8) & ".png", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 0, 0)
+			$IS = _ImageSearchArea("res/processing/" & StringStripWS($Ingredient1, 8) & ".png", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 20, 0)
 			If $IS = True Then
 				If $x = 0 Or $y = 0 Then SetGUIStatus("Ingredient Image probably missing")
 				SetGUIStatus($Ingredient1 & " on page " & $k & " is PRESENT")
@@ -795,7 +795,7 @@ Func FindResourceCustom($Ingredient1 = "", $Batch1 = 0, $Ingredient2 = "", $Batc
 		EndIf
 
 		If $Ing2Status = 0 Then
-			$IS = _ImageSearchArea("res/processing/" & StringStripWS($Ingredient2, 8) & ".png", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 0, 0)
+			$IS = _ImageSearchArea("res/processing/" & StringStripWS($Ingredient2, 8) & ".png", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 20, 0)
 			If $IS = True Then
 				If $x = 0 Or $y = 0 Then SetGUIStatus("Ingredient Image probably missing")
 				SetGUIStatus($Ingredient2 & " on page " & $k & " is PRESENT")
@@ -838,7 +838,7 @@ Func FindResource(ByRef $ProcessingList)
 		If $Processing = False Then Return False
 		If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then MouseMove($C[0] - 50, $C[1]) ; Keep mouse out of detection range
 		For $i = 0 To UBound($ProcessingList) - 1
-			$IS = _ImageSearchArea("res/processing/" & $ProcessingList[$i][0] & ".png", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 0, 0)
+			$IS = _ImageSearchArea("res/processing/" & $ProcessingList[$i][0] & ".png", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 20, 0)
 			If $IS = True Then
 				If $x = 0 Or $y = 0 Then SetGUIStatus("Imagefile probably missing")
 				SetGUIStatus($ProcessingList[$i][0] & " found, attempting to withdraw")
@@ -891,7 +891,7 @@ Func ProductionMethod($Method) ; 0=Shaking, 1=Grinding, 2=Chopping, 3=Drying, 4=
 	$Processing = True
 
 	Local $x, $y, $IS
-	Local $ProductionHammer = "res/processing_hammer.png"
+	Local $ProductionHammer = "res/processing_hammer_uno.png"
 	Local $ProcessingMethodOffset[2] = [62, -62]
 	Local $ProcessingStart[2] = [256, -294]
 
@@ -911,6 +911,9 @@ Func ProductionMethod($Method) ; 0=Shaking, 1=Grinding, 2=Chopping, 3=Drying, 4=
 				$Method = 5
 		EndSwitch
 	EndIf
+	
+	CoSe("l")
+	Sleep(500)
 
 	$IS = _ImageSearchArea($ProductionHammer, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
 	SetGUIStatus("Processing open: " & $IS)
@@ -957,7 +960,7 @@ EndFunc   ;==>ProductionMethod
 
 Func StorageWindow()
 	Local $x, $y, $IS
-	Local Static $AutoArrangeCheck = "res/reference_autoarrange.bmp"
+	Local Static $AutoArrangeCheck = "res/reference_autoarrange.png"
 	Local $FirstSlotOffset[2] = [-2, 32]
 	Local $C[2]
 
