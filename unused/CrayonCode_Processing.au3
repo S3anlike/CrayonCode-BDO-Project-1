@@ -1,30 +1,3 @@
-#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_Icon=ico\earth.ico
-#AutoIt3Wrapper_Outfile=ico\vlad.Exe
-#AutoIt3Wrapper_Outfile_x64=ico\vlod.Exe
-#AutoIt3Wrapper_UseUpx=y
-#AutoIt3Wrapper_Add_Constants=n
-#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_Icon=ico\earth.ico
-#AutoIt3Wrapper_Outfile=ico\vlad.Exe
-#AutoIt3Wrapper_Outfile_x64=ico\vlod.Exe
-#AutoIt3Wrapper_UseUpx=y
-#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_Icon=ico\earth.ico
-#AutoIt3Wrapper_Outfile=ico\vlad.Exe
-#AutoIt3Wrapper_Outfile_x64=ico\vlod.Exe
-#AutoIt3Wrapper_UseUpx=y
-#AutoIt3Wrapper_Compile_Both=y
-#AutoIt3Wrapper_UseX64=y
-#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_UseUpx=y
-#AutoIt3Wrapper_Compile_Both=y
-#AutoIt3Wrapper_UseX64=y
-#AutoIt3Wrapper_Add_Constants=n
-#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 #cs ----------------------------------------------------------------------------
 
 	AutoIt Version: 3.3.14.2
@@ -69,7 +42,6 @@ Global $LogFile = ""
 ;Global $LogFileEnable = 1
 Global $LastGUIStatus
 Global $ResOffset[4] = [0, 0, 0, 0]
-Global $Days[7] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 Global $Customs[14][8]
 Global $CustomsValues[14][8]
 Global $DefaultBatchSize = 100
@@ -81,126 +53,112 @@ Global $AlchemyStoneEnable = 1
 Global $TestingMode = False
 Global $Res[4] = [0, 0, @DesktopWidth, @DesktopHeight]
 
-Global $newtitle = ""
-
 HotKeySet("^{F1}", "_terminate")
-HotKeySet("^{F2}", "Save")
-HotKeySet("^{F3}", "PauseToggle")
-HotKeySet("^{F4}", "ProcessCustom")
-HotKeySet("^{F5}", "ProcessSimple")
-HotKeySet("^{F6}", "WorkerFeed")
-HotKeySet("^{F7}", "BuffTestrun")
-HotKeySet("^{F8}", "ProductionActivityCheck")
-HotKeySet("^{F9}", "CleadLogWindow")
+HotKeySet("{F2}", "Save")
+HotKeySet("{F3}", "PauseToggle")
+HotKeySet("{F4}", "ProcessCustom")
+HotKeySet("{F5}", "ProcessSimple")
+HotKeySet("{F6}", "WorkerFeed")
+HotKeySet("{F7}", "BuffTest")
+HotKeySet("{F8}", "ProductionActivityCheck")
 #EndRegion - Global
 
 
 #Region ### START Koda GUI section ### Form=c:\program files (x86)\autoit3\scite\koda\forms\processing.kxf
-$Form1 = GUICreate("CrayonCode Processing", 615, 450, 196, 143)
+$Form1 = GUICreate("CrayonCode Processing", 615, 437, 196, 143)
 $Tab1 = GUICtrlCreateTab(0, 0, 614, 400)
 $TabSheet1 = GUICtrlCreateTabItem("Simple Processing")
-$MAterial_Settings = GUICtrlCreateGroup("Material Settings", 8, 30, 596, 300)
-$lumber_category = GUICtrlCreateCheckbox("Lumber", 45, 50, 97, 18)
-$lumber_acacia = GUICtrlCreateCheckbox("Acacia", 59, 72, 97, 18)
-$lumber_ash = GUICtrlCreateCheckbox("Ash", 59, 89, 97, 18)
-$lumber_birch = GUICtrlCreateCheckbox("Birch", 59, 107, 97, 18)
-$lumber_cedar = GUICtrlCreateCheckbox("Cedar", 59, 125, 97, 18)
-$lumber_eldertree = GUICtrlCreateCheckbox("Elder Tree", 59, 143, 97, 18)
-$lumber_fir = GUICtrlCreateCheckbox("Fir", 59, 161, 97, 18)
-$lumber_maple = GUICtrlCreateCheckbox("Maple", 59, 179, 97, 18)
-$lumber_palm = GUICtrlCreateCheckbox("Palm", 59, 198, 97, 18)
-$lumber_pine = GUICtrlCreateCheckbox("Pine", 59, 216, 97, 18)
-$lumber_whitecedar = GUICtrlCreateCheckbox("White Cedar", 59, 234, 97, 18)
-;-----
-$plank_category = GUICtrlCreateCheckbox("Plank", 171, 50, 97, 18)
-$plank_acacia = GUICtrlCreateCheckbox("Acacia", 195, 72, 97, 18)
-$plank_ash = GUICtrlCreateCheckbox("Ash", 195, 89, 97, 18)
-$plank_birch = GUICtrlCreateCheckbox("Birch", 195, 107, 97, 18)
-$plank_cedar = GUICtrlCreateCheckbox("Cedar", 195, 125, 97, 18)
-$plank_eldertree = GUICtrlCreateCheckbox("Elder Tree", 195, 143, 97, 18)
-$plank_fir = GUICtrlCreateCheckbox("Fir", 195, 161, 97, 18)
-$plank_maple = GUICtrlCreateCheckbox("Maple", 195, 179, 97, 18)
-$plank_palm = GUICtrlCreateCheckbox("Palm", 195, 198, 97, 18)
-$plank_pine = GUICtrlCreateCheckbox("Pine", 195, 216, 97, 18)
-$plank_whitecedar = GUICtrlCreateCheckbox("White Cedar", 195, 234, 97, 18)
-;-----
-$ore_category = GUICtrlCreateCheckbox("Ore", 307, 50, 97, 18)
-$ore_copper = GUICtrlCreateCheckbox("Copper", 331, 72, 97, 18)
-$ore_gold = GUICtrlCreateCheckbox("Gold", 331, 89, 97, 18)
-$ore_iron = GUICtrlCreateCheckbox("Iron", 331, 107, 97, 18)
-$ore_lead = GUICtrlCreateCheckbox("Lead", 331, 125, 97, 18)
-$ore_mythril = GUICtrlCreateCheckbox("Mythril", 331, 143, 97, 18)
-$ore_platinum = GUICtrlCreateCheckbox("Platinum", 331, 161, 97, 18)
-$ore_silver = GUICtrlCreateCheckbox("Silver", 331, 179, 97, 18)
-$ore_tin = GUICtrlCreateCheckbox("Tin", 331, 198, 97, 18)
-$ore_titanium = GUICtrlCreateCheckbox("Titanium", 331, 216, 97, 18)
-$ore_vanadium = GUICtrlCreateCheckbox("Vanadium", 331, 234, 97, 18)
-$ore_zinc = GUICtrlCreateCheckbox("Zinc", 331, 252, 97, 18)
-$ore_coal = GUICtrlCreateCheckbox("Coal", 331, 270, 97, 18)
-;-----
-$meltedshard_category = GUICtrlCreateCheckbox("Melted Shard", 443, 50, 97, 18)
-$meltedshard_copper = GUICtrlCreateCheckbox("Copper", 467, 72, 97, 18)
-$meltedshard_gold = GUICtrlCreateCheckbox("Gold", 467, 89, 97, 18)
-$meltedshard_iron = GUICtrlCreateCheckbox("Iron", 467, 107, 97, 18)
-$meltedshard_lead = GUICtrlCreateCheckbox("Lead", 467, 125, 97, 18)
-$meltedshard_mythril = GUICtrlCreateCheckbox("Mythril", 467, 143, 97, 18)
-$meltedshard_platinum = GUICtrlCreateCheckbox("Platinum", 467, 161, 97, 18)
-$meltedshard_silver = GUICtrlCreateCheckbox("Silver", 467, 179, 97, 18)
-$meltedshard_tin = GUICtrlCreateCheckbox("Tin", 467, 198, 97, 18)
-$meltedshard_titanium = GUICtrlCreateCheckbox("Titanium", 467, 216, 97, 18)
-$meltedshard_vanadium = GUICtrlCreateCheckbox("Vanadium", 467, 234, 97, 18)
-$meltedshard_zinc = GUICtrlCreateCheckbox("Zinc", 467, 252, 97, 18)
-
+$lumber_category = GUICtrlCreateCheckbox("Lumber", 24, 48, 97, 17)
+$lumber_acacia = GUICtrlCreateCheckbox("Acacia", 48, 72, 97, 17)
+$lumber_ash = GUICtrlCreateCheckbox("Ash", 48, 88, 97, 17)
+$lumber_birch = GUICtrlCreateCheckbox("Birch", 48, 104, 97, 17)
+$lumber_cedar = GUICtrlCreateCheckbox("Cedar", 48, 120, 97, 17)
+$lumber_eldertree = GUICtrlCreateCheckbox("Elder Tree", 48, 136, 97, 17)
+$lumber_fir = GUICtrlCreateCheckbox("Fir", 48, 152, 97, 17)
+$lumber_maple = GUICtrlCreateCheckbox("Maple", 48, 168, 97, 17)
+$lumber_palm = GUICtrlCreateCheckbox("Palm", 48, 184, 97, 17)
+$lumber_pine = GUICtrlCreateCheckbox("Pine", 48, 200, 97, 17)
+$lumber_whitecedar = GUICtrlCreateCheckbox("White Cedar", 48, 216, 97, 17)
+$plank_category = GUICtrlCreateCheckbox("Plank", 136, 48, 97, 17)
+$plank_acacia = GUICtrlCreateCheckbox("Acacia", 160, 72, 97, 17)
+$plank_ash = GUICtrlCreateCheckbox("Ash", 160, 88, 97, 17)
+$plank_birch = GUICtrlCreateCheckbox("Birch", 160, 104, 97, 17)
+$plank_cedar = GUICtrlCreateCheckbox("Cedar", 160, 120, 97, 17)
+$plank_eldertree = GUICtrlCreateCheckbox("Elder Tree", 160, 136, 97, 17)
+$plank_fir = GUICtrlCreateCheckbox("Fir", 160, 152, 97, 17)
+$plank_maple = GUICtrlCreateCheckbox("Maple", 160, 168, 97, 17)
+$plank_palm = GUICtrlCreateCheckbox("Palm", 160, 184, 97, 17)
+$plank_pine = GUICtrlCreateCheckbox("Pine", 160, 200, 97, 17)
+$plank_whitecedar = GUICtrlCreateCheckbox("White Cedar", 160, 216, 97, 17)
+$ore_category = GUICtrlCreateCheckbox("Ore", 240, 48, 97, 17)
+$ore_copper = GUICtrlCreateCheckbox("Copper", 264, 72, 97, 17)
+$ore_gold = GUICtrlCreateCheckbox("Gold", 264, 88, 97, 17)
+$ore_iron = GUICtrlCreateCheckbox("Iron", 264, 104, 97, 17)
+$ore_lead = GUICtrlCreateCheckbox("Lead", 264, 120, 97, 17)
+$ore_mythril = GUICtrlCreateCheckbox("Mythril", 264, 136, 97, 17)
+$ore_platinum = GUICtrlCreateCheckbox("Platinum", 264, 152, 97, 17)
+$ore_silver = GUICtrlCreateCheckbox("Silver", 264, 168, 97, 17)
+$ore_tin = GUICtrlCreateCheckbox("Tin", 264, 184, 97, 17)
+$ore_titanium = GUICtrlCreateCheckbox("Titanium", 264, 200, 97, 17)
+$ore_vanadium = GUICtrlCreateCheckbox("Vanadium", 264, 216, 97, 17)
+$ore_zinc = GUICtrlCreateCheckbox("Zinc", 264, 232, 97, 17)
+$ore_coal = GUICtrlCreateCheckbox("Coal", 264, 248, 97, 17)
+$meltedshard_category = GUICtrlCreateCheckbox("Melted Shard", 344, 48, 97, 17)
+$meltedshard_copper = GUICtrlCreateCheckbox("Copper", 368, 72, 97, 17)
+$meltedshard_gold = GUICtrlCreateCheckbox("Gold", 368, 88, 97, 17)
+$meltedshard_lead = GUICtrlCreateCheckbox("Lead", 368, 120, 97, 17)
+$meltedshard_mythril = GUICtrlCreateCheckbox("Mythril", 368, 136, 97, 17)
+$meltedshard_platinum = GUICtrlCreateCheckbox("Platinum", 368, 152, 97, 17)
+$meltedshard_silver = GUICtrlCreateCheckbox("Silver", 368, 168, 97, 17)
+$meltedshard_tin = GUICtrlCreateCheckbox("Tin", 368, 184, 97, 17)
+$meltedshard_titanium = GUICtrlCreateCheckbox("Titanium", 368, 200, 97, 17)
+$meltedshard_vanadium = GUICtrlCreateCheckbox("Vanadium", 368, 216, 97, 17)
+$meltedshard_zinc = GUICtrlCreateCheckbox("Zinc", 368, 232, 97, 17)
+$meltedshard_iron = GUICtrlCreateCheckbox("Iron", 368, 104, 97, 17)
 $TabSheet2 = GUICtrlCreateTabItem("Custom Processing")
 CreateCustoms()
-$Label1 = GUICtrlCreateLabel("Method", 16, 32, 45, 17)
-$Label2 = GUICtrlCreateLabel("Ingredient 1", 115, 32, 70, 17)
-$Label3 = GUICtrlCreateLabel("Batch", 240, 32, 35, 17)
-$Label5 = GUICtrlCreateLabel("Ingredient 2", 365, 32, 70, 17)
-$Label6 = GUICtrlCreateLabel("Batch", 488, 32, 35, 17)
-$Label4 = GUICtrlCreateLabel("Max", 288, 32, 30, 17)
-$Label7 = GUICtrlCreateLabel("Max", 536, 32, 30, 17)
+$Label1 = GUICtrlCreateLabel("Method", 16, 32, 40, 17)
+$Label2 = GUICtrlCreateLabel("Ingredient 1", 136, 32, 60, 17)
+$Label3 = GUICtrlCreateLabel("Batch", 240, 32, 32, 17)
+$Label5 = GUICtrlCreateLabel("Ingredient 2", 376, 32, 60, 17)
+$Label6 = GUICtrlCreateLabel("Batch", 488, 32, 32, 17)
+$Label4 = GUICtrlCreateLabel("Max", 288, 32, 24, 17)
+$Label7 = GUICtrlCreateLabel("Max", 536, 32, 24, 17)
 $TabSheet4 = GUICtrlCreateTabItem("Control Panel")
 GUICtrlSetState(-1,$GUI_SHOW)
-
-$ELog = GUICtrlCreateEdit("", 5, 155, 600, 230, BitOR($GUI_SS_DEFAULT_EDIT,$ES_READONLY))
-GUICtrlSetData(-1, "")
-GUICtrlSetFont(-1, 8, 400, 0, "Arial")
-$Processing_Settings = GUICtrlCreateGroup("Processing Settings", 8, 35, 594, 95)
-$I_DefaultBatchSize = GUICtrlCreateInput("", 139, 60, 55, 24)
+$ELog = GUICtrlCreateEdit("", 330, 32, 280, 350, BitOR($GUI_SS_DEFAULT_EDIT,$ES_READONLY))
+$Processing_Settings = GUICtrlCreateGroup("Processing Settings", 13, 37, 300, 199)
+$I_DefaultBatchSize = GUICtrlCreateInput("", 144, 62, 121, 21)
 GUICtrlSetTip(-1, "Items taken from storage. Customize depending on your LT")
-$Label8 = GUICtrlCreateLabel("Default Batch Size:", 19, 62, 120, 17)
+$Label8 = GUICtrlCreateLabel("Default Batch Size:", 24, 64, 95, 17)
 GUICtrlSetTip(-1, "Items taken from storage. Customize depending on your LT")
-$I_MinProcessTime = GUICtrlCreateInput("", 139, 90, 55, 24)
+$I_MinProcessTime = GUICtrlCreateInput("", 144, 92, 121, 21)
 GUICtrlSetTip(-1, "Minimum seconds to wait before checking if actually processing")
-$Label9 = GUICtrlCreateLabel("Delay in seconds:", 19, 92, 125, 17)
+$Label9 = GUICtrlCreateLabel("Delay in seconds:", 24, 94, 105, 17)
 GUICtrlSetTip(-1, "Minimum seconds to wait before checking if actually processing")
-$Label10 = GUICtrlCreateLabel("Buff 1 key:", 240, 62, 68, 17)
-$CBuffkey1 = GUICtrlCreateCombo("", 306, 62, 35, 25, BitOR($GUI_SS_DEFAULT_COMBO,$CBS_SIMPLE))
-GUICtrlSetData(-1, "")
-$Label11 = GUICtrlCreateLabel("delay:", 348, 62, 67, 17)
-$I_BuffCD1 = GUICtrlCreateInput("", 390, 62, 30, 24)
-GUICtrlSetTip(-1, "Time in Minutes. Set 0 to Deactivate.")
-$Label12 = GUICtrlCreateLabel("Buff 2 key:", 240, 92, 68, 17)
-$CBuffkey2 = GUICtrlCreateCombo("", 306, 92, 35, 25, BitOR($GUI_SS_DEFAULT_COMBO,$CBS_SIMPLE))
-GUICtrlSetData(-1, "")
-$Label13 = GUICtrlCreateLabel("delay:", 348, 92, 67, 17)
-$I_BuffCD2 = GUICtrlCreateInput("", 390, 92, 30, 24)
-GUICtrlSetTip(-1, "Time in Minutes. Set 0 to Deactivate.")
-$CB_AlchemyStone = GUICtrlCreateCheckbox("Worker Feed", 470, 62, 120, 18)
-$CB_LogFile = GUICtrlCreateCheckbox("Log File to Disk", 470, 92, 120, 18)
+$Label10 = GUICtrlCreateLabel("Buff 1 key:", 24, 124, 59, 17)
+$CBuffkey1 = GUICtrlCreateCombo("", 84, 122, 35, 25, BitOR($CBS_DROPDOWNLIST,$CBS_AUTOHSCROLL))
+GUICtrlSetData(-1, "", "7")
+$Label11 = GUICtrlCreateLabel("Buff 1 delay:", 140, 124, 59, 17)
+$I_BuffCD1 = GUICtrlCreateInput("", 205, 122, 30, 21)
+GUICtrlSetTip(-1,"Time in Minutes. Set 0 to Deactivate.")
+$Label12 = GUICtrlCreateLabel("Buff 2 key:", 24, 154, 59, 17)
+$CBuffkey2 = GUICtrlCreateCombo("", 84, 152, 35, 25, BitOR($CBS_DROPDOWNLIST,$CBS_AUTOHSCROLL))
+GUICtrlSetData(-1, "", "8")
+$Label13 = GUICtrlCreateLabel("Buff 2 delay:", 140, 154, 59, 17)
+$I_BuffCD2 = GUICtrlCreateInput("", 205, 152, 30, 21)
+GUICtrlSetTip(-1,"Time in Minutes. Set 0 to Deactivate.")
+$CB_AlchemyStone = GUICtrlCreateCheckbox("Enable Worker Feed (every 30m)", 24, 184, 180, 17)
+$CB_LogFile = GUICtrlCreateCheckbox("Enable Log File", 24, 214, 129, 17)
 ;$Label14 = GUICtrlCreateLabel("Will feed every 1h", 176, 288, 146, 17)
-$jumpi=" "
-$Label14 = GUICtrlCreateLabel("Log", 8, 140, 179, 20)
-
 GUICtrlCreateTabItem("")
-$BQuit = GUICtrlCreateButton("Quit" & @CRLF & "(Ctrl+F1)", 8, 404, 80, 41, $BS_MULTILINE)
-$BSave = GUICtrlCreateButton("Save" & @CRLF & "(Ctrl+F2)", 91, 404, 80, 41, $BS_MULTILINE)
-$BPause = GUICtrlCreateButton("Un/Pause" & @CRLF & "(Ctrl+F3)", 174, 404, 80, 41, $BS_MULTILINE)
-$BCustom = GUICtrlCreateButton("Custom" & @CRLF & "(Ctrl+F4)", 257, 404, 80, 41, $BS_MULTILINE)
-$BSimple = GUICtrlCreateButton("Simple" & @CRLF & "(Ctrl+F5)", 340, 404, 80, 41, $BS_MULTILINE)
-$BWorkerTest = GUICtrlCreateButton("Test Workers" & @CRLF & "(Ctrl+F6)", 423, 404, 100, 41, $BS_MULTILINE)
-$BBuffsTest = GUICtrlCreateButton("Test Buffs" & @CRLF & "(Ctrl+F7)", 526, 404, 80, 41, $BS_MULTILINE)
+$BQuit = GUICtrlCreateButton("Quit (Ctrl+F1)", 8, 400, 80, 33)
+$BSave = GUICtrlCreateButton("Save (F2)", 91, 400, 80, 33)
+$BPause = GUICtrlCreateButton("Un/Pause (F3)", 174, 400, 80, 33)
+$BCustom = GUICtrlCreateButton("Custom (F4)", 257, 400, 80, 33)
+$BSimple = GUICtrlCreateButton("Simple (F5)", 340, 400, 80, 33)
+$BWorkerTest = GUICtrlCreateButton("Test Workers (F6)", 423, 400, 100, 33)
+$BBuffsTest = GUICtrlCreateButton("Test Buffs (F7)", 526, 400, 80, 33)
 GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
 
@@ -210,13 +168,13 @@ Func StoreGUI()
 	IniWrite("config/processing.ini", "Global", "MinProcessTime", GUICtrlRead($I_MinProcessTime))
 	;IniWrite("config/processing.ini", "Global", "LogFileEnable", cbt($CB_LogFile))
 	IniWrite("config/processing.ini", "Global", "AlchemyStoneEnable", cbt($CB_AlchemyStone))
-
+	
 	; Buff Settings
 	IniWrite("config/processing.ini", "Buff", "BuffCD1", GUICtrlRead($I_BuffCD1))
 	IniWrite("config/processing.ini", "Buff", "BuffCD2", GUICtrlRead($I_BuffCD2))
 	IniWrite("config/processing.ini", "Buff", "BuffKey1", GUICtrlRead($CBuffkey1))
 	IniWrite("config/processing.ini", "Buff", "BuffKey2", GUICtrlRead($CBuffkey2))
-
+	
 	; Lumber
 	IniWrite("config/processing.ini", "lumber", "lumber_category", cbt($lumber_category))
 	IniWrite("config/processing.ini", "lumber", "lumber_acacia", cbt($lumber_acacia))
@@ -285,7 +243,6 @@ Func StoreGUI()
 EndFunc   ;==>StoreGUI
 
 Func InitGUI()
-	SetGUIStatus(StringFormat("Initializing..."))
 	; Global Settings
 	$DefaultBatchSize = IniRead("config/processing.ini", "Global", "DefaultBatchSize", $DefaultBatchSize)
 	GUICtrlSetData($I_DefaultBatchSize, $DefaultBatchSize)
@@ -295,7 +252,7 @@ Func InitGUI()
 	;GUICtrlSetState($CB_LogFile, $LogFileEnable)
 	$AlchemyStoneEnable =  cbt(IniRead("config/processing.ini", "Global", "AlchemyStoneEnable", $AlchemyStoneEnable))
 	GUICtrlSetState($CB_AlchemyStone, $AlchemyStoneEnable)
-
+	
 	; Buff Settings
 	$BuffCD1 = IniRead("config/processing.ini", "Buff", "BuffCD1", $BuffCD1)
 	GUICtrlSetData($I_BuffCD1, $BuffCD1)
@@ -305,20 +262,20 @@ Func InitGUI()
 	GUICtrlSetData($CBuffKey1, "1|2|3|4|5|6|7|8|9|0", $BuffKey1)
 	$BuffKey2 = IniRead("config/processing.ini", "Buff", "BuffKey2", $BuffKey2)
 	GUICtrlSetData($CBuffKey2, "1|2|3|4|5|6|7|8|9|0", $BuffKey2)
-
+	
 	If ($BuffCD1 = 0 And $BuffCD2 = 0) Then
 		$Buff1Enable = False
 		$Buff2Enable = False
 		SetGUIStatus(StringFormat("Buff timers are 0, will not attempt to use buffs"))
 	Else
 		SetGUIStatus(StringFormat("Buff(s) are enabled"))
-		If Not ($BuffCD1 = 0) Then
+		If Not ($BuffCD1 = 0) Then 
 		SetGUIStatus(StringFormat("Buff1 key: " & $BuffKey1 & " with delay of " & $BuffCD1 & " minutes."))
 		Else
 		SetGUIStatus(StringFormat("Buff1 Disabled"))
 		$Buff1Enable = False
 		EndIf
-		If Not ($BuffCD2 = 0) Then
+		If Not ($BuffCD2 = 0) Then 
 		SetGUIStatus(StringFormat("Buff2 key: " & $BuffKey2 & " with delay of " & $BuffCD2 & " minutes."))
 		Else
 		SetGUIStatus(StringFormat("Buff2 Disabled"))
@@ -399,8 +356,6 @@ Func InitGUI()
 			If $CustomsValues[$i][$j] <> "" Then GUICtrlSetData($Customs[$i][$j], $CustomsValues[$i][$j])
 		Next
 	Next
-
-	SetGUIStatus(StringFormat("Initializing done..."))
 EndFunc   ;==>InitGUI
 
 Func cbt($handle) ; Transforms Checkbox values for ini
@@ -447,22 +402,17 @@ Func _terminate()
 EndFunc   ;==>_terminate
 
 Func PauseToggle()
-	If not $Processing then
-		SetGUIStatus("No process running.")
-		Else
-			Local Static $PauseToggle = False
-			$PauseToggle = Not $PauseToggle
-			If $PauseToggle = False Then
-				SetGUIStatus("Resume operations")
-				Return True
-			EndIf
-			SetGUIStatus("Pausing operations - worker feed will continue...")
-			While $PauseToggle
-				GSleep(500)
-			WEnd
-			Return True
-		EndIf
-	SetGUIStatus("Pause not enabled!")
+	Local Static $PauseToggle = False
+	$PauseToggle = Not $PauseToggle
+	If $PauseToggle = False Then
+		SetGUIStatus("Resume operations")
+		Return True
+	EndIf
+	SetGUIStatus("Pause")
+	While $PauseToggle
+		GSleep(500)
+	WEnd
+	Return True
 EndFunc
 
 Func cw($text)
@@ -489,9 +439,9 @@ EndFunc   ;==>CoSe
 Func SetGUIStatus($data)
 	If $data <> $LastGUIStatus Then
 		ConsoleWrite(@CRLF & @HOUR & ":" & @MIN & "." & @SEC & " " & $data)
-		;If $LogFileEnable = True Then
+		;If $LogFileEnable = True Then 
 		LogData(@HOUR & ":" & @MIN & "." & @SEC & " " & $data)
-		_GUICtrlEdit_AppendText($ELog, "[" & $Days[@WDAY-1] & "]" & @HOUR & ":" & @MIN & " > " &  $data & @CRLF)
+		_GUICtrlEdit_AppendText($ELog, $data & @CRLF)
 		$LastGUIStatus = $data
 	EndIf
 EndFunc   ;==>SetGUIStatus
@@ -518,7 +468,7 @@ Func DetectFullscreenToWindowedOffset() ; Returns $Offset[4] left, top, right, b
 	WinActivate($hBDO)
 	Local $Client = WinGetPos($hBDO)
 	If Not IsArray($Client) Then
-		SetGUIStatus("E: ClientSize could not be detected")
+		SetGUIStatus("E: ClientSize coudl not be detected")
 		Return ($ClientZero)
 	EndIf
 
@@ -705,10 +655,6 @@ Func ProcessCustom()
 	$Processing = False
 EndFunc   ;==>ProcessCustom
 
-Func BuffTestrun()
-    BuffTest($Buff1Enable, $Buff2Enable)
-EndFunc   ;==>HotKeyFunc
-
 Func ProcessSimple()
 	$Processing = Not $Processing
 	If $Processing = False Then
@@ -759,9 +705,6 @@ Func ProcessSimple()
 		Else
 			SetGUIStatus("No Item in ProcessingQueue found. Stopping.")
 			$Processing = False
-			;=================trash fix pause after craft for continous feed
-			PauseToggle()
-			;=================
 			ExitLoop
 		EndIf
 	WEnd
@@ -776,7 +719,7 @@ Func OpenWarehouse($SkipTransport = False)
 
 	Local $counter = 12
 	SetGUIStatus("Opening warehouse interface")
-
+	
 	While $counter >= 0 And $Processing = True
 		$IS = _ImageSearchArea($TransportButton, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 20, 0)
 		If $IS = True Then
@@ -968,6 +911,9 @@ Func ProductionMethod($Method) ; 0=Shaking, 1=Grinding, 2=Chopping, 3=Drying, 4=
 				$Method = 5
 		EndSwitch
 	EndIf
+	
+	CoSe("l")
+	Sleep(500)
 
 	$IS = _ImageSearchArea($ProductionHammer, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
 	SetGUIStatus("Processing open: " & $IS)
@@ -1050,7 +996,7 @@ Func CreateCustoms()
 		$Customs[$i][4] = GUICtrlCreateCombo("", 336, 56 + $span * $i, 145, 25, BitOR($CBS_DROPDOWNLIST, $WS_VSCROLL, $CBS_SORT)) ; Ingredient 2
 		$Customs[$i][5] = GUICtrlCreateInput("0", 488, 56 + $span * $i, 33, 21, BitOR($GUI_SS_DEFAULT_INPUT, $ES_NUMBER)) ; Batch 2
 		$Customs[$i][6] = GUICtrlCreateInput("0", 528, 56 + $span * $i, 41, 21, BitOR($GUI_SS_DEFAULT_INPUT, $ES_NUMBER)) ; Max 2
-		$Customs[$i][7] = GUICtrlCreateButton("CLR", 576, 55 + $span * $i, 30, 23) ; CLR
+		$Customs[$i][7] = GUICtrlCreateButton("Clear", 576, 55 + $span * $i, 30, 23) ; CLR
 
 		GUICtrlSetData($Customs[$i][0], "|Shaking|Grinding|Chopping|Drying|Filtering|Heating|")
 		GUICtrlSetData($Customs[$i][1], $MaterialSring)
@@ -1226,7 +1172,7 @@ Func BuffTest($Buff1Enable, $Buff2Enable)
 		CoSe($CoSeKey1)
 		Sleep(1500)
 	EndIf
-
+	
 	if $Buff2Enable = True Then
 		SetGUIStatus("Consuming buff2")
 		Local $CoSeKey2 = String($BuffKey2)
@@ -1238,8 +1184,8 @@ EndFunc
 Func Buff($Buff1Enable, $Buff2Enable, $BuffCD1, $BuffCD2, $BuffKey1, $BuffKey2)
 	;SetGUIStatus("Buff()")
 	If $Buff1Enable = False And $Buff2Enable = False Then Return False
-
-	If $Buff1Enable = True Then
+	
+	If $Buff1Enable = True Then 
 		Local Static $BuffTimer1 = TimerInit()
 		If $BuffCD1 = 0 Then $BuffTimer1 = 0
 		$BuffCD1 *= 60000
@@ -1254,7 +1200,7 @@ Func Buff($Buff1Enable, $Buff2Enable, $BuffCD1, $BuffCD2, $BuffKey1, $BuffKey2)
 		;SetGUIStatus("Buff1 Cooldown(" & $BuffCD1 / 60000 & "m): " & Round(($BuffCD1 - $TimerDiff1) / 60000, 1) & "m left.")
 		EndIf
 	EndIf
-
+	
 	If $Buff2Enable = True Then
 		Local Static $BuffTimer2 = TimerInit()
 		If $BuffCD2 = 0 Then $BuffTimer2 = 0
@@ -1272,9 +1218,9 @@ Func Buff($Buff1Enable, $Buff2Enable, $BuffCD1, $BuffCD2, $BuffKey1, $BuffKey2)
 			;SetGUIStatus("Buff2 Cooldown(" & $BuffCD2 / 60000 & "m): " & Round(($BuffCD2 - $TimerDiff2) / 60000, 1) & "m left.")
 			Return False
 		EndIf
-
+	
 	EndIf
-
+	
 EndFunc   ;==>Buff
 
 Func VMouse($x, $y, $clicks = 0, $button = "left", $speed = 10)
@@ -1306,7 +1252,4 @@ While 1
 	CheckGUI()
 WEnd
 
-Func CleadLogWindow()
-	$blahvsar=ControlSetText($newtitle,"","Edit57","");
-	_GUICtrlEdit_AppendText($ELog, @HOUR & ":" & @MIN & " > " &  "Log Cleared..." & @CRLF)
-EndFunc
+

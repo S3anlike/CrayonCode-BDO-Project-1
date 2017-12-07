@@ -1,4 +1,4 @@
-Heating|meltedshard_tin|10|10|meltedshard_copper|10|10|
+||0|0||0|0|
 ||0|0||0|0|
 ||0|0||0|0|
 ||0|0||0|0|

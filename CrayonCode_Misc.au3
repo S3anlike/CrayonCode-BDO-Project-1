@@ -17,11 +17,37 @@
 #include "ImageSearch.au3"
 #include "FastFind.au3"
 #include "Support.au3"
-#include "MP_GUI.au3"
 #include <File.au3>
 #include <Array.au3>
 #include <GUIConstantsEx.au3>
 #include <GuiEdit.au3>
+#include <ButtonConstants.au3>
+#include <ComboConstants.au3>
+#include <EditConstants.au3>
+#include <GUIConstantsEx.au3>
+#include <ListViewConstants.au3>
+#include <StaticConstants.au3>
+#include <TabConstants.au3>
+#include <WindowsConstants.au3>
+
+#Region ### START Koda GUI section ### Form=c:\program files (x86)\autoit3\scite\koda\forms\fish2.kxf
+$Form1_1 = GUICreate("CrayonCode Marketplace", 615, 437, 231, 124)
+$Tab1 = GUICtrlCreateTab(0, 0, 614, 400)
+$Tab_StatusLog = GUICtrlCreateTabItem("Status Log")
+GUICtrlSetState(-1,$GUI_SHOW)
+$ELog = GUICtrlCreateEdit("", 8, 32, 593, 361, BitOR($GUI_SS_DEFAULT_EDIT,$ES_READONLY))
+GUICtrlSendMsg(-1, $LVM_SETCOLUMNWIDTH, 0, 100)
+GUICtrlSendMsg(-1, $LVM_SETCOLUMNWIDTH, 1, 100)
+GUICtrlSendMsg(-1, $LVM_SETCOLUMNWIDTH, 2, 100)
+GUICtrlSendMsg(-1, $LVM_SETCOLUMNWIDTH, 3, 100)
+GUICtrlCreateTabItem("")
+$BQuit = GUICtrlCreateButton("Quit "& @CRLF & "[CTRL+F1]", 8, 400, 100, 33, $BS_MULTILINE)
+;$BSave = GUICtrlCreateButton("Save Settings" & @CRLF & "[CTRL+F2]", 108, 400, 100, 33, $BS_MULTILINE)
+$BMarketplace = GUICtrlCreateButton("Start MP" & @CRLF & "[Ctrl+F3]", 108, 400, 100, 33, $BS_MULTILINE)
+$BMilk = GUICtrlCreateButton("Start Milking" & @CRLF & "[Ctrl+F4]", 208, 400, 100, 33, $BS_MULTILINE)
+$BRoll = GUICtrlCreateButton("Start Rolling" & @CRLF & "[Ctrl+F5]", 308, 400, 100, 33, $BS_MULTILINE)
+GUISetState(@SW_SHOW)
+#EndRegion ### END Koda GUI section ###
 
 OnAutoItExitRegister(_ImageSearchShutdown)
 Opt("MouseClickDownDelay", 100)
@@ -33,9 +59,12 @@ Global $Res[4] = [0, 0, @DesktopWidth, @DesktopHeight]
 Global $hTitle = "BLACK DESERT - "
 Global $LNG = "en"
 Global $LogEnable = True
+Global $IsRolling = False
 HotKeySet("^{F1}", "_terminate")
-HotKeySet("{F4}", "RunMarketplace")
-HotKeySet("{F7}", "Milking")
+;HotKeySet("^{F2}", "StoreGUI")
+HotKeySet("^{F3}", "RunMarketplace")
+HotKeySet("^{F4}", "Milking")
+HotKeySet("^{F5}", "Rolling")
 
 ; # GUI
 Func SetGUIStatus($data)
@@ -57,21 +86,21 @@ Func GUILoopSwitch()
 			_terminate()
 		Case $BMarketplace
 			RunMarketplace()
-		Case $BSave
-			StoreGUI()
-		;Case $BMilk
-			;Milking()
+		;Case $BSave
+		;	StoreGUI()
+		Case $BMilk
+			Milking()
+		Case $BRoll
+			Rolling()
 	EndSwitch
 EndFunc   ;==>GUILoopSwitch
 
 Func InitGUI()
-	; LootSettings
 	; ClientSettings
-	Global $ClientSettings = IniReadSection("config/settings.ini", "ClientSettings")
-	GUICtrlSetData($IClientName, $ClientSettings[1][1])
-	GUICtrlSetData($CLang, "|en|de|fr", $ClientSettings[2][1])
-	GUICtrlSetState($CBLogFile, CBT($ClientSettings[3][1]))
-
+	;Global $ClientSettings = IniReadSection("config/settings.ini", "ClientSettings")
+	;GUICtrlSetData($IClientName, $ClientSettings[1][1])
+	;GUICtrlSetData($CLang, "|en|de|fr", $ClientSettings[2][1])
+	;GUICtrlSetState($CBLogFile, CBT($ClientSettings[3][1]))
 EndFunc
 
 Func StoreGUI()
@@ -347,5 +376,27 @@ Func Milking()
 	WEnd
 	SetGUIStatus("Stopped Milking")
 EndFunc   ;==>Milking
+
+Func Rolling()
+	$IsRolling = Not $IsRolling
+
+	If $IsRolling = False Then
+		SetGUIStatus("Stopped Rolling")
+	Else
+		SetGUIStatus("Started rolling")
+	EndIf
+	
+	While $IsRolling = True
+		Sleep(50)
+        CoSe("{q down}")
+        Sleep(100)
+        CoSe("{w down}")
+        Sleep(50)
+        CoSe("{w up}")
+        Sleep(150)
+		CoSe("{q up}")
+	WEnd
+
+EndFunc
 
 Main()
