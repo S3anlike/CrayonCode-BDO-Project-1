@@ -3,6 +3,12 @@
 #AutoIt3Wrapper_Outfile=ico\vlad.Exe
 #AutoIt3Wrapper_Outfile_x64=ico\vlod.Exe
 #AutoIt3Wrapper_UseUpx=y
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Icon=ico\earth.ico
+#AutoIt3Wrapper_Outfile=ico\vlad.Exe
+#AutoIt3Wrapper_Outfile_x64=ico\vlod.Exe
+#AutoIt3Wrapper_UseUpx=y
 #AutoIt3Wrapper_Add_Constants=n
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
@@ -69,10 +75,11 @@ Global $LogFile = ""
 ;Global $LogFileEnable = 1
 Global $LastGUIStatus
 Global $ResOffset[4] = [0, 0, 0, 0]
-Global $Days[7] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+Global $Days[7] = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"]
 Global $Customs[14][8]
 Global $CustomsValues[14][8]
 Global $DefaultBatchSize = 100
+Global $MaxLogCharsInLogwindow = 2000
 Global $MinProcessTime = 20
 Global $WorkerFeedingTime = 30
 Global $Buff1Enable = True, $Buff2Enable = True, $BuffCD1 = 30, $BuffCD2 = 90
@@ -191,7 +198,7 @@ $CB_AlchemyStone = GUICtrlCreateCheckbox("Worker Feed", 470, 62, 120, 18)
 $CB_LogFile = GUICtrlCreateCheckbox("Log File to Disk", 470, 92, 120, 18)
 ;$Label14 = GUICtrlCreateLabel("Will feed every 1h", 176, 288, 146, 17)
 $jumpi=" "
-$Label14 = GUICtrlCreateLabel("Log", 8, 140, 179, 20)
+$Label14 = GUICtrlCreateLabel("Live Logs (Ctrl+F9 to Clear)", 8, 140, 179, 20)
 
 GUICtrlCreateTabItem("")
 $BQuit = GUICtrlCreateButton("Quit" & @CRLF & "(Ctrl+F1)", 8, 404, 80, 41, $BS_MULTILINE)
@@ -487,11 +494,12 @@ Func CoSe($key, $raw = 0)
 EndFunc   ;==>CoSe
 
 Func SetGUIStatus($data)
+	RemLineLogWindow()
 	If $data <> $LastGUIStatus Then
 		ConsoleWrite(@CRLF & @HOUR & ":" & @MIN & "." & @SEC & " " & $data)
 		;If $LogFileEnable = True Then
 		LogData(@HOUR & ":" & @MIN & "." & @SEC & " " & $data)
-		_GUICtrlEdit_AppendText($ELog, "[" & $Days[@WDAY-1] & "]" & @HOUR & ":" & @MIN & " > " &  $data & @CRLF)
+		_GUICtrlEdit_AppendText($ELog, "[" & $Days[@WDAY] & "]" & @HOUR & ":" & @MIN & " > " &  $data & @CRLF)
 		$LastGUIStatus = $data
 	EndIf
 EndFunc   ;==>SetGUIStatus
@@ -559,7 +567,7 @@ Func OCInventory($open = True) ; Adpated (Removed $Fish)
 	Local $timer = TimerInit()
 	While Not $IS And $Processing
 		Sleep(250)
-		$IS = _ImageSearchArea("res/reference_inventory.png", 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $C[0], $C[1], 40, 0)
+		$IS = _ImageSearchArea("res/reference_inventory.png", 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $C[0], $C[1], 50, 0)
 		Sleep(250)
 		If $IS = True Then
 			If $open = True Then
@@ -581,7 +589,7 @@ Func OCInventory($open = True) ; Adpated (Removed $Fish)
 			EndIf
 		EndIf
 		If TimerDiff($timer) / 1000 >= 6 Then
-			SetGUIStatus("OCInventory Timeout")
+			SetGUIStatus("Inventory not detected, maybe restart the bot?")
 			Return False
 		EndIf
 	WEnd
@@ -1305,6 +1313,14 @@ ObfuscateTitle($Form1)
 While 1
 	CheckGUI()
 WEnd
+
+Func RemLineLogWindow()
+	$blahvsar1=ControlGetText($newtitle,"","Edit57");
+	If(StringLen($blahvsar1) > $MaxLogCharsInLogwindow) Then
+	  $restorest=StringTrimLeft($blahvsar1,StringInStr($blahvsar1, @CRLF));
+	  $blahvsar2=ControlSetText($newtitle,"","Edit57",$restorest);
+	EndIf
+EndFunc
 
 Func CleadLogWindow()
 	$blahvsar=ControlSetText($newtitle,"","Edit57","");

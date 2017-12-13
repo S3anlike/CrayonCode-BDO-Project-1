@@ -185,7 +185,7 @@ Func RunMarketplace()
 EndFunc   ;==>RunMarketplace
 
 Func Marketplace()
-	Local Const $PurpleBags = "res/marketplace_purplebags.bmp"
+	Local Const $PurpleBags = "res/marketplace_purplebags.png"
 	Local $RegistrationCountOffset[4] = [70, -9, 110, 5]
 	Local $RefreshOffset[2] = [-440, 480]
 	Local $x, $y, $IS
@@ -194,7 +194,7 @@ Func Marketplace()
 
 	$ResOffset = DetectFullscreenToWindowedOffset($hTitle)
 	
-	$IS = _ImageSearchArea($PurpleBags, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 0, 0)
+	$IS = _ImageSearchArea($PurpleBags, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 20, 0)
 	If $IS = False Then
 		SetGUIStatus("No PurpleBags found. Stopping.")
 		$Marketplace = False
@@ -218,7 +218,7 @@ Func Marketplace()
 				Else
 					$breakout += 1
 					If $breakout > 10 Then
-						$IS = _ImageSearchArea($PurpleBags, 1, $x - 10, $y - 10, $x + 10, $y + 10, $x, $y, 0, 0)
+						$IS = _ImageSearchArea($PurpleBags, 1, $x - 10, $y - 10, $x + 10, $y + 10, $x, $y, 20, 0)
 						If $IS = False Then
 							SetGUIStatus("No PurpleBags found. Stopping.")
 							$Marketplace = False
@@ -250,6 +250,7 @@ Func FastFindBidBuy($x, $y)
 	Local $BuyOffset[3] = [78, 54, 62] ; x, y, height 7
 	Local $ButtonRegion[4] = [$x + $BuyOffset[0] - 15, $y + $BuyOffset[1] - 15, $x + $BuyOffset[0] + 15, $y + $BuyOffset[1] + 15]
 	Local $count
+	Local $IS = _ImageSearchArea("res/mp_buy.png", 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $C[0], $C[1], 50, 0)
 
 	FFSnapShot($ButtonRegion[0], $ButtonRegion[1], $ButtonRegion[2], $ButtonRegion[3] + $BuyOffset[2] * 6, $SSN)
 
@@ -323,7 +324,7 @@ Func Milking()
 	If $Milking = False Then Return False
 
 	Local $x, $y, $IS
-	Local Const $Milk[4] = ["res/milk_right.bmp", "res/milk_left.bmp", "res/milk_startL.bmp", "res/milk_startR.bmp"]
+	Local Const $Milk[4] = ["res/milk_right.png", "res/milk_left.png", "res/milk_startL.png", "res/milk_startR.png"]
 	Local $CowCDIni = 0;Int(IniRead("config/data.ini", "MilkingSettings", "MilkCD", 0))
 	$ResOffset = DetectFullscreenToWindowedOffset($hTitle)
 	Local $statustimer = TimerInit()

@@ -402,7 +402,6 @@ Func WaitForMenu($show = False, $timeout = 5)
 EndFunc   ;==>WaitForMenu
 
 Func OCInventory($open = True)
-;~ 	Local Const $Offset[2] = [-298, 32] ; Offset from reference_inventory to left border of first Inventory Slot.
 	Local Const $Offset[2] = [-298, 30] ; Offset from reference_inventory to left border of first Inventory Slot.
 	Local $IS = False
 	Local $C[2]
@@ -431,7 +430,7 @@ Func OCInventory($open = True)
 			EndIf
 		EndIf
 		If TimerDiff($timer) / 1000 >= 6 Then
-			SetGUIStatus("OCInventory Timeout")
+			SetGUIStatus("Failed to detect inventory, try to restart the bot?")
 			Return False
 		EndIf
 	WEnd
