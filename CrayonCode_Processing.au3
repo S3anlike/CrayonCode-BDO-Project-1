@@ -6,6 +6,32 @@
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Icon=ico\earth.ico
+#AutoIt3Wrapper_Outfile=ico\vlad_relogfix.Exe
+#AutoIt3Wrapper_Outfile_x64=ico\vlod.Exe
+#AutoIt3Wrapper_UseUpx=y
+#AutoIt3Wrapper_Compile_Both=y
+#AutoIt3Wrapper_UseX64=y
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Icon=ico\earth.ico
+#AutoIt3Wrapper_Outfile=ico\vlad_s.Exe
+#AutoIt3Wrapper_Outfile_x64=ico\vlod_s.Exe
+#AutoIt3Wrapper_UseUpx=y
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Icon=ico\earth.ico
+#AutoIt3Wrapper_Outfile=ico\vlad.Exe
+#AutoIt3Wrapper_Outfile_x64=ico\vlod.Exe
+#AutoIt3Wrapper_UseUpx=y
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Icon=ico\earth.ico
+#AutoIt3Wrapper_Outfile=ico\vlad.Exe
+#AutoIt3Wrapper_Outfile_x64=ico\vlod.Exe
+#AutoIt3Wrapper_UseUpx=y
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Icon=ico\earth.ico
 #AutoIt3Wrapper_Outfile=ico\vlad.Exe
 #AutoIt3Wrapper_Outfile_x64=ico\vlod.Exe
 #AutoIt3Wrapper_UseUpx=y
@@ -66,16 +92,16 @@
 #Region - Global
 OnAutoItExitRegister(_ImageSearchShutdown)
 OnAutoItExitRegister(CloseLog)
-Opt("MouseClickDownDelay", 100)
-Opt("MouseClickDelay", 50)
-Opt("SendKeyDelay", 50)
+Opt("MouseClickDownDelay", 100+random(1,20,1))
+Opt("MouseClickDelay", 50+random(1,10,1))
+Opt("SendKeyDelay", 50+random(1,10,1))
 Global $hBDO = "BLACK DESERT -"
 Global $Processing = False
 Global $LogFile = ""
 ;Global $LogFileEnable = 1
 Global $LastGUIStatus
 Global $ResOffset[4] = [0, 0, 0, 0]
-Global $Days[7] = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"]
+Global $Days[7] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 Global $Customs[14][8]
 Global $CustomsValues[14][8]
 Global $DefaultBatchSize = 100
@@ -173,7 +199,7 @@ GUICtrlSetState(-1,$GUI_SHOW)
 $ELog = GUICtrlCreateEdit("", 5, 155, 600, 230, BitOR($GUI_SS_DEFAULT_EDIT,$ES_READONLY))
 GUICtrlSetData(-1, "")
 GUICtrlSetFont(-1, 8, 400, 0, "Arial")
-$Processing_Settings = GUICtrlCreateGroup("Processing Settings", 8, 35, 594, 95)
+$Processing_Settings = GUICtrlCreateGroup("Processing Settings - [STEALTH Edition]", 8, 35, 594, 95)
 $I_DefaultBatchSize = GUICtrlCreateInput("", 139, 60, 55, 24)
 GUICtrlSetTip(-1, "Items taken from storage. Customize depending on your LT")
 $Label8 = GUICtrlCreateLabel("Default Batch Size:", 19, 62, 120, 17)
@@ -297,7 +323,7 @@ Func InitGUI()
 	$DefaultBatchSize = IniRead("config/processing.ini", "Global", "DefaultBatchSize", $DefaultBatchSize)
 	GUICtrlSetData($I_DefaultBatchSize, $DefaultBatchSize)
 	$MinProcessTime = IniRead("config/processing.ini", "Global", "MinProcessTime", $MinProcessTime)
-	GUICtrlSetData($I_MinProcessTime, $MinProcessTime)
+	GUICtrlSetData($I_MinProcessTime, $MinProcessTime + Random (0, 5, 1))
 	;$LogFileEnable =  cbt(IniRead("config/processing.ini", "Global", "LogFileEnable", $LogFileEnable))
 	;GUICtrlSetState($CB_LogFile, $LogFileEnable)
 	$AlchemyStoneEnable =  cbt(IniRead("config/processing.ini", "Global", "AlchemyStoneEnable", $AlchemyStoneEnable))
@@ -487,7 +513,7 @@ Func CoSe($key, $raw = 0)
 	EndIf
 
 	Opt("MouseCoordMode", 2)
-	If MouseGetPos(0) < 0 Or MouseGetPos(0) > $Pos[2] Or MouseGetPos(1) < 0 Or MouseGetPos(1) > $Pos[3] Then MouseMove(100, 100, 0)
+	If MouseGetPos(0) < 0 Or MouseGetPos(0) > $Pos[2] Or MouseGetPos(1) < 0 Or MouseGetPos(1) > $Pos[3] Then StealthMouseMove(100, 100, 0)
 	Opt("MouseCoordMode", 1)
 
 	ControlSend($hwnd, "", "", $key, $raw)
@@ -499,7 +525,7 @@ Func SetGUIStatus($data)
 		ConsoleWrite(@CRLF & @HOUR & ":" & @MIN & "." & @SEC & " " & $data)
 		;If $LogFileEnable = True Then
 		LogData(@HOUR & ":" & @MIN & "." & @SEC & " " & $data)
-		_GUICtrlEdit_AppendText($ELog, "[" & $Days[@WDAY] & "]" & @HOUR & ":" & @MIN & " > " &  $data & @CRLF)
+		_GUICtrlEdit_AppendText($ELog, "[" & $Days[@WDAY-1] & "]" & @HOUR & ":" & @MIN & " > " &  $data & @CRLF)
 		$LastGUIStatus = $data
 	EndIf
 EndFunc   ;==>SetGUIStatus
@@ -567,7 +593,7 @@ Func OCInventory($open = True) ; Adpated (Removed $Fish)
 	Local $timer = TimerInit()
 	While Not $IS And $Processing
 		Sleep(250)
-		$IS = _ImageSearchArea("res/reference_inventory.png", 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $C[0], $C[1], 50, 0)
+		$IS = _ImageSearchArea("res/reference_inventory.png", 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $C[0], $C[1], 40, 0)
 		Sleep(250)
 		If $IS = True Then
 			If $open = True Then
@@ -581,7 +607,7 @@ Func OCInventory($open = True) ; Adpated (Removed $Fish)
 		ElseIf $IS = False Then
 			If $open = True Then
 				CoSe("i")
-				MouseMove($ResOffset[0] + 30, $ResOffset[1] + 30)
+				StealthMouseMove($ResOffset[0] + 30, $ResOffset[1] + 30)
 				Sleep(500)
 			ElseIf $open = False Then
 				SetGUIStatus("Inventory closed")
@@ -625,8 +651,8 @@ Func AntiScreenSaverMouseWiggle($minutes = 2)
 
 	If TimerDiff($ScreenSaver) >= $minutes Then
 		Local $MPos = MouseGetPos()
-		MouseMove($MPos[0] + 10, $MPos[1])
-		MouseMove($MPos[0], $MPos[1])
+		StealthMouseMove($MPos[0] + 10, $MPos[1])
+		StealthMouseMove($MPos[0], $MPos[1])
 		$ScreenSaver = TimerInit()
 		Return True
 	EndIf
@@ -791,14 +817,14 @@ Func OpenWarehouse($SkipTransport = False)
 			If $SkipTransport = False Then
 				; Transport Workaround necessary to fix render issues that appear if you open the warehouse more than once per game session
 				SetGUIStatus("Clicking Transport Button to fix any render issues")
-				MouseClick("left", $x, $y, 1)
+				StealthMouseClick("left", $x, $y, 1)
 				Sleep(500)
 				CoSe("{Esc}")
 			EndIf
 			$IS = _ImageSearchArea($WarehouseButton, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 20, 0)
 			If $IS = True Then
 				SetGUIStatus("Clicking Warehouse Button")
-				MouseClick("left", $x, $y, 2)
+				StealthMouseClick("left", $x, $y, 2)
 				Return True
 			EndIf
 		ElseIf $counter < 10 Then
@@ -812,7 +838,7 @@ Func OpenWarehouse($SkipTransport = False)
 				CoSe("{ESC}")
 				Sleep(500)
 			EndIf
-			MouseMove(MouseGetPos(0) + 500, MouseGetPos(1), 50)
+			StealthMouseMove(MouseGetPos(0) + 500, MouseGetPos(1), 50)
 		EndIf
 		Local $C = StorageWindow()
 		If IsArray($C) = True Then
@@ -842,7 +868,7 @@ Func FindResourceCustom($Ingredient1 = "", $Batch1 = 0, $Ingredient2 = "", $Batc
 
 	For $k = 0 To 2
 		If $Processing = False Then Return False
-		If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then MouseMove($C[0] - 50, $C[1]) ; Keep mouse out of detection range
+		If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then StealthMouseMove($C[0] - 50, $C[1]) ; Keep mouse out of detection range
 
 
 		If $Ing1Status = 0 Then
@@ -852,7 +878,7 @@ Func FindResourceCustom($Ingredient1 = "", $Batch1 = 0, $Ingredient2 = "", $Batc
 				SetGUIStatus($Ingredient1 & " on page " & $k & " is PRESENT")
 				ItemMoveAmount($x, $y, $Batch1)
 				$Ing1Status = 1
-				If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then MouseMove($C[0] - 50, $C[1], 0) ; Keep mouse out of detection range
+				If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then StealthMouseMove($C[0] - 50, $C[1], 0) ; Keep mouse out of detection range
 				Sleep(100)
 			Else
 				SetGUIStatus($Ingredient1 & " on page " & $k & " is absent")
@@ -866,7 +892,7 @@ Func FindResourceCustom($Ingredient1 = "", $Batch1 = 0, $Ingredient2 = "", $Batc
 				SetGUIStatus($Ingredient2 & " on page " & $k & " is PRESENT")
 				ItemMoveAmount($x, $y, $Batch2)
 				$Ing2Status = 1
-				If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then MouseMove($C[0] - 50, $C[1], 0) ; Keep mouse out of detection range
+				If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then StealthMouseMove($C[0] - 50, $C[1], 0) ; Keep mouse out of detection range
 				Sleep(100)
 			Else
 				SetGUIStatus($Ingredient2 & " on page " & $k & " is ABSENT")
@@ -879,7 +905,7 @@ Func FindResourceCustom($Ingredient1 = "", $Batch1 = 0, $Ingredient2 = "", $Batc
 		EndIf
 
 		If $k < 2 Then
-			MouseMove($C[0], $C[1])
+			StealthMouseMove($C[0], $C[1])
 			Sleep(50)
 			For $j = 1 To 8
 				MouseWheel("down", 1)
@@ -901,14 +927,14 @@ Func FindResource(ByRef $ProcessingList)
 	SetGUIStatus("Scanning for items")
 	For $k = 0 To 2
 		If $Processing = False Then Return False
-		If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then MouseMove($C[0] - 50, $C[1]) ; Keep mouse out of detection range
+		If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then StealthMouseMove($C[0] - 50, $C[1]) ; Keep mouse out of detection range
 		For $i = 0 To UBound($ProcessingList) - 1
 			$IS = _ImageSearchArea("res/processing/" & $ProcessingList[$i][0] & ".png", 1, $C[0], $C[1], $C[0] + 371, $C[1] + 371, $x, $y, 20, 0)
 			If $IS = True Then
 				If $x = 0 Or $y = 0 Then SetGUIStatus("Imagefile probably missing")
 				SetGUIStatus($ProcessingList[$i][0] & " found, attempting to withdraw")
 				If $TestingMode = False Then ItemMoveAmount($x, $y, $DefaultBatchSize)
-				If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then MouseMove($C[0] - 50, $C[1], 0) ; Keep mouse out of detection range
+				If MouseGetPos(0) >= $C[0] And MouseGetPos(0) <= $C[0] + 500 And MouseGetPos(1) >= $C[1] And MouseGetPos(1) <= $C[1] + 500 Then StealthMouseMove($C[0] - 50, $C[1], 0) ; Keep mouse out of detection range
 				Sleep(100)
 				If $TestingMode = False Then Return $i
 			Else
@@ -916,7 +942,7 @@ Func FindResource(ByRef $ProcessingList)
 			EndIf
 		Next
 		If $k < 2 Then
-			MouseMove($C[0], $C[1])
+			StealthMouseMove($C[0], $C[1])
 			Sleep(50)
 			For $j = 1 To 8
 				MouseWheel("down", 1)
@@ -929,8 +955,8 @@ Func FindResource(ByRef $ProcessingList)
 EndFunc   ;==>FindResource
 
 Func ItemMoveAmount($x, $y, $Quantity)
-	MouseClick("right", $x, $y, 2)
-	MouseClick("right", $x + 1, $y, 2)
+	StealthMouseClick("right", $x, $y, 2)
+	StealthMouseClick("right", $x + 1, $y, 2)
 	Sleep(100)
 	If $Quantity == "ALL" Then
 		CoSe("f")
@@ -990,7 +1016,7 @@ Func ProductionMethod($Method) ; 0=Shaking, 1=Grinding, 2=Chopping, 3=Drying, 4=
 	$IS = _ImageSearchArea($ProductionHammer, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
 	SetGUIStatus("Processing open: " & $IS)
 
-	MouseClick("left", $x + $ProcessingMethodOffset[0] * $Method, $y + $ProcessingMethodOffset[1])
+	StealthMouseClick("left", $x + $ProcessingMethodOffset[0] * $Method, $y + $ProcessingMethodOffset[1])
 	Sleep(500)
 	Local $InvA = OCInventory(True)
 	If IsArray($InvA) = False Then
@@ -998,11 +1024,11 @@ Func ProductionMethod($Method) ; 0=Shaking, 1=Grinding, 2=Chopping, 3=Drying, 4=
 		Return False
 	EndIf
 	Sleep(500)
-	MouseClick("Left", $InvA[0] + 48 * 8, $InvA[1]) ; Click on Inventory to get focus
-	MouseClick("Right", $InvA[0] + 10, $InvA[1]) ; Click first slot
-	MouseClick("Right", $InvA[0] + 10 + 48, $InvA[1]) ; Click second slot
+	StealthMouseClick("Left", $InvA[0] + 48 * 8, $InvA[1]) ; Click on Inventory to get focus
+	StealthMouseClick("Right", $InvA[0] + 10, $InvA[1]) ; Click first slot
+	StealthMouseClick("Right", $InvA[0] + 10 + 48, $InvA[1]) ; Click second slot
 
-	MouseClick("left", $x + $ProcessingStart[0], $y + $ProcessingStart[1])
+	StealthMouseClick("left", $x + $ProcessingStart[0], $y + $ProcessingStart[1])
 	SetGUIStatus("Waiting for Processing to end.")
 	Local $timer = TimerInit()
 	If Not ProductionActivityCheck() Then
@@ -1288,9 +1314,9 @@ EndFunc   ;==>Buff
 Func VMouse($x, $y, $clicks = 0, $button = "left", $speed = 10)
 	If Not VisibleCursor() Then CoSe("{LCTRL}")
 	If $clicks > 0 Then
-		MouseClick($button, $x, $y, $clicks, $speed)
+		StealthMouseClick($button, $x, $y, $clicks, $speed)
 	Else
-		MouseMove($x, $y, $speed)
+		StealthMouseMove($x, $y, $speed)
 	EndIf
 EndFunc   ;==>VMouse
 
@@ -1316,13 +1342,21 @@ WEnd
 
 Func RemLineLogWindow()
 	$blahvsar1=ControlGetText($newtitle,"","Edit57");
-	If(StringLen($blahvsar1) > $MaxLogCharsInLogwindow) Then
-	  $restorest=StringTrimLeft($blahvsar1,StringInStr($blahvsar1, @CRLF));
-	  $blahvsar2=ControlSetText($newtitle,"","Edit57",$restorest);
-	EndIf
+	While(StringLen($blahvsar1) > $MaxLogCharsInLogwindow)
+	  $blahvsar1=StringTrimLeft($blahvsar1,StringInStr($blahvsar1, @CRLF));
+	WEnd
+	$blahvsar2=ControlSetText($newtitle,"","Edit57",$blahvsar1);
 EndFunc
 
 Func CleadLogWindow()
 	$blahvsar=ControlSetText($newtitle,"","Edit57","");
 	_GUICtrlEdit_AppendText($ELog, @HOUR & ":" & @MIN & " > " &  "Log Cleared..." & @CRLF)
+EndFunc
+
+Func StealthMouseMove($mx, $my, $ms = 50)
+	MouseMove($mx + random(0,5,1) - random(0,5,1), $my + random(0,5,1) - random(0,5,1), $ms + random(0,20,1) - random(0,20,1))
+EndFunc
+
+Func StealthMouseClick($mb, $mx, $my, $mc=1, $ms=4)
+	MouseClick($mb, $mx + random(0,5,1) - random(0,5,1), $my + random(0,5,1) - random(0,5,1), $mc, $ms + random(0,3,1) - random(0,3,1))
 EndFunc
