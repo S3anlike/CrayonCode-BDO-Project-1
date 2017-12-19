@@ -185,7 +185,7 @@ Func RunMarketplace()
 EndFunc   ;==>RunMarketplace
 
 Func Marketplace()
-	Local Const $PurpleBags = "res/marketplace_purplebags.png"
+	Local Const $PurpleBags = "res/purplebags.png"
 	Local $RegistrationCountOffset[4] = [70, -9, 110, 5]
 	Local $RefreshOffset[2] = [-440, 480]
 	Local $x, $y, $IS
@@ -194,10 +194,13 @@ Func Marketplace()
 
 	$ResOffset = DetectFullscreenToWindowedOffset($hTitle)
 	
-	$IS = _ImageSearchArea($PurpleBags, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 20, 0)
+	$IS = _ImageSearchArea($PurpleBags, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
 	If $IS = False Then
-		SetGUIStatus("No PurpleBags found. Stopping.")
+		SetGUIStatus("Couldn't find MP anchor, are you on the right interface? Maybe restart the bot.")
 		$Marketplace = False
+	Else
+		SetGUIStatus("PurpleBags anchor found with location " & $x & ", " & $y)
+		MouseMove($x, $y)
 	EndIf
 		
 	Local $count = 0, $breakout = 0
@@ -249,49 +252,26 @@ Func FastFindBidBuy($x, $y)
 	Local $Bid[3] = [4, 12, 21]
 	Local $BuyOffset[3] = [78, 54, 62] ; x, y, height 7
 	Local $ButtonRegion[4] = [$x + $BuyOffset[0] - 15, $y + $BuyOffset[1] - 15, $x + $BuyOffset[0] + 15, $y + $BuyOffset[1] + 15]
-	Local $count
-	Local $IS = _ImageSearchArea("res/mp_buy.png", 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $C[0], $C[1], 50, 0)
-
+	Local $MPImages[5] = ["res/mp_buy.png", "res/mp_max.png", "res/mp_purchase.png", "res/mp_bid.png", "mp_bidresult.png"]
+	Local $count = 0
+	Local $b, $n, $IS
+	$ResOffset = DetectFullscreenToWindowedOffset($hTitle)
+	
+	;SetGUIStatus("Setting search area for snapshot")
+	;MouseMove($x + $BuyOffset[0] - 15, $y + $BuyOffset[1] - 15)
+	;Sleep(500)
+	;MouseMove($x + $BuyOffset[0] + 15, $y + $BuyOffset[1] + 15)
+	;Sleep(500)
+	
 	FFSnapShot($ButtonRegion[0], $ButtonRegion[1], $ButtonRegion[2], $ButtonRegion[3] + $BuyOffset[2] * 6, $SSN)
-
-	For $i = 0 To 6
-		$count = 0
-		For $yBid = $Bid[1] To $Bid[2]
-			$FF = FFGetPixel($ButtonRegion[0] + $Bid[0], $ButtonRegion[1] + $yBid + $BuyOffset[2] * $i, $SSN)
-			If $FF = $Valid[0] Or $FF = $Valid[1] Then
-				$count += 1
-			EndIf
-		Next
-		If $count > 9 Then
-			SetGUIStatus("Bid " & $i)
-			MouseClick("left", $x + $BuyOffset[0], $y + $BuyOffset[1] + $i * $BuyOffset[2], 2, 0)
-			CoSe("{SPACE}")
-		EndIf
-	Next
-
-
-	For $i = 0 To 6
-		$count = 0
-		For $yBuy = $Buy[1] To $Buy[2]
-			$FF = FFGetPixel($ButtonRegion[0] + $Buy[0], $ButtonRegion[1] + $yBuy + $BuyOffset[2] * $i, $SSN)
-			If $FF = $Valid[0] Or $FF = $Valid[1] Then
-				$count += 1
-			EndIf
-		Next
-		If $count > 9 Then
-			SetGUIStatus("Buy " & $i)
-			Return ($i)
-		EndIf
-		$count = 0
-		For $yBidR = $BidR[1] To $BidR[2]
-			$FF = FFGetPixel($ButtonRegion[0] + $BidR[0], $ButtonRegion[1] + $yBidR + $BuyOffset[2] * $i, $SSN)
-			If $FF = $Valid[0] Or $FF = $Valid[1] Then
-				$count += 1
-			EndIf
-		Next
-		If $count > 9 Then
-			SetGUIStatus("BidR " & $i)
-			Return ($i)
+	
+	For $count = 0 To 4
+		$IS = _ImageSearchArea($MPImages[$count], 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $b, $n, 50, 0)
+		If $IS = True Then
+			SetGUIStatus($MPImages[$count] & " found, clicking")
+			MouseClick("left", $b, $n, 2, 0)
+		Else
+			SetGUIStatus($MPImages[$count] & " not found, moving on to next image")
 		EndIf
 	Next
 	Return -1
