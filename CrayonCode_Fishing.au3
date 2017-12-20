@@ -402,7 +402,7 @@ Func WaitForMenu($show = False, $timeout = 5)
 EndFunc   ;==>WaitForMenu
 
 Func OCInventory($open = True)
-	Local Const $Offset[2] = [-298, 30] ; Offset from reference_inventory to left border of first Inventory Slot.
+	Local Const $Offset[2] = [-298, 35] ; Offset from reference_inventory to left border of first Inventory Slot.
 	Local $IS = False
 	Local $C[2]
 	Local $timer = TimerInit()
