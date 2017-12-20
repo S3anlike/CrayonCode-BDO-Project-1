@@ -275,11 +275,11 @@ Func FFSnapShot(const $Left=0, const $Top=0, const $Right=0, const $Bottom=0, co
 	$FFDefaultSnapShot = $NoSnapShot ; On mémorise le no du SnapShot utilisé, cela restera le SnapShop par défaut pour les prochains appels
 	local $Res = DllCall($FFDllHandle, "int", "SnapShot", "int", $Left, "int", $Top, "int", $Right, "int", $Bottom, "int", $NoSnapShot)
 	If ( ((Not IsArray($Res)) AND ($Res=0)) OR $Res[0]=0) Then
-		MsgBox(0, "FFSnapShot", "SnapShot ("&$Left&","&$Top&","&$Right&","&$Bottom&","&$NoSnapShot&","&Hex($WindowHandle,8)&") failed ")
+		;MsgBox(0, "FFSnapShot", "SnapShot ("&$Left&","&$Top&","&$Right&","&$Bottom&","&$NoSnapShot&","&Hex($WindowHandle,8)&") failed ")
 		if (IsArray($Res)) Then
-			MsgBox(0, "FFSnapShot Error", "IsArray($Res):"&IsArray($Res)&" - Ubound($Res):"&UBound($Res)&" - $Res[0]:"&$Res[0])
+			;MsgBox(0, "FFSnapShot Error", "IsArray($Res):"&IsArray($Res)&" - Ubound($Res):"&UBound($Res)&" - $Res[0]:"&$Res[0])
 		else
-			MsgBox(0, "FFSnapShot Error", "IsArray($Res):"&IsArray($Res)&" - $Res:"&$Res)
+			;MsgBox(0, "FFSnapShot Error", "IsArray($Res):"&IsArray($Res)&" - $Res:"&$Res)
 		EndIf
 		$FFLastSnapStatus[$NoSnapShot] = -1
 		SetError(2)

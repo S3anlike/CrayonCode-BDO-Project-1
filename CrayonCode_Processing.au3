@@ -737,6 +737,14 @@ Func ProcessCustom()
 	WEnd
 	SetGUIStatus("ProcessCustom finished")
 	$Processing = False
+	CoSe("{ESC}")
+	CoSe("{ESC}")
+	SetGUIStatus("Processing task finished, will continue to feed workers.")
+	WorkerFeed()
+	While $Processing = False
+		AlchemyStone()
+		Sleep(60000)
+	WEnd
 EndFunc   ;==>ProcessCustom
 
 Func BuffTestrun()
@@ -793,8 +801,15 @@ Func ProcessSimple()
 		Else
 			SetGUIStatus("No Item in ProcessingQueue found. Stopping.")
 			$Processing = False
+			CoSe("{ESC}")
+			CoSe("{ESC}")
 			;=================trash fix pause after craft for continous feed
-			PauseToggle()
+			SetGUIStatus("Processing task finished, will continue to feed workers.")
+			WorkerFeed()
+			While $Processing = False
+				AlchemyStone()
+				Sleep(60000)
+			WEnd
 			;=================
 			ExitLoop
 		EndIf
@@ -1185,6 +1200,7 @@ Func AlchemyStone()
 		Return False
 	Else
 		$AlchemyStoneTimerDiff = TimerDiff($AlchemyStoneTimer)
+		SetGUIStatus(StringFormat("Feeding Worker when timer hits 30 min.[%.1fm]", $AlchemyStoneTimerDiff / 60000))
 		If $AlchemyStoneTimerDiff >= $AlchemyStoneCooldown Then
 			WorkerFeed()
 			SetGUIStatus("Feeding workers")
