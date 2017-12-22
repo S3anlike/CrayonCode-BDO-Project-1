@@ -88,6 +88,47 @@
 #include <Array.au3>
 #include <GuiEdit.au3>
 
+#Region - Autoupdate
+Global $VersionsInfo = "https://raw.githubusercontent.com/davidgao93/CrayonCode-BDO-Project/master/version.ini"
+Global $oldVersion = IniRead("updater.ini","Version","PVersion","NotFound")
+Global $newVersion = "0.0"
+
+$Ini = InetGet($VersionsInfo,@ScriptDir & "\version.ini") ;download version.ini
+
+If $Ini = 0 Then ;was the download of version.ini successful?
+    MsgBox(0,"ERROR","Unable to fetch from Github - maybe it's down?")
+Else
+    $newVersion = IniRead (@ScriptDir & "\version.ini","Version","PVersion","") ;reads the new version out of version.ini
+    If $NewVersion = $oldVersion Then ;compare old and new
+        MsgBox (0,"Autoupdate", "You're running version " & $NewVersion)
+    Else
+        $msg = MsgBox (4,"Autoupdate","Update available, revision: " & $newVersion & ". You are currently on revision: " & $oldVersion & ". Do you want to update?")
+        If $msg = 7 Then ;No was pressed
+            FileDelete(@ScriptDir & "\version.ini")
+            Exit
+        ElseIf $msg = 6 Then ;OK was pressed
+            $downloadLink = IniRead(@ScriptDir & "\version.ini","Version","Pdownload","NotFound")
+            $dlhandle = InetGet($downloadLink,@ScriptDir & "\CrayonCode_Processing" & $newVersion & ".au3",1,1)
+            ProgressOn("", "", "",-1,-1,16) ;creates an progressbar
+            $Size = InetGetSize($downloadLink,1) ;get the size of the update
+            While Not InetGetInfo($dlhandle, 2)
+                $Percent = (InetGetInfo($dlhandle,0)/$Size)*100
+                ProgressSet( $Percent, $Percent & " percent");update progressbar
+                Sleep(1)
+            WEnd
+            ProgressSet(100 , "Done", "Complete");show complete progressbar
+            sleep(500)
+            ProgressOff() ;close progress window
+            IniWrite("updater.ini","Version","PVersion",$NewVersion) ;updates update.ini with the new version
+            InetClose($dlhandle)
+            MsgBox(-1,"Success","Update complete, please run the new version of the application with the new version number. Please see the releases page for changelog.")
+			FileDelete(@ScriptDir & "\version.ini")
+			_terminate()
+            EndIf
+    EndIf
+EndIf
+FileDelete(@ScriptDir & "\version.ini")
+#EndRegion - Autoupdate
 
 #Region - Global
 OnAutoItExitRegister(_ImageSearchShutdown)
