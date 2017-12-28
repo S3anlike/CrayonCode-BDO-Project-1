@@ -64,12 +64,12 @@ Else
             IniWrite("updater.ini","Version","FVersion",$NewVersion) ;updates update.ini with the new version
             InetClose($dlhandle)
             MsgBox(-1,"Success","Update complete, please run the new version of the application with the new version number. Please see the releases page for changelog.")
-			FileDelete(@ScriptDir & "\version.ini")
+			;FileDelete(@ScriptDir & "\version.ini")
 			_terminate()
             EndIf
     EndIf
 EndIf
-FileDelete(@ScriptDir & "\version.ini")
+;FileDelete(@ScriptDir & "\version.ini")
 #EndRegion - Autoupdate
 
 
