@@ -31,7 +31,7 @@ Opt("SendKeyDelay", 50)
 
 #Region - Autoupdate
 
-Global $VersionsInfo = "https://raw.githubusercontent.com/davidgao93/CrayonCode-BDO-Project/master/version.ini"
+Global $VersionsInfo = "https://raw.githubusercontent.com/davidgao93/CrayonCode-BDO-Project/master/config/version.ini"
 Global $ChangelogLink = "https://raw.githubusercontent.com/davidgao93/CrayonCode-BDO-Project/master/config/changelog.txt"
 Global $oldVersion = IniRead("config\updater.ini","Version","FVersion","NotFound")
 Global $newVersion = "0.0"
