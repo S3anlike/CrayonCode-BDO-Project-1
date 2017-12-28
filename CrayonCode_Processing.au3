@@ -115,7 +115,7 @@ Else
             Exit
         ElseIf $msg = 6 Then ;OK was pressed
             $downloadLink = IniRead(@ScriptDir & "\config\version.ini","Version","Pdownload","NotFound")
-            $dlhandle = InetGet($downloadLink,@ScriptDir & "\CrayonCode_Fishing" & $newVersion & ".au3",1,1)
+            $dlhandle = InetGet($downloadLink,@ScriptDir & "\CrayonCode_Processing" & $newVersion & ".au3",1,1)
             ProgressOn("", "", "",-1,-1,16) ;creates an progressbar
             $Size = InetGetSize($downloadLink,1) ;get the size of the update
             While Not InetGetInfo($dlhandle, 2)
