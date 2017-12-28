@@ -1,6 +1,0 @@
-Revision 11:
-
-* Initial Telegram support (BETA) use the CrayonCode_Fishing_Telegram_BETA.au3 script to set it up.
-* It will notify you of the fishing task, follow the included pdf guide to learn how to get your own token.
-* If you delete settings.ini the fishing bot will successfully recreate the settings.ini with default settings.
-* Cloned fork
