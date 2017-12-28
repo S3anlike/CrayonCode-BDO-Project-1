@@ -1,4 +1,4 @@
-# CrayonCode-BDO-Project Rev. 16 (12/7/2017) Mystic Update
+# CrayonCode-BDO-Project Rev. 22 (12/27/2017) Holiday Update
 
 ## FOR FISHING ENTHUSIASTS:
 
@@ -42,6 +42,6 @@ Requirements:
 * For Milking, toggle the milking function, start milking a cow and the mini-game will complete as needed.
 * For rolling with trade goods, simply use the hotkey to toggle it off and on.
 
-Known issues:
+## CrayonCode-Wiki
 
-* Marketplace bidding is currently broken, please use another bot for a possible solution.
+* Visit the CC-Wiki for tutorials on how to make money with CrayonCode in BDO! Feel free to contribute and expand the wiki.

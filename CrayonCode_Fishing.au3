@@ -583,7 +583,10 @@ Func DetectDisconnect()
 	Local $x, $y, $IS
 	SetGUIStatus("Scanning for launch screen")
 	$IS = _ImageSearchArea("res/launch_start.png", 0, $Res[0], $Res[1], $Res[2], $Res[3], $x, $y, 40, 0)
-	If $IS = True Then Return True
+	If $IS = True Then 
+		SetGUIStatus("Launch screen detected.")
+		Return True
+	EndIf
 	Return False
 EndFunc
 
@@ -1571,14 +1574,18 @@ Func Main_Fishing()
 				If $Breaktimer = 0 Then
 					$Breaktimer = TimerInit()
 					SetGUIStatus("Unidentified state, did we disconnect? Checking...")
-					DetectDisconnect()
+					If DetectDisconnect() = True Then
+						TelegramMessage("Start screen detected! Killing BDO process.")
+						KillBDO()
+						_terminate()
+					EndIf
 				ElseIf TimerDiff($Breaktimer) / 1000 > 10 Then
 					SetGUIStatus("Disconnect not detected, trying to resolve unidentified state")
 					If WaitForMenu(False) = True Then
 						SetGUIStatus("Escape to Menu possible, trying to reset fishing process")
 					Else
 						SetGUIStatus("Escape to Menu failed or image detection not working, killing process.")
-						KillBDO()
+
 					EndIf
 
 					If IsProcessConnected("BlackDesert64.exe") = 1 Then
