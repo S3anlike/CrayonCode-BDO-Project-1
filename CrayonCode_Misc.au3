@@ -265,7 +265,7 @@ Func Marketplace()
 					If $breakout > 10 Then
 						$IS = _ImageSearchArea($PurpleBags, 1, $x - 10, $y - 10, $x + 10, $y + 10, $x, $y, 20, 0)
 						If $IS = False Then
-							SetGUIStatus("No PurpleBags found. Stopping.")
+							SetGUIStatus("Marketplace anchor not found. Stopping.")
 							$Marketplace = False
 						Else
 							$breakout = 0
@@ -305,16 +305,19 @@ Func FastFindBidBuy($x, $y)
 	;MouseMove($x + $BuyOffset[0] + 15, $y + $BuyOffset[1] + 15)
 	;Sleep(500)
 	
-	FFSnapShot($ButtonRegion[0], $ButtonRegion[1], $ButtonRegion[2], $ButtonRegion[3] + $BuyOffset[2] * 6, $SSN)
+	;FFSnapShot($ButtonRegion[0], $ButtonRegion[1], $ButtonRegion[2], $ButtonRegion[3] + $BuyOffset[2] * 6, $SSN)
 	
 	For $count = 0 To 4
 		$IS = _ImageSearchArea($MPImages[$count], 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $b, $n, 50, 0)
-		If $IS = True Then
-			SetGUIStatus($MPImages[$count] & " found, clicking")
-			MouseClick("left", $b, $n, 2, 0)
-		Else
-			SetGUIStatus($MPImages[$count] & " not found, moving on to next image")
-		EndIf
+		While $IS = True
+			If $IS = True Then
+				SetGUIStatus($MPImages[$count] & " found, clicking")
+				MouseClick("left", $b, $n, 2, 0)
+				Sleep(200)
+				CoSe{"SPACE"}
+			EndIf
+		$IS = _ImageSearchArea($MPImages[$count], 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $b, $n, 50, 0)
+		WEnd
 	Next
 	Return -1
 EndFunc   ;==>FastFindBidBuy

@@ -91,9 +91,6 @@ Global $msgData[5] = ['', '', '', '', '']
 Global $TelegramEnable = False
 Global $WarningCounter = 0
 
-
-
-
 Global $aListView1[10]
 For $i = 1 to 9
 	$aListView1[$i] = GUICtrlCreateListViewItem("", $ListView1)
@@ -581,6 +578,14 @@ Func DetectState($FishingState)
 	If $IS = True Then Return True
 	Return False
 EndFunc   ;==>DetectState
+
+Func DetectDisconnect()
+	Local $x, $y, $IS
+	SetGUIStatus("Scanning for launch screen")
+	$IS = _ImageSearchArea("res/launch_start.png", 0, $Res[0], $Res[1], $Res[2], $Res[3], $x, $y, 40, 0)
+	If $IS = True Then Return True
+	Return False
+EndFunc
 
 Func GetState()
 	Local Const $FishingStandby = "res/fishing/standby_" & $LNG & ".png"
@@ -1071,7 +1076,7 @@ EndFunc   ;==>CheckWeather
 
 Func SelectProductionMethod($Method) ; 0=Shaking, 1=Grinding, 2=Chopping, 3=Drying, 4=Filtering, 5=Heating
 	Local $x, $y, $IS
-	Local $ProductionHammer = "res/processing_hammer.png"
+	Local $ProductionHammer = "res/processing_hammer_uno.png"
 	Local $ProcessingMethodOffset[2] = [62, -62]
 
 	; If $Method is a string translate it to int
@@ -1565,14 +1570,15 @@ Func Main_Fishing()
 			Case Else ; If no state is detected
 				If $Breaktimer = 0 Then
 					$Breaktimer = TimerInit()
-					; SetGUIStatus("Unidentified state")
+					SetGUIStatus("Unidentified state, did we disconnect? Checking...")
+					DetectDisconnect()
 				ElseIf TimerDiff($Breaktimer) / 1000 > 10 Then
-					SetGUIStatus("Trying to resolve unidentified state")
+					SetGUIStatus("Disconnect not detected, trying to resolve unidentified state")
 					If WaitForMenu(False) = True Then
-						SetGUIStatus("Escape to Menu possible.")
+						SetGUIStatus("Escape to Menu possible, trying to reset fishing process")
 					Else
-						SetGUIStatus("Escape to Menu failed")
-						; TODO
+						SetGUIStatus("Escape to Menu failed or image detection not working, killing process.")
+						KillBDO()
 					EndIf
 
 					If IsProcessConnected("BlackDesert64.exe") = 1 Then
