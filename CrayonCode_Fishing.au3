@@ -43,9 +43,6 @@ If $Changelog = 0 Then
 	MsgBox(0, "ERROR", "Unable to fetch changelog from Github, are you connected to the network? Attempting to check for version...")
 EndIf
 
-$File1 =  (@ScriptDir & "\config\changelog.txt")
-MsgBox(-1, "Autoupdate", FileRead($File1, FileGetSize($File1)))
-
 If $Ini = 0 Then ;was the download of version.ini successful?
     MsgBox(0,"ERROR","Unable to fetch from Github - maybe it's down?")
 Else
@@ -72,7 +69,8 @@ Else
             ProgressOff() ;close progress window
             IniWrite("config\updater.ini","Version","FVersion",$NewVersion) ;updates update.ini with the new version
             InetClose($dlhandle)
-            MsgBox(4, "Autoupdate", FileRead($Changelog, FileGetSize($Changelog)))
+            $File1 =  (@ScriptDir & "\config\changelog.txt")
+			MsgBox(-1, "Autoupdate", FileRead($File1, FileGetSize($File1)))
 			;FileDelete(@ScriptDir & "\version.ini")
 			_terminate()
             EndIf
