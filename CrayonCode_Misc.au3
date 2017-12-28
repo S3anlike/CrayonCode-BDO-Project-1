@@ -314,7 +314,7 @@ Func FastFindBidBuy($x, $y)
 				SetGUIStatus($MPImages[$count] & " found, clicking")
 				MouseClick("left", $b, $n, 2, 0)
 				Sleep(200)
-				CoSe{"SPACE"}
+				CoSe("{SPACE}")
 			EndIf
 		$IS = _ImageSearchArea($MPImages[$count], 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $b, $n, 50, 0)
 		WEnd
