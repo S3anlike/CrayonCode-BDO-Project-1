@@ -1,6 +1,5 @@
-Revision 11:
+Revision 23:
 
-* Initial Telegram support (BETA) use the CrayonCode_Fishing_Telegram_BETA.au3 script to set it up.
-* It will notify you of the fishing task, follow the included pdf guide to learn how to get your own token.
-* If you delete settings.ini the fishing bot will successfully recreate the settings.ini with default settings.
-* Cloned fork
+* Autoupdate support, need a full redownload though
+* More failsafe checks for fishing process
+* Autoclose BDO process + Shutdown computer (if option enabled) when disconnect screen detected

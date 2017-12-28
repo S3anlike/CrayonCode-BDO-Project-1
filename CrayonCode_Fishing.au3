@@ -1591,8 +1591,12 @@ Func Main_Fishing()
 					If WaitForMenu(False) = True Then
 						SetGUIStatus("Escape to Menu possible, trying to reset fishing process")
 					Else
-						SetGUIStatus("Escape to Menu failed or image detection not working, killing process.")
-
+						SetGUIStatus("Escape to Menu failed or image detection not working, trying to spam ESC a bunch of times")
+						CoSe("{ESC}")
+						CoSe("{ESC}")
+						CoSe("{ESC}")
+						CoSe("{ESC}")
+						CoSe("{ESC}")
 					EndIf
 
 					If IsProcessConnected("BlackDesert64.exe") = 1 Then
