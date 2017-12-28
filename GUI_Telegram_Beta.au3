@@ -59,6 +59,7 @@ If FileExists("config/settings.ini") = False Then
 	$ClientSettings &= "Slots_Reserved=10" & @LF
 	$ClientSettings &= "Telegram_Token=Copy/paste your unique Telegram token in here." & @LF
 	$ClientSettings &= "ChatID=-1" & @LF
+	$ClientSettings &= "Shutdown=0" & @LF
 	IniWriteSection("config/settings.ini", "ClientSettings", $ClientSettings)
 	
 	Local $LangSettings = ""
@@ -216,7 +217,8 @@ GUICtrlSetTip(-1, _MultiLang_GetText("rarity_tip"))
 $CBLogFile = GUICtrlCreateCheckbox(_MultiLang_GetText("log"), 160, 118, 137, 17)
 $CBLootCapture = GUICtrlCreateCheckbox(_MultiLang_GetText("screencap"), 160, 138, 209, 17)
 $CBReserve = GUICtrlCreateCheckbox(_MultiLang_GetText("relic_reserve"), 160, 158, 300, 17)
-$ISlotsReserved = GUICtrlCreateInput("8", 470, 174, 41, 21, BitOR($GUI_SS_DEFAULT_INPUT,$ES_NUMBER))
+$CBShutdown = GUICtrlCreateCheckbox("Shutdown computer on disconnect", 160, 178, 300, 17)
+$ISlotsReserved = GUICtrlCreateInput("8", 470, 158, 41, 21, BitOR($GUI_SS_DEFAULT_INPUT,$ES_NUMBER))
 GUICtrlSetLimit(-1, 3)
 GUICtrlCreateGroup("", -99, -99, 1, 1)
 $Drying_Settings = GUICtrlCreateGroup(_MultiLang_GetText("dry"), 8, 304, 337, 89)

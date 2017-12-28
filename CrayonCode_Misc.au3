@@ -194,7 +194,7 @@ Func DetectFullscreenToWindowedOffset($hTitle) ; Returns $Offset[4] left, top, r
 	EndIf
 
 	If $Client[2] = @DesktopWidth And $Client[3] = @DesktopHeight Then
-		SetGUIStatus("Fullscreen detected (" & $Client[2] & "x" & $Client[3] & ") - No Offsets")
+		;SetGUIStatus("Fullscreen detected (" & $Client[2] & "x" & $Client[3] & ") - No Offsets")
 		Return ($Client)
 	EndIf
 
@@ -217,7 +217,7 @@ Func DetectFullscreenToWindowedOffset($hTitle) ; Returns $Offset[4] left, top, r
 	$Offset[2] = $Client[0] + $Client[2]
 	$Offset[3] = $Client[1] + $Client[3]
 	For $i = 0 To 3
-		SetGUIStatus("ScreenOffset(" & $i & "): " & $Offset[$i])
+		;SetGUIStatus("ScreenOffset(" & $i & "): " & $Offset[$i])
 	Next
 
 	Return ($Offset)
@@ -241,7 +241,9 @@ Func Marketplace()
 	Local $x, $y, $IS
 	Local $Diff[4]
 	Local $timer
-
+	Local $MPImages[6] = ["res/mp_buy.png", "res/mp_max.png", "res/mp_purchase.png", "res/mp_bid.png", "res/mp_bidresult.png", "res/mp_directbuy.png"]
+	Local $count = 0, $breakout = 0
+	Local $b, $n, $IS2
 	$ResOffset = DetectFullscreenToWindowedOffset($hTitle)
 	
 	$IS = _ImageSearchArea($PurpleBags, 1, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $x, $y, 50, 0)
@@ -249,104 +251,71 @@ Func Marketplace()
 		SetGUIStatus("Couldn't find MP anchor, are you on the right interface? Maybe restart the bot.")
 		$Marketplace = False
 	Else
-		SetGUIStatus("PurpleBags anchor found with location " & $x & ", " & $y)
-		MouseMove($x, $y)
+		SetGUIStatus("MP anchor found with location " & $x & ", " & $y)
+		;MouseMove($x, $y)
 	EndIf
-		
-	Local $count = 0, $breakout = 0
-	While $Marketplace
-		SetGUIStatus("Waiting for Registration Count change")
-		$number = FastFindBidBuy($x, $y)
-		If $number >= 0 Then BuyItem($x, $y, $number)
 
-		$Diff[$count] = PixelChecksum($x + $RegistrationCountOffset[0], $y + $RegistrationCountOffset[1], $x + $RegistrationCountOffset[2], $y + $RegistrationCountOffset[3])
-		For $i = 0 To UBound($Diff) - 1
-			If $Diff[0] <> $Diff[$i] Then
-				If TimerDiff($timer) > 1000 Then
-					SetGUIStatus("Refresh (Registration Count change)")
-					MouseClick("left", $x + $RefreshOffset[0], $y + $RefreshOffset[1], 1, 0)
-					$timer = TimerInit()
-					Sleep(50)
-					ExitLoop
-				Else
-					$breakout += 1
-					If $breakout > 10 Then
-						$IS = _ImageSearchArea($PurpleBags, 1, $x - 10, $y - 10, $x + 10, $y + 10, $x, $y, 20, 0)
-						If $IS = False Then
-							SetGUIStatus("Marketplace anchor not found. Stopping.")
-							$Marketplace = False
-						Else
-							$breakout = 0
+	While $Marketplace
+		$ResOffset = DetectFullscreenToWindowedOffset($hTitle)
+		For $count = 0 To 5
+			$IS = _ImageSearchArea($MPImages[$count], 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $b, $n, 50, 0)
+			If $IS = True Then
+				SetGUIStatus($MPImages[$count] & " found with index " & $count & " moving into switch loop to determine next action")
+				MouseMove($b, $n)
+				Sleep(50)
+				Switch $count
+					Case 0
+						SetGUIStatus("Case 0, buy image")
+						MouseClick("left", $b, $n, 2, 0)
+						Sleep(500)
+						
+						$IS = _ImageSearchArea($MPImages[1], 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $b, $n, 50, 0)
+						If $IS = True Then
+							SetGUIStatus("Multiple item purchase detected, clicking max and purchasing")
+							MouseClick("left", $b, $n, 2, 0)
+							Sleep(50)
+							CoSe("{SPACE}")
+						Else 
+							SetGUIStatus("Single item purchase detected, purchasing")
+							CoSe("{SPACE}")
 						EndIf
-					EndIf
-				EndIf
+					Case 1
+						SetGUIStatus("Max button detected, pressing it and buying afterwards")
+						MouseClick("left", $b, $n, 2, 0)
+						Sleep(50)
+						CoSe("{SPACE}")
+					Case 2
+						SetGUIStatus("Purchase button detected, buying")
+						Sleep(50)
+						CoSe("{SPACE}")
+					Case 3
+						SetGUIStatus("Bid detected, pressing it and buying afterwards")
+						MouseClick("left", $b, $n, 2, 0)
+						Sleep(50)
+						CoSe("{SPACE}")
+					Case 4
+						SetGUIStatus("Bid result detected, pressing it and buying afterwards")
+						MouseClick("left", $b, $n, 2, 0)
+						Sleep(50)
+						CoSe("{SPACE}")
+					Case 5
+						SetGUIStatus("Purchase button detected, buying")
+						Sleep(50)
+						CoSe("{SPACE}")
+				EndSwitch
+				
+				Sleep(200)
+				MouseClick("left", $x + $RefreshOffset[0], $y + $RefreshOffset[1], 1, 0)
 			EndIf
 		Next
-		If TimerDiff($timer) > 15000 Then
-			SetGUIStatus("Refresh (15s no change detected)")
-			MouseClick("left", $x + $RefreshOffset[0], $y + $RefreshOffset[1], 1, 0)
-			$timer = TimerInit()
-			Sleep(50)
-		EndIf
-		Sleep(50)
-		$count += 1
-		If $count = 4 Then $count = 0
 	WEnd
 EndFunc   ;==>Marketplace
-
-Func FastFindBidBuy($x, $y)
-	Local $Valid[2] = [0x979292, 0xB8B8B8]
-	Local $SSN = 1, $FF
-	Local $BidR[3] = [21, 12, 21]
-	Local $Buy[3] = [3, 12, 21]
-	Local $Bid[3] = [4, 12, 21]
-	Local $BuyOffset[3] = [78, 54, 62] ; x, y, height 7
-	Local $ButtonRegion[4] = [$x + $BuyOffset[0] - 15, $y + $BuyOffset[1] - 15, $x + $BuyOffset[0] + 15, $y + $BuyOffset[1] + 15]
-	Local $MPImages[5] = ["res/mp_buy.png", "res/mp_max.png", "res/mp_purchase.png", "res/mp_bid.png", "mp_bidresult.png"]
-	Local $count = 0
-	Local $b, $n, $IS
-	$ResOffset = DetectFullscreenToWindowedOffset($hTitle)
-	
-	;SetGUIStatus("Setting search area for snapshot")
-	;MouseMove($x + $BuyOffset[0] - 15, $y + $BuyOffset[1] - 15)
-	;Sleep(500)
-	;MouseMove($x + $BuyOffset[0] + 15, $y + $BuyOffset[1] + 15)
-	;Sleep(500)
-	
-	;FFSnapShot($ButtonRegion[0], $ButtonRegion[1], $ButtonRegion[2], $ButtonRegion[3] + $BuyOffset[2] * 6, $SSN)
-	
-	For $count = 0 To 4
-		$IS = _ImageSearchArea($MPImages[$count], 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $b, $n, 50, 0)
-		While $IS = True
-			If $IS = True Then
-				SetGUIStatus($MPImages[$count] & " found, clicking")
-				MouseClick("left", $b, $n, 2, 0)
-				Sleep(200)
-				CoSe("{SPACE}")
-			EndIf
-		$IS = _ImageSearchArea($MPImages[$count], 0, $ResOffset[0], $ResOffset[1], $ResOffset[2], $ResOffset[3], $b, $n, 50, 0)
-		WEnd
-	Next
-	Return -1
-EndFunc   ;==>FastFindBidBuy
-
-
-Func BuyItem($x, $y, $number)
-	Local $MaxOffset[2] = [-111, 297]
-	Local $BuyOffset[3] = [78, 54, 62] ; x, y, height
-
-	MouseClick("left", $x + $BuyOffset[0], $y + $BuyOffset[1] + $number * $BuyOffset[2], 2, 0) ; buy
-	MouseClick("left", $x + $MaxOffset[0] - 30, $y + $MaxOffset[1], 1, 0) ; amount
-	CoSe("f") ; max
-	CoSe("r") ; confirm
-	CoSe("{SPACE}") ; yes
-EndFunc   ;==>BuyItem
-; #EndRegion - Marketplace
 
 Func Main()
 	ObfuscateTitle($Form1_1)
 	CreateConfig()
 	InitGUI()
+	SetGUIStatus("Please press a hotkey to begin...")
 	While True
 		GUILoopSwitch()
 	WEnd

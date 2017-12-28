@@ -1,0 +1,68 @@
+13:37.11 Starting Marketplace
+13:37.12 Fullscreen detected (1920x1080) - No Offsets
+13:37.13 MP anchor found with location 1227, 293
+13:37.15 Fullscreen detected (1920x1080) - No Offsets
+13:37.15 res/mp_buy.png found, clicking
+13:53.06 Please press a hotkey to begin...
+13:53.13 Starting Marketplace
+13:53.38 Please press a hotkey to begin...
+13:53.58 Starting Marketplace
+13:53.59 Fullscreen detected (1920x1080) - No Offsets
+13:53.59 MP anchor found with location 1227, 293
+13:54.01 Fullscreen detected (1920x1080) - No Offsets
+13:54.01 res/mp_buy.png found, clicking
+13:56.33 Please press a hotkey to begin...
+13:56.46 Fullscreen detected (1920x1080) - No Offsets
+13:56.46 Starting Marketplace
+13:58.00 Please press a hotkey to begin...
+13:58.02 Starting Marketplace
+13:58.04 MP anchor found with location 1227, 293
+13:58.05 res/mp_buy.png found, moving into switch loop to determine next action
+14:02.08 Please press a hotkey to begin...
+14:02.11 Starting Marketplace
+14:02.13 MP anchor found with location 1227, 293
+14:02.15 res/mp_buy.png found, moving into switch loop to determine next action
+14:06.29 Please press a hotkey to begin...
+14:06.30 Starting Marketplace
+14:06.32 MP anchor found with location 1227, 293
+14:06.34 res/mp_buy.png found with index 0 moving into switch loop to determine next action
+14:06.34 Case 0, buy image
+14:06.36 Single item purchase detected, purchasing
+14:06.37 res/mp_bid.png found with index 3 moving into switch loop to determine next action
+14:06.38 Max button detected, pressing it and buying afterwards
+14:07.51 Please press a hotkey to begin...
+14:07.55 Please press a hotkey to begin...
+14:07.57 Starting Marketplace
+14:07.58 MP anchor found with location 1227, 293
+14:08.00 res/mp_buy.png found with index 0 moving into switch loop to determine next action
+14:08.01 Case 0, buy image
+14:08.02 Single item purchase detected, purchasing
+14:08.07 res/mp_buy.png found with index 0 moving into switch loop to determine next action
+14:08.07 Case 0, buy image
+14:08.08 Single item purchase detected, purchasing
+14:08.13 res/mp_buy.png found with index 0 moving into switch loop to determine next action
+14:08.14 Case 0, buy image
+14:08.15 Single item purchase detected, purchasing
+14:08.20 res/mp_buy.png found with index 0 moving into switch loop to determine next action
+14:08.20 Case 0, buy image
+14:08.21 Single item purchase detected, purchasing
+14:08.26 res/mp_buy.png found with index 0 moving into switch loop to determine next action
+14:08.27 Case 0, buy image
+14:08.28 Single item purchase detected, purchasing
+14:08.32 res/mp_buy.png found with index 0 moving into switch loop to determine next action
+14:08.33 Case 0, buy image
+14:08.34 Single item purchase detected, purchasing
+14:08.39 res/mp_buy.png found with index 0 moving into switch loop to determine next action
+14:08.39 Case 0, buy image
+14:08.40 Single item purchase detected, purchasing
+14:08.49 res/mp_buy.png found with index 0 moving into switch loop to determine next action
+14:10.50 Please press a hotkey to begin...
+14:10.56 Starting Marketplace
+14:10.57 MP anchor found with location 1227, 293
+14:10.59 res/mp_buy.png found with index 0 moving into switch loop to determine next action
+14:11.00 Case 0, buy image
+14:11.01 Multiple item purchase detected, clicking max and purchasing
+14:11.05 res/mp_buy.png found with index 0 moving into switch loop to determine next action
+14:11.06 Case 0, buy image
+14:11.07 Multiple item purchase detected, clicking max and purchasing
+14:11.12 res/mp_buy.png found with index 0 moving into switch loop to determine next action

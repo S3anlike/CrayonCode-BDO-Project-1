@@ -96,6 +96,7 @@ Global $Token = '' ;Insert here your token
 Global $ChatID = ''
 Global $msgData[5] = ['', '', '', '', '']
 Global $TelegramEnable = False
+Global $ShutdownEnable = False
 Global $WarningCounter = 0
 
 Global $aListView1[10]
@@ -216,9 +217,12 @@ Func InitGUI()
 	GUICtrlSetState($CBLootCapture, CBT($ClientSettings[4][1]))
 
 	GUICtrlSetState($CBReserve, CBT($ClientSettings[5][1]))
+	
 	GUICtrlSetData($ISlotsReserved, $ClientSettings[6][1])
 	GUICtrlSetData($Telegram_Token, $ClientSettings[7][1])
 	GUICtrlSetData($IChatID, $ClientSettings[8][1])
+	
+	GUICtrlSetState($CBShutdown, CBT($ClientSettings[9][1]))
 	
 	$hTitle = $ClientSettings[1][1]
 	$LNG = $ClientSettings[2][1]
@@ -228,15 +232,18 @@ Func InitGUI()
 	$SlotsReserved = $ClientSettings[6][1]
 	$Token = $ClientSettings[7][1]
 	$ChatID = $ClientSettings[8][1]
+	$ShutdownEnable = $ClientSettings[9][1]
 	
 	Local $TotalStats = IniReadSection("logs/stats.ini", "TotalStats")
 	Local $SessionStats = IniReadSection("logs/stats.ini", "SessionStats")
 
-	SetGUIStatus("Diagnostic data: ")
+	SetGUIStatus("============Diagnostic data===============")
 	SetGUIStatus("Relic reserve enabled: " & $ReserveEnable)
 	SetGUIStatus("Slots Reserved: " & $SlotsReserved)
 	SetGUIStatus("Telegram token: " & $Token)
 	SetGUIStatus("ChatID: " & $ChatID)
+	SetGUIStatus("Auto-Shutdown: " & $ShutdownEnable)
+
 	For $i = 1 To 9
 		GUICtrlSetData($aListView1[$i], $SessionStats[$i][0] & "|" & $SessionStats[$i][1] & "|" & $TotalStats[$i][1], "")
 	Next
@@ -310,6 +317,7 @@ Func StoreGUI()
 	$ClientSettings[6][1] = GUICtrlRead($ISlotsReserved)
 	$ClientSettings[7][1] = GUICtrlRead($Telegram_Token)
 	$ClientSettings[8][1] = GUICtrlRead($IChatID)
+	$ClientSettings[9][1] = CBT(GUICtrlRead($CBShutdown))
 	IniWriteSection("config/settings.ini", "ClientSettings", $ClientSettings)
 	
 	InitGUI()
@@ -361,6 +369,7 @@ Func CreateConfig()
 		$ClientSettings &= "Slots_Reserved=10" & @LF
 		$ClientSettings &= "Telegram_Token=abcdefg" & @LF
 		$ClientSettings &= "ChatID=-1" & @LF
+		$ClientSettings &= "Shutdown=0" & @LF
 		IniWriteSection("config/settings.ini", "ClientSettings", $ClientSettings)
 		
 		Local $LangSettings = ""
@@ -1584,6 +1593,7 @@ Func Main_Fishing()
 					If DetectDisconnect() = True Then
 						TelegramMessage("Start screen detected! Killing BDO process.")
 						KillBDO()
+						Shutdown(4)
 						_terminate()
 					EndIf
 				ElseIf TimerDiff($Breaktimer) / 1000 > 10 Then
