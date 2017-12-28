@@ -3,3 +3,4 @@ Revision 23:
 * Autoupdate support, need a full redownload though
 * More failsafe checks for fishing process
 * Autoclose BDO process + Shutdown computer (if option enabled) when disconnect screen detected
+* Rewrote Marketplace algorithm so it actually works (very slow atm, will optimize later)
