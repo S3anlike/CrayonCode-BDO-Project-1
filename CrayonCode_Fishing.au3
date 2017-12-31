@@ -703,7 +703,7 @@ Func Riddler() ; Solves the fishing letter minigame
 		EndIf
 	Next
 
-	; If Wordlenght is >= 2 Then send each letter
+	; If Wordlwength is >= 2 Then send each letter
 	If $Wordlength < 2 Then
 		Return (False)
 	Else
@@ -1593,7 +1593,7 @@ Func Main_Fishing()
 					If DetectDisconnect() = True Then
 						TelegramMessage("Start screen detected! Killing BDO process.")
 						KillBDO()
-						Shutdown(4)
+						If $ShutdownEnable = True Then Run (@ScriptDir & "\include\shutdown.bat")
 						_terminate()
 					EndIf
 				ElseIf TimerDiff($Breaktimer) / 1000 > 10 Then
@@ -1614,6 +1614,7 @@ Func Main_Fishing()
 					Else
 						TelegramMessage("Black Desert is disconnected!")
 						SetGUIStatus("BlackDesert64.exe is DISCONNECTED")
+						If $ShutdownEnable = True Then Run (@ScriptDir & "\include\shutdown.bat")
 					EndIf
 
 					If SwapFishingrod($Enable_DiscardRods) = True Then
@@ -1624,7 +1625,13 @@ Func Main_Fishing()
 					EndIf
 					$Breaktimer = TimerInit()
 				Else
-					; SetGUIStatus("Unidentified state (" & Round(TimerDiff($Breaktimer) / 1000, 0) & "s)")
+					If DetectDisconnect() = True Then
+						TelegramMessage("Start screen detected! Killing BDO process.")
+						KillBDO()
+						If $ShutdownEnable = True Then Run (@ScriptDir & "\include\shutdown.bat")
+						_terminate()
+					EndIf
+					SetGUIStatus("Unidentified state (" & Round(TimerDiff($Breaktimer) / 1000, 0) & "s)")
 				EndIf
 		EndSwitch
 		Sleep(100)
