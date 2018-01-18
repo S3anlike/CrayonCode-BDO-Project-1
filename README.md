@@ -1,4 +1,4 @@
-# CrayonCode-BDO-Project Rev. 22 (12/27/2017) Holiday Update
+# CrayonCode-BDO-Project Rev. 25 (1/18/2018) Golden Puppy Update
 
 ## FOR FISHING ENTHUSIASTS:
 
@@ -32,15 +32,6 @@ For example: You have 3651 Birch Lumber, BATCH would be 500, MAX 3500.
 This feature is still under development and might bug.
 
 Any issues please report to the discord at: https://discord.gg/hj6jPrW
-
-## FOR OTHER FUNCTIONS:
-
-Run CrayonCode_MISC.au3 to start the script.
-
-Requirements:
-* For MP, Marketplace must be open on a specific item, image for reference: https://i.gyazo.com/f243cf942bf5031fd53f1fc62abb2c96.png
-* For Milking, toggle the milking function, start milking a cow and the mini-game will complete as needed.
-* For rolling with trade goods, simply use the hotkey to toggle it off and on.
 
 ## CrayonCode-Wiki
 
