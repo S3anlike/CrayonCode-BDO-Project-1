@@ -876,7 +876,7 @@ Func DetectLoot(ByRef $LWref) ; Identifies Rarity by bordercolor and Empty, Tras
 			EndIf
 		Next
 		For $i = 1 To UBound($EventIdentifier) - 1 Step 1 ; Check for Event items (includes all images in res/fishing/event/ folder)
-			If _ImageSearchArea("res/fishing/event/" & $EventIdentifier[$i], 0, $LW[0] + $LW[4] * $j, $LW[1], $LW[2] + 44 + $LW[4] * $j, $LW[3], $x, $y, 25, 0) = 1 Then
+			If _ImageSearchArea("res/fishing/event/" & $EventIdentifier[$i], 0, $LW[0] + $LW[4] * $j, $LW[1], $LW[2] + 44 + $LW[4] * $j, $LW[3], $x, $y, 50, 0) = 1 Then
 				$Loot[$j][2] = $i
 			EndIf
 		Next
