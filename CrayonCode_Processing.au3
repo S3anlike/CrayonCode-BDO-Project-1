@@ -112,7 +112,7 @@ Else
         $msg = MsgBox (4,"Autoupdate","Update available, revision: " & $newVersion & ". You are currently on revision: " & $oldVersion & ". Do you want to update?")
         If $msg = 7 Then ;No was pressed
             ;FileDelete(@ScriptDir & "\config\version.ini")
-            Exit
+            ;Exit
         ElseIf $msg = 6 Then ;OK was pressed
             $downloadLink = IniRead(@ScriptDir & "\config\version.ini","Version","Pdownload","NotFound")
             $dlhandle = InetGet($downloadLink,@ScriptDir & "\CrayonCode_Processing" & $newVersion & ".au3",1,1)
@@ -131,7 +131,7 @@ Else
             $File1 =  (@ScriptDir & "\config\changelog.txt")
 			MsgBox(-1, "Autoupdate", FileRead($File1, FileGetSize($File1)))
 			;FileDelete(@ScriptDir & "\version.ini")
-			_terminate()
+			;_terminate()
             EndIf
     EndIf
 EndIf
@@ -161,6 +161,7 @@ Global $Buff1Enable = True, $Buff2Enable = True, $BuffCD1 = 30, $BuffCD2 = 90
 Global $BuffKey1 = 7, $BuffKey2 = 8
 Global $AlchemyStoneEnable = 1
 Global $TestingMode = False
+Global $HorseLoading = False
 Global $Res[4] = [0, 0, @DesktopWidth, @DesktopHeight]
 
 Global $newtitle = ""
@@ -171,7 +172,7 @@ HotKeySet("^{F3}", "PauseToggle")
 HotKeySet("^{F4}", "ProcessCustom")
 HotKeySet("^{F5}", "ProcessSimple")
 HotKeySet("^{F6}", "WorkerFeed")
-HotKeySet("^{F7}", "BuffTestrun")
+HotKeySet("^{F7}", "LoadHorse")
 HotKeySet("^{F8}", "ProductionActivityCheck")
 HotKeySet("^{F9}", "CleadLogWindow")
 #EndRegion - Global
@@ -282,7 +283,7 @@ $BPause = GUICtrlCreateButton("Un/Pause" & @CRLF & "(Ctrl+F3)", 174, 404, 80, 41
 $BCustom = GUICtrlCreateButton("Custom" & @CRLF & "(Ctrl+F4)", 257, 404, 80, 41, $BS_MULTILINE)
 $BSimple = GUICtrlCreateButton("Simple" & @CRLF & "(Ctrl+F5)", 340, 404, 80, 41, $BS_MULTILINE)
 $BWorkerTest = GUICtrlCreateButton("Test Workers" & @CRLF & "(Ctrl+F6)", 423, 404, 100, 41, $BS_MULTILINE)
-$BBuffsTest = GUICtrlCreateButton("Test Buffs" & @CRLF & "(Ctrl+F7)", 526, 404, 80, 41, $BS_MULTILINE)
+$BBuffsTest = GUICtrlCreateButton("Load Horse" & @CRLF & "(Ctrl+F7)", 526, 404, 80, 41, $BS_MULTILINE)
 GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
 
@@ -796,17 +797,12 @@ Func ProcessCustom()
 	WEnd
 EndFunc   ;==>ProcessCustom
 
-Func BuffTestrun()
-    BuffTest($Buff1Enable, $Buff2Enable)
-EndFunc   ;==>HotKeyFunc
-
 Func ProcessSimple()
 	$Processing = Not $Processing
 	If $Processing = False Then
 		SetGUIStatus("Manually stopping ProcessSimple")
 		Return False
 	EndIf
-	BuffTest($Buff1Enable, $Buff2Enable)
 	Global $PL[0][2]
 	Local $ItemNumber
 	$ResOffset = DetectFullscreenToWindowedOffset()
@@ -1040,6 +1036,64 @@ Func ReturnToStorage()
 		ItemMoveAmount($InvA[0] + 10 + 48 * $i, $InvA[1], "ALL")
 	Next
 EndFunc   ;==>ReturnToStorage
+
+Func LoadHorse()
+	$HorseLoading = Not $HorseLoading
+	
+	If $HorseLoading Then
+		Local $Quantity = $DefaultBatchSize
+		MsgBox(0, "INFO", "Hover mouse over first slot of horse, then press ENTER")
+		Local $HorsePos = MouseGetPos()
+		MsgBox(0, "INFO", "Hover mouse over item you want to stack and press ENTER.")
+		Local $ItemPos = MouseGetPos()
+		MsgBox(0, "INFO", "Hover mouse over first empty inventory slot and press ENTER.")
+		Local $InvenPos = MouseGetPos()
+		MsgBox(0, "INFO", "Press ENTER to begin process, Ctrl+F7 to end.")
+		
+		StealthMouseClick("right", $ItemPos[0], $ItemPos[1], 2)
+		sleep(50)
+		StealthMouseClick("left", $ItemPos[0]+20, $ItemPos[1]+60, 2)
+		sleep(50)
+		CoSe($Quantity)
+		sleep(50)
+		CoSe("r")
+		sleep(50)
+		
+		StealthMouseClick("right", $InvenPos[0], $InvenPos[1], 2)
+		sleep(50)
+		StealthMouseClick("left", $InvenPos[0]+20, $InvenPos[1]+30, 2)
+		sleep(50)
+		CoSe("fr")
+		sleep(50)
+	EndIf
+	
+	While $HorseLoading
+		StealthMouseClick("right", $ItemPos[0], $ItemPos[1], 2)
+		sleep(50)
+		StealthMouseClick("left", $ItemPos[0]+20, $ItemPos[1]+60, 2)
+		sleep(50)
+		CoSe($Quantity)
+		sleep(50)
+		CoSe("r")
+		sleep(50)
+		
+		StealthMouseClick("right", $HorsePos[0], $HorsePos[1], 2)
+		sleep(50)
+		StealthMouseClick("left", $HorsePos[0]+20, $HorsePos[1]+30, 2)
+		sleep(50)
+		CoSe("fr")
+		sleep(50)
+		
+		StealthMouseClick("right", $InvenPos[0], $InvenPos[1], 2)
+		sleep(50)
+		StealthMouseClick("left", $InvenPos[0]+20, $InvenPos[1]+30, 2)
+		sleep(50)
+		CoSe("fr")
+		sleep(50)
+		
+	WEnd
+
+EndFunc
 
 Func ProductionMethod($Method) ; 0=Shaking, 1=Grinding, 2=Chopping, 3=Drying, 4=Filtering, 5=Heating
 

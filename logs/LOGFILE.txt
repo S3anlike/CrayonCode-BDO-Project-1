@@ -16,3 +16,43 @@
 10:29.23 Dry Fish initiated [0.0m CD]
 10:29.23 Weather: None found
 10:29.23 Unsuitable weather for drying.
+10:30.29 ============Diagnostic data===============
+10:30.29 Relic reserve enabled: 1
+10:30.29 Slots Reserved: 10
+10:30.29 Telegram token: -1
+10:30.29 ChatID: -1
+10:30.29 Auto-Shutdown: 1
+10:30.31 Dry Fish initiated [0.0m CD]
+10:30.31 Weather: None found
+10:30.31 Unsuitable weather for drying.
+10:31.33 ============Diagnostic data===============
+10:31.33 Relic reserve enabled: 1
+10:31.33 Slots Reserved: 10
+10:31.33 Telegram token: -1
+10:31.33 ChatID: -1
+10:31.33 Auto-Shutdown: 1
+10:31.35 Dry Fish initiated [0.0m CD]
+10:31.35 Weather: None found
+10:31.35 Unsuitable weather for drying.
+10:33.54 ============Diagnostic data===============
+10:33.54 Relic reserve enabled: 1
+10:33.54 Slots Reserved: 10
+10:33.54 Telegram token: -1
+10:33.54 ChatID: -1
+10:33.54 Auto-Shutdown: 1
+10:33.56 ============Diagnostic data===============
+10:33.56 Relic reserve enabled: 1
+10:33.56 Slots Reserved: 10
+10:33.56 Telegram token: -1
+10:33.56 ChatID: -1
+10:33.57 Auto-Shutdown: 1
+10:33.57 Dry Fish initiated [0.0m CD]
+10:33.57 Weather: Sunny
+10:33.58 Equipment found
+10:33.59 Drying requirements met. Starting proces.
+10:33.59 Weather: Sunny
+10:34.01 Processing open: False
+10:34.03 Processing open: True
+10:34.06 Dryable fish detected: 017, rarity: 0
+10:34.08 Drying started. Waiting for Production end.
+10:34.10 Drying failed.

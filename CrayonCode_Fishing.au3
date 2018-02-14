@@ -53,7 +53,7 @@ Else
         $msg = MsgBox (4,"Autoupdate","Update available, revision: " & $newVersion & ". You are currently on revision: " & $oldVersion & ". Do you want to update?")
         If $msg = 7 Then ;No was pressed
             ;FileDelete(@ScriptDir & "\config\version.ini")
-            Exit
+            ;Exit
         ElseIf $msg = 6 Then ;OK was pressed
             $downloadLink = IniRead(@ScriptDir & "\config\version.ini","Version","Fdownload","NotFound")
             $dlhandle = InetGet($downloadLink,@ScriptDir & "\CrayonCode_Fishing" & $newVersion & ".au3",1,1)
@@ -72,7 +72,7 @@ Else
             $File1 =  (@ScriptDir & "\config\changelog.txt")
 			MsgBox(-1, "Autoupdate", FileRead($File1, FileGetSize($File1)))
 			;FileDelete(@ScriptDir & "\version.ini")
-			_terminate()
+			;_terminate()
             EndIf
     EndIf
 EndIf
@@ -1077,19 +1077,13 @@ Func CheckWeather()
 	Local Const $WeatherSunny = "res/fishing/drying_sunny.png"
 	Local Const $WeatherRain = "res/fishing/drying_rain.png"
 	Local $x, $y, $IS
-	$IS = _ImageSearchArea($WeatherSunny, 1, $Res[2] - 350, $Res[1], $Res[2], $Res[1] + 100, $x, $y, 50, "White")
+	$IS = _ImageSearchArea("res/fishing/drying_sunny.png", 0, $Res[0], $Res[1], $Res[2], $Res[3],  $x, $y, 50, 0)
 	If $IS = True Then
 		SetGUIStatus("Weather: Sunny")
 		Return True
 	Else
-		$IS = _ImageSearchArea($WeatherRain, 1, $Res[2] - 350, $Res[1], $Res[2], $Res[1] + 100, $x, $y, 50, "White")
-		If $IS = True Then
-			SetGUIStatus("Weather: Rain")
-			Return False
-		Else
-			SetGUIStatus("Weather: None found")
-			Return False
-		EndIf
+		SetGUIStatus("Weather: None found")
+		Return False
 	EndIf
 EndFunc   ;==>CheckWeather
 
@@ -1225,7 +1219,7 @@ Func CheckInventoryForFishBySlot($MaxRarity = 3)
 EndFunc   ;==>CheckInventoryForFishBySlot
 
 Func ProductionActivityCheckLoop() ; Adpated
-	Local Const $Processing_Hammer = "res/processing_hammer.png"
+	Local Const $Processing_Hammer = "res/processing_hammer_uno.png"
 	Local $IS, $x, $y
 
 	SetGUIStatus("Drying started. Waiting for Production end.")
