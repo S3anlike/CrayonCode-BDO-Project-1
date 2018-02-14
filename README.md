@@ -1,4 +1,4 @@
-# CrayonCode-BDO-Project Rev. 25 (1/18/2018) Golden Puppy Update
+# CrayonCode-BDO-Project Rev. 26 (2/14/2018) Valentine Event Update
 
 ## FOR FISHING ENTHUSIASTS:
 

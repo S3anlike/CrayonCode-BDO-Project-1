@@ -1,4 +1,5 @@
-Revision 25:
+Revision 26:
 
-* Increased event item tolerance, golden puppy now detected, please download image from discord or from github and put into your res/event folder
-* Removed CC Misc, not enough features now that marketplace is no longer supported, alternative bots that have it can be found on the elitepvp forum.
+* Added Horse-loading function to processing bot, message boxes will guide you through the process.
+* Fixed fish drying
+* Added valentine's event item to folder, untested though, check discord for any updates (if available)
