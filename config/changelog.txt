@@ -1,5 +1,3 @@
-Revision 26:
+Revision 27:
 
-* Added Horse-loading function to processing bot, message boxes will guide you through the process.
-* Fixed fish drying
-* Added valentine's event item to folder, untested though, check discord for any updates (if available)
+* Updated co-ords for processing start button which changed slightly.

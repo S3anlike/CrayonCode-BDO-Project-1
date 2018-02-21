@@ -1102,7 +1102,7 @@ Func ProductionMethod($Method) ; 0=Shaking, 1=Grinding, 2=Chopping, 3=Drying, 4=
 	Local $x, $y, $IS
 	Local $ProductionHammer = "res/processing_hammer_uno.png"
 	Local $ProcessingMethodOffset[2] = [62, -62]
-	Local $ProcessingStart[2] = [256, -294]
+	Local $ProcessingStart[2] = [256, -274]
 
 	If IsNumber($Method) = False Then
 		Switch $Method
