@@ -72,7 +72,7 @@ Else
             $File1 =  (@ScriptDir & "\config\changelog.txt")
 			MsgBox(-1, "Autoupdate", FileRead($File1, FileGetSize($File1)))
 			;FileDelete(@ScriptDir & "\version.ini")
-			;_terminate()
+			_terminate()
             EndIf
     EndIf
 EndIf
