@@ -1587,8 +1587,10 @@ Func Main_Fishing()
 					If DetectDisconnect() = True Then
 						TelegramMessage("Start screen detected! Killing BDO process.")
 						KillBDO()
-						If $ShutdownEnable = True Then Run (@ScriptDir & "\include\shutdown.bat")
-						_terminate()
+						If $ShutdownEnable = True Then 
+							Run (@ScriptDir & "\include\shutdown.bat")
+							_terminate()
+						EndIf
 					EndIf
 				ElseIf TimerDiff($Breaktimer) / 1000 > 10 Then
 					SetGUIStatus("Disconnect not detected, trying to resolve unidentified state")
@@ -1608,7 +1610,10 @@ Func Main_Fishing()
 					Else
 						TelegramMessage("Black Desert is disconnected!")
 						SetGUIStatus("BlackDesert64.exe is DISCONNECTED")
-						If $ShutdownEnable = True Then Run (@ScriptDir & "\include\shutdown.bat")
+						If $ShutdownEnable = True Then 
+							Run (@ScriptDir & "\include\shutdown.bat")
+							_terminate()
+						EndIf
 					EndIf
 
 					If SwapFishingrod($Enable_DiscardRods) = True Then
@@ -1619,12 +1624,6 @@ Func Main_Fishing()
 					EndIf
 					$Breaktimer = TimerInit()
 				Else
-					If DetectDisconnect() = True Then
-						TelegramMessage("Start screen detected! Killing BDO process.")
-						KillBDO()
-						If $ShutdownEnable = True Then Run (@ScriptDir & "\include\shutdown.bat")
-						_terminate()
-					EndIf
 					SetGUIStatus("Unidentified state (" & Round(TimerDiff($Breaktimer) / 1000, 0) & "s)")
 				EndIf
 		EndSwitch

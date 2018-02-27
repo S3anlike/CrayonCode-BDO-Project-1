@@ -1,3 +1,4 @@
 Revision 27:
 
 * Updated co-ords for processing start button which changed slightly.
+* Less rigorous shutdown detection and disabling option should work now?
