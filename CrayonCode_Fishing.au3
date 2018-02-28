@@ -443,7 +443,7 @@ Func DetectFullscreenToWindowedOffset($hTitle) ; Returns $Offset[4] left, top, r
 EndFunc   ;==>DetectFullscreenToWindowedOffset
 
 Func WaitForMenu($show = False, $timeout = 5)
-	Local Const $MenuAnchor = "res/menu_anchor.png"
+	Local Const $MenuAnchor = "res/esc_worker.png"
 	Local $x, $y, $IS
 	Local $timer = TimerInit()
 	$timeout *= 1000
