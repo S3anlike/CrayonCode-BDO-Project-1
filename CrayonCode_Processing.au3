@@ -1335,6 +1335,8 @@ EndFunc   ;==>WaitForMenu
 
 ; # Side
 Func WorkerFeed()
+Func WorkerFeed()
+	Local Const $WorkerIcon = "res/esc_worker.png"
 	Local Const $WorkerRecoverAnchor = "res/worker_recover_anchor.png"
 	Local Const $WorkerOffsets[4][2] = [ _
 			[-263, 444], _ ; Recover All
@@ -1343,26 +1345,33 @@ Func WorkerFeed()
 			[-188, 443]] ; Repeat All
 	Local $x, $y, $IS
 	SetGUIStatus(StringFormat("Feeding Worker"))
-	CoSe("{F11}")
-	Sleep(1500)
-	$IS = _ImageSearchArea($WorkerRecoverAnchor, 0, $Res[0], $Res[1], $Res[2], $Res[3], $x, $y, 10, 0)
+	WaitForMenu(True)
+	$IS = _ImageSearchArea($WorkerIcon, 1, $Res[0], $Res[1], $Res[2], $Res[3], $x, $y, 10, 0)
 	If $IS = True Then
-			VMouse($x + $WorkerOffsets[0][0], $y + $WorkerOffsets[0][1], 1, "left") ; Recover All
-			VMouse($x + $WorkerOffsets[0][0], $y + $WorkerOffsets[0][1] + 10, 1, "left") ; Recover All DIFFERENT LANGUAGES FIX
-			VMouse($x + $WorkerOffsets[1][0], $y + $WorkerOffsets[1][1], 1, "left") ; Select food
-			Sleep(100)
-			VMouse($x + $WorkerOffsets[2][0], $y + $WorkerOffsets[2][1], 1, "left") ; Confirm
-			Sleep(1000)
-			VMouse($x + $WorkerOffsets[3][0], $y + $WorkerOffsets[3][1], 1, "left") ; Repeat All
-			VMouse($x + $WorkerOffsets[3][0], $y + $WorkerOffsets[3][1] + 10, 1, "left") ; Repeat All DIFFERENT LANGUAGES FIX
-		CoSe("{ESC}") ; Close Worker List
+		VMouse($x, $y, 1, "left")
 		Sleep(1500)
-		CoSe("l") ; Open Processing screen
-		Return True
+		$IS = _ImageSearchArea($WorkerRecoverAnchor, 0, $Res[0], $Res[1], $Res[2], $Res[3], $x, $y, 10, 0)
+		If $IS = True Then
+				VMouse($x + $WorkerOffsets[0][0], $y + $WorkerOffsets[0][1], 1, "left") ; Recover All
+				VMouse($x + $WorkerOffsets[0][0], $y + $WorkerOffsets[0][1] + 10, 1, "left") ; Recover All DIFFERENT LANGUAGES FIX
+				VMouse($x + $WorkerOffsets[1][0], $y + $WorkerOffsets[1][1], 1, "left") ; Select food
+				Sleep(100)
+				VMouse($x + $WorkerOffsets[2][0], $y + $WorkerOffsets[2][1], 1, "left") ; Confirm
+				Sleep(1000)
+				VMouse($x + $WorkerOffsets[3][0], $y + $WorkerOffsets[3][1], 1, "left") ; Repeat All
+				VMouse($x + $WorkerOffsets[3][0], $y + $WorkerOffsets[3][1] + 10, 1, "left") ; Repeat All DIFFERENT LANGUAGES FIX
+			CoSe("{ESC}") ; Close Worker List
+			Sleep(1500)
+			CoSe("l") ; Open Processing screen
+			Return True
+		Else
+			SetGUIStatus("WorkerRecoverAnchor missing")
+			Return False
+		EndIf
 	Else
-		SetGUIStatus("WorkerRecoverAnchor missing")
-		Return False
+		SetGUIStatus("WorkerIcon missing")
 	EndIf
+EndFunc   ;==>WorkerFeed
 EndFunc   ;==>WorkerFeed
 
 Func BuffTest($Buff1Enable, $Buff2Enable)
