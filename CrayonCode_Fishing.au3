@@ -443,13 +443,13 @@ Func DetectFullscreenToWindowedOffset($hTitle) ; Returns $Offset[4] left, top, r
 EndFunc   ;==>DetectFullscreenToWindowedOffset
 
 Func WaitForMenu($show = False, $timeout = 5)
-	Local Const $WorkerIcon = "res/esc_worker.png"
+	Local Const $MenuAnchor = "res/menu_anchor.png"
 	Local $x, $y, $IS
 	Local $timer = TimerInit()
 	$timeout *= 1000
 
 	While TimerDiff($timer) < $timeout
-		$IS = _ImageSearchArea($WorkerIcon, 1, $Res[0], $Res[1], $Res[2], $Res[3], $x, $y, 50, 0)
+		$IS = _ImageSearchArea($MenuAnchor, 1, $Res[0], $Res[1], $Res[2], $Res[3], $x, $y, 50, 0)
 		If $IS = False Then CoSe("{ESC}") ; Opening Menu
 		If $IS = True Then
 			If $show = False Then CoSe("{ESC}") ; Closing Menu
@@ -1366,7 +1366,6 @@ Func WorkerFeed($WorkerEnable, $WorkerCD)
 	$WorkerCD *= 60000
 
 	If $TimerDiff > $WorkerCD Then
-		Local Const $WorkerIcon = "res/esc_worker.png"
 		Local Const $WorkerRecoverAnchor = "res/worker_recover_anchor.png"
 		Local Const $WorkerOffsets[4][2] = [ _
 				[-263, 444], _ ; Recover All
@@ -1375,32 +1374,24 @@ Func WorkerFeed($WorkerEnable, $WorkerCD)
 				[-188, 443]] ; Repeat All
 		Local $x, $y, $IS
 		SetGUIStatus(StringFormat("Feeding Worker [%.1fm CD]", $WorkerCD / 60000))
-		WaitForMenu(True)
-		$IS = _ImageSearchArea($WorkerIcon, 1, $Res[0], $Res[1], $Res[2], $Res[3], $x, $y, 10, 0)
+		CoSe("{F11}")
+		Sleep(1500)
+		$IS = _ImageSearchArea($WorkerRecoverAnchor, 1, $Res[0], $Res[1], $Res[2], $Res[3], $x, $y, 10, 0)
 		If $IS = True Then
-			VMouse($x, $y, 1, "left")
-			Sleep(1500)
-			$IS = _ImageSearchArea($WorkerRecoverAnchor, 0, $Res[0], $Res[1], $Res[2], $Res[3], $x, $y, 10, 0)
-			If $IS = True Then
-				VMouse($x + $WorkerOffsets[0][0], $y + $WorkerOffsets[0][1], 1, "left") ; Recover All
-				VMouse($x + $WorkerOffsets[0][0], $y + $WorkerOffsets[0][1] + 10, 1, "left") ; Recover All DIFFERENT LANGUAGES FIX
-				VMouse($x + $WorkerOffsets[1][0], $y + $WorkerOffsets[1][1], 1, "left") ; Select food
-				Sleep(100)
-				VMouse($x + $WorkerOffsets[2][0], $y + $WorkerOffsets[2][1], 1, "left") ; Confirm
-				Sleep(1000)
-				VMouse($x + $WorkerOffsets[3][0], $y + $WorkerOffsets[3][1], 1, "left") ; Repeat All
-				VMouse($x + $WorkerOffsets[3][0], $y + $WorkerOffsets[3][1] + 10, 1, "left") ; Repeat All DIFFERENT LANGUAGES FIX
-				CoSe("{ESC}") ; Close Worker List
-				$WorkerFeedTimer = TimerInit()
-				Return True
-			Else
-				SetGUIStatus("WorkerRecoverAnchor missing")
-				Return False
-			EndIf
+			VMouse($x + $WorkerOffsets[0][0], $y + $WorkerOffsets[0][1], 1, "left") ; Recover All
+			VMouse($x + $WorkerOffsets[0][0], $y + $WorkerOffsets[0][1] + 10, 1, "left") ; Recover All DIFFERENT LANGUAGES FIX
+			VMouse($x + $WorkerOffsets[1][0], $y + $WorkerOffsets[1][1], 1, "left") ; Select food
+			Sleep(100)
+			VMouse($x + $WorkerOffsets[2][0], $y + $WorkerOffsets[2][1], 1, "left") ; Confirm
+			Sleep(1000)
+			VMouse($x + $WorkerOffsets[3][0], $y + $WorkerOffsets[3][1], 1, "left") ; Repeat All
+			VMouse($x + $WorkerOffsets[3][0], $y + $WorkerOffsets[3][1] + 10, 1, "left") ; Repeat All DIFFERENT LANGUAGES FIX
+			CoSe("{ESC}") ; Close Worker List
+			$WorkerFeedTimer = TimerInit()
+			Return True
 		Else
-			SetGUIStatus("WorkerIcon missing")
+			SetGUIStatus("WorkerMenu failed to open, is your hotkey correct? (F11)")
 		EndIf
-
 	Else
 		SetGUIStatus("WorkerFeed Cooldown(" & $WorkerCD / 60000 & "m): " & Round(($WorkerCD - $TimerDiff) / 60000, 1) & "m left.")
 		Return False
