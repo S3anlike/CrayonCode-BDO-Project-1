@@ -1335,7 +1335,6 @@ EndFunc   ;==>WaitForMenu
 
 ; # Side
 Func WorkerFeed()
-Func WorkerFeed()
 	Local Const $WorkerIcon = "res/esc_worker.png"
 	Local Const $WorkerRecoverAnchor = "res/worker_recover_anchor.png"
 	Local Const $WorkerOffsets[4][2] = [ _
@@ -1371,7 +1370,6 @@ Func WorkerFeed()
 	Else
 		SetGUIStatus("WorkerIcon missing")
 	EndIf
-EndFunc   ;==>WorkerFeed
 EndFunc   ;==>WorkerFeed
 
 Func BuffTest($Buff1Enable, $Buff2Enable)
