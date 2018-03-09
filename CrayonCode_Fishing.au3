@@ -98,6 +98,7 @@ Global $msgData[5] = ['', '', '', '', '']
 Global $TelegramEnable = False
 Global $ShutdownEnable = False
 Global $WarningCounter = 0
+Global $FailCounter = 0
 
 Global $aListView1[10]
 For $i = 1 to 9
@@ -1558,7 +1559,8 @@ Func Main_Fishing()
 
 				If Cast() = False Then
 					$failedcasts += 1
-					SetGUIStatus("Casting fishingrod failed.")
+					$FailCounter += 1
+					SetGUIStatus("Casting fishingrod failed. Global fail counter increased to: " & $FailCounter)
 
 					If InspectFishingrod() = True Then
 						SetGUIStatus("Broken Fishingrod in Weaponslot detected.")
@@ -1572,11 +1574,17 @@ Func Main_Fishing()
 					Else
 						SetGUIStatus("No broken Fishingrod equipped. Maybe turn around?")
 						TurnAround()
+						If $FailCounter > 1 Then
+							SetGUIStatus("Global fail counter is now " & $FailCounter & ". Something wrong has happened, sending telegram message and ending bot.")
+							TelegramMessage("Global fail counter triggered, please check your bot, a GM might have teleported you.")
+							$Fish = False
+						EndIf
 					EndIf
 
 				Else
 					$failedcasts = 0
-					SetGUIStatus("Casting fishingrod successful.")
+					$FailCounter = 0
+					SetGUIStatus("Casting fishingrod successful, resetting failcounter.")
 				EndIf
 
 				$fishingtimer = TimerInit()
@@ -1610,10 +1618,6 @@ Func Main_Fishing()
 					Else
 						TelegramMessage("Black Desert is disconnected!")
 						SetGUIStatus("BlackDesert64.exe is DISCONNECTED")
-						If $ShutdownEnable = True Then 
-							Run (@ScriptDir & "\include\shutdown.bat")
-							_terminate()
-						EndIf
 					EndIf
 
 					If SwapFishingrod($Enable_DiscardRods) = True Then
